@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
 
 echo.
 echo ==========================================
-echo    BollettaAI v3 - Setup e Avvio
+echo    BollettaAI - Avvio Sito Completo
 echo ==========================================
 echo.
 
@@ -15,36 +15,39 @@ if errorlevel 1 (
     pause
     exit /b 1
 )
-echo [OK] Python trovato:
-python --version
+echo [OK] Python trovato
 
 if "%GEMINI_API_KEY%"=="" (
     echo.
     echo ATTENZIONE: GEMINI_API_KEY non configurata.
-    echo Ottieni una chiave gratuita su: https://aistudio.google.com/apikey
+    echo Ottienila su: https://aistudio.google.com/apikey
     echo.
-    set /p GEMINI_API_KEY="Incolla qui la tua API Key Gemini: "
+    set /p GEMINI_API_KEY="Incolla la tua API Key Gemini: "
     if "!GEMINI_API_KEY!"=="" (
         echo ERRORE: API Key obbligatoria.
         pause
         exit /b 1
     )
     echo.
-    echo Per salvarla in modo permanente:
-    echo Pannello di Controllo - Sistema - Variabili d'ambiente avanzate
+    echo Per salvarla definitivamente:
+    echo Pannello di Controllo - Sistema - Variabili d'ambiente
     echo Aggiungi: GEMINI_API_KEY = la-tua-chiave
 )
 echo [OK] GEMINI_API_KEY configurata
 
+if "%ADMIN_TOKEN%"=="" (
+    echo.
+    echo ATTENZIONE: ADMIN_TOKEN non configurato.
+    echo Il token di default e': admin123
+    echo Impostane uno sicuro con: set ADMIN_TOKEN=tuo-token-segreto
+    set ADMIN_TOKEN=admin123
+)
+echo [OK] ADMIN_TOKEN: !ADMIN_TOKEN!
+
 if not exist ".venv" (
     echo.
-    echo Creo virtual environment Python...
+    echo Creo virtual environment...
     python -m venv .venv
-    if errorlevel 1 (
-        echo ERRORE nella creazione del virtual environment.
-        pause
-        exit /b 1
-    )
 )
 call .venv\Scripts\activate.bat
 echo [OK] Virtual environment attivo
@@ -62,9 +65,10 @@ echo [OK] Dipendenze installate
 
 echo.
 echo ==========================================
-echo   Avvio server su http://localhost:8000
-echo   Apri il browser su quell'indirizzo.
-echo   Per fermare: premi Ctrl+C
+echo   Sito pubblico:  http://localhost:8000
+echo   Pannello admin: http://localhost:8000/admin
+echo   Token admin:    !ADMIN_TOKEN!
+echo   Per fermare:    Ctrl+C
 echo ==========================================
 echo.
 

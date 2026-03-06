@@ -2,897 +2,857 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BollettaAI v3 — Comparatore Luce & Gas</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="Analizza la tua bolletta luce o gas gratis con l'intelligenza artificiale. Confronta le offerte e scopri quanto puoi risparmiare.">
+<title>BollettaAI — Analizza e risparmia su luce e gas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,700;12..96,800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
+/* ══ RESET & TOKENS ══════════════════════════════════════════════════════ */
 :root{
-  --ink:#0d1117;--paper:#f6f4ef;--warm:#edead9;--card:#fff;
-  --muted:#7a7570;--border:#e0dbd0;
-  --accent:#e85d1a;--blue:#1d4ed8;--green:#16a34a;
-  --yellow:#d97706;--red:#dc2626;--purple:#7c3aed;
-  --shadow:0 4px 20px rgba(13,17,23,.09);
-  --shadow-sm:0 1px 4px rgba(13,17,23,.06);
-  --r:14px;--r-sm:8px;--t:.18s ease;
+  --navy:#0d1b2a; --ink:#1a2332; --muted:#5a6a7e;
+  --border:#e4eaf2; --bg:#f8fafd; --white:#ffffff;
+  --green:#059669; --green-l:#d1fae5; --green-d:#065f46;
+  --blue:#2563eb; --blue-l:#dbeafe;
+  --orange:#ea580c; --orange-l:#ffedd5;
+  --yellow:#d97706; --red:#dc2626;
+  --r:16px; --r-sm:10px; --r-lg:24px; --r-xl:32px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);
+  --shadow:0 4px 16px rgba(13,27,42,.10);
+  --shadow-lg:0 20px 60px rgba(13,27,42,.16);
+  --t:200ms ease;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;line-height:1.55}
-button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inherit}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--ink);-webkit-font-smoothing:antialiased}
 
-/* ── Sidebar ── */
-.sidebar{width:230px;background:var(--ink);position:fixed;top:0;left:0;height:100vh;display:flex;flex-direction:column;z-index:200;transition:transform .2s}
-.sb-logo{padding:1.4rem 1.4rem 1rem;border-bottom:1px solid rgba(255,255,255,.08)}
-.logo-t{font-family:'Syne',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;letter-spacing:-.5px}
-.logo-t span{color:var(--accent)}
-.logo-sub{font-size:.65rem;color:rgba(255,255,255,.3);letter-spacing:.8px;text-transform:uppercase;margin-top:2px}
-.sb-nav{padding:.75rem 0;flex:1;overflow-y:auto}
-.nav-sec{padding:.5rem 1.4rem .2rem;font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.22)}
-.nav-btn{display:flex;align-items:center;gap:.7rem;padding:.6rem 1.4rem;color:rgba(255,255,255,.55);font-size:.88rem;cursor:pointer;border:none;background:none;width:100%;text-align:left;transition:all var(--t);border-right:3px solid transparent}
-.nav-btn:hover{color:#fff;background:rgba(255,255,255,.06)}
-.nav-btn.active{color:#fff;background:rgba(232,93,26,.14);border-right-color:var(--accent)}
-.nav-btn .ic{font-size:.95rem;width:18px;text-align:center;flex-shrink:0}
-.sb-footer{padding:1rem 1.4rem;border-top:1px solid rgba(255,255,255,.07);font-size:.72rem;color:rgba(255,255,255,.28)}
-.h-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#22c55e;margin-right:5px;animation:blink 2.5s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
-
-/* ── Layout ── */
-.content{margin-left:230px;padding:2.2rem 2.5rem;max-width:1120px}
-.page{display:none;animation:fi .22s ease}
-.page.active{display:block}
-@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
-
-/* ── Mobile ── */
-.mob-hdr{display:none;background:var(--ink);padding:.7rem 1rem;position:sticky;top:0;z-index:100;align-items:center;justify-content:space-between}
-@media(max-width:860px){
-  .mob-hdr{display:flex}
-  .sidebar{transform:translateX(-100%)}
-  .sidebar.open{transform:none}
-  .content{margin-left:0;padding:1.2rem 1rem}
+/* ══ NAVBAR ══════════════════════════════════════════════════════════════ */
+.nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(255,255,255,.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:0 1.5rem;height:64px;
+  display:flex;align-items:center;justify-content:space-between;
 }
-.burger{background:none;border:none;color:#fff;font-size:1.5rem;padding:2px}
+.nav-logo{display:flex;align-items:center;gap:.5rem;text-decoration:none}
+.nav-logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--navy),#1e40af);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.nav-logo-text{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.2rem;color:var(--navy);letter-spacing:-.5px}
+.nav-logo-text span{color:var(--blue)}
+.nav-links{display:flex;align-items:center;gap:.5rem}
+.nav-links a{font-size:.85rem;color:var(--muted);text-decoration:none;padding:6px 14px;border-radius:var(--r-sm);transition:all var(--t);font-weight:500}
+.nav-links a:hover{background:var(--bg);color:var(--ink)}
+.nav-cta{background:var(--navy)!important;color:white!important;font-weight:600!important}
+.nav-cta:hover{background:#1e3a5f!important;transform:translateY(-1px)}
+@media(max-width:600px){.nav-links .hide-mob{display:none}}
 
-/* ── Typography ── */
-h1.pt{font-family:'Syne',sans-serif;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;letter-spacing:-1px;margin-bottom:.3rem}
-h1.pt em{color:var(--accent);font-style:normal}
-.psub{color:var(--muted);font-size:.92rem;font-weight:300;margin-bottom:1.75rem}
+/* ══ HERO ════════════════════════════════════════════════════════════════ */
+.hero{
+  background:linear-gradient(160deg,#f0f6ff 0%,#e8f4f8 50%,#f0fff8 100%);
+  padding:5rem 1.5rem 4rem;
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% -20%,rgba(37,99,235,.08) 0%,transparent 70%),
+             radial-gradient(ellipse 50% 40% at 80% 80%,rgba(5,150,105,.06) 0%,transparent 60%);
+  pointer-events:none;
+}
+.hero-inner{max-width:780px;margin:0 auto;text-align:center;position:relative}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:white;border:1px solid var(--border);border-radius:100px;
+  padding:.35rem 1rem .35rem .5rem;
+  font-size:.8rem;font-weight:600;color:var(--green-d);
+  margin-bottom:1.5rem;box-shadow:var(--shadow-sm);
+}
+.hero-badge-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.8)}}
+h1.hero-title{
+  font-family:'Bricolage Grotesque',sans-serif;
+  font-size:clamp(2rem,5vw,3.4rem);font-weight:800;
+  line-height:1.1;letter-spacing:-1.5px;
+  color:var(--navy);margin-bottom:1.25rem;
+}
+h1.hero-title .hl{
+  background:linear-gradient(135deg,var(--blue),#7c3aed);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-sub{font-size:1.05rem;color:var(--muted);font-weight:400;max-width:540px;margin:0 auto 2.5rem;line-height:1.65}
+.hero-pills{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-bottom:2.5rem}
+.pill{background:white;border:1px solid var(--border);border-radius:100px;padding:.3rem .9rem;font-size:.78rem;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:.35rem}
 
-/* ── Cards ── */
-.card{background:var(--card);border-radius:var(--r);padding:1.4rem;box-shadow:var(--shadow-sm);border:1px solid var(--border)}
-.ctitle{font-family:'Syne',sans-serif;font-weight:700;font-size:.92rem;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
-.ctitle::after{content:'';flex:1;height:1px;background:var(--warm)}
-.kpi{background:var(--card);border-radius:var(--r);padding:1.15rem 1.4rem;border:1px solid var(--border);box-shadow:var(--shadow-sm)}
-.kl{font-size:.68rem;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem}
-.kv{font-family:'Syne',sans-serif;font-size:1.75rem;font-weight:800;letter-spacing:-.8px;line-height:1}
-.ks{font-size:.73rem;color:var(--muted);margin-top:.2rem}
+/* ══ CARD ANALISI (centrale) ═════════════════════════════════════════════ */
+.card-analisi{
+  background:white;border-radius:var(--r-xl);box-shadow:var(--shadow-lg);
+  padding:2.25rem;max-width:560px;margin:0 auto;
+  border:1px solid var(--border);
+  animation:slideUp .6s ease both;
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.ca-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1.05rem;color:var(--ink);margin-bottom:1.4rem;text-align:center}
 
-/* ── Grid ── */
-.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.9rem}
-.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
-@media(max-width:680px){.g2,.g3,.g4{grid-template-columns:1fr}}
+/* Toggle luce/gas */
+.tipo-toggle{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;background:var(--bg);padding:.3rem;border-radius:var(--r-sm);margin-bottom:1.4rem}
+.tipo-btn{border:none;padding:.7rem;border-radius:8px;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.88rem;cursor:pointer;transition:all var(--t);color:var(--muted);background:transparent}
+.tipo-btn.active{background:white;color:var(--ink);box-shadow:var(--shadow-sm)}
+.tipo-btn.active.luce{color:#b45309}
+.tipo-btn.active.gas{color:#0369a1}
 
-/* ── Tags ── */
-.tag{display:inline-flex;align-items:center;gap:3px;font-size:.7rem;font-weight:600;padding:3px 9px;border-radius:20px}
-.t-luce{background:#fff7ed;color:#c2410c}
-.t-gas{background:#eff6ff;color:#1e40af}
-.t-d2{background:#f0fdf4;color:#166534}
-.t-d3{background:#ecfdf5;color:#065f46}
-.t-bta{background:#faf5ff;color:#6b21a8}
-.t-cdo{background:#f8fafc;color:#374151;border:1px solid #e2e8f0}
-.t-lib{background:#dcfce7;color:#14532d}
-.t-tut{background:#fefce8;color:#713f12}
+/* Profilo */
+.profilo-grid{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:1.4rem}
+.pr-btn{border:2px solid var(--border);padding:.6rem .7rem;border-radius:var(--r-sm);cursor:pointer;background:white;text-align:left;transition:all var(--t);font-family:'DM Sans',sans-serif}
+.pr-btn:hover{border-color:var(--blue);background:var(--blue-l)}
+.pr-btn.active{border-color:var(--blue);background:var(--blue-l)}
+.pr-btn-name{font-weight:600;font-size:.82rem;color:var(--ink);display:block}
+.pr-btn-sub{font-size:.7rem;color:var(--muted);display:block;margin-top:1px}
+
+/* Upload zone */
+.drop-zone{
+  border:2.5px dashed var(--border);border-radius:var(--r);
+  padding:1.75rem 1rem;text-align:center;cursor:pointer;
+  transition:all .22s;background:var(--bg);margin-bottom:1.25rem;
+}
+.drop-zone:hover,.drop-zone.over{border-color:var(--blue);background:#eff6ff}
+.drop-zone .dz-icon{font-size:2rem;margin-bottom:.6rem;display:block}
+.drop-zone h4{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.95rem;color:var(--ink);margin-bottom:.3rem}
+.drop-zone p{font-size:.78rem;color:var(--muted)}
+.dz-privacy{display:flex;align-items:center;gap:.4rem;font-size:.72rem;color:var(--muted);justify-content:center;margin-top:.5rem}
+
+/* Form campi */
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.7rem}
+.field{display:flex;flex-direction:column;gap:.25rem}
+.field label{font-size:.75rem;font-weight:600;color:var(--muted)}
+.field input{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:9px 12px;font-size:.9rem;font-family:'DM Sans',sans-serif;color:var(--ink);transition:border-color var(--t);outline:none}
+.field input:focus{border-color:var(--blue)}
+.field input::placeholder{color:#aab4c0}
+
+/* Consenso */
+.consenso-row{display:flex;align-items:flex-start;gap:.5rem;margin-bottom:1rem;font-size:.78rem;color:var(--muted);line-height:1.5}
+.consenso-row input[type=checkbox]{margin-top:3px;accent-color:var(--blue);flex-shrink:0}
+.consenso-row a{color:var(--blue);text-decoration:none}
+
+/* CTA button */
+.btn-analizza{
+  width:100%;padding:1rem;border:none;border-radius:var(--r);
+  background:linear-gradient(135deg,var(--navy) 0%,#1e40af 100%);
+  color:white;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;
+  font-size:1.05rem;cursor:pointer;transition:all var(--t);
+  display:flex;align-items:center;justify-content:center;gap:.5rem;
+  letter-spacing:.2px;
+}
+.btn-analizza:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 24px rgba(30,64,175,.3)}
+.btn-analizza:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-consulente{
+  width:100%;margin-top:.7rem;padding:.75rem;border:1.5px solid var(--border);
+  border-radius:var(--r);background:white;color:var(--ink);
+  font-family:'DM Sans',sans-serif;font-weight:500;font-size:.9rem;cursor:pointer;
+  transition:all var(--t);
+}
+.btn-consulente:hover{border-color:var(--ink);background:var(--bg)}
+
+/* ══ LOADING ═════════════════════════════════════════════════════════════ */
+#loading-section{display:none;padding:3rem 1.5rem;text-align:center;max-width:560px;margin:0 auto}
+.spinner{width:52px;height:52px;border:4px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .85s linear infinite;margin:0 auto 1.5rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1.15rem;color:var(--ink);margin-bottom:1rem}
+.loading-steps{list-style:none;max-width:280px;margin:0 auto}
+.loading-steps li{display:flex;align-items:center;gap:.6rem;padding:.4rem 0;font-size:.86rem;color:var(--muted);transition:color .3s}
+.loading-steps li.done{color:var(--green-d)}
+.loading-steps li.act{color:var(--ink);font-weight:500}
+.step-ic{width:18px;height:18px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:.65rem;flex-shrink:0;transition:all .3s}
+.loading-steps li.done .step-ic{background:var(--green);color:white}
+.loading-steps li.act .step-ic{background:var(--blue);color:white}
+
+/* ══ RISULTATI ═══════════════════════════════════════════════════════════ */
+#risultati-section{display:none;padding:2rem 1.5rem 4rem;max-width:800px;margin:0 auto}
+.ris-header{text-align:center;margin-bottom:2rem}
+.ris-title{font-family:'Bricolage Grotesque',sans-serif;font-size:1.8rem;font-weight:800;color:var(--navy);letter-spacing:-.5px;margin-bottom:.5rem}
+.ris-subtitle{color:var(--muted);font-size:.95rem}
+
+/* KPI cards */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.75rem;margin-bottom:1.75rem}
+.kpi-card{background:white;border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.1rem;box-shadow:var(--shadow-sm)}
+.kpi-label{font-size:.68rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin-bottom:.25rem}
+.kpi-value{font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:800;letter-spacing:-.5px;line-height:1}
+.kpi-sub{font-size:.72rem;color:var(--muted);margin-top:.25rem}
+.kpi-card.highlight{background:linear-gradient(135deg,var(--green-l),#ecfdf5);border-color:var(--green)}
+.kpi-card.highlight .kpi-value{color:var(--green-d)}
+
+/* Dettaglio costi */
+.cost-card{background:white;border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem;box-shadow:var(--shadow-sm)}
+.cost-card-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.92rem;color:var(--ink);margin-bottom:.9rem;display:flex;align-items:center;gap:.5rem}
+.cost-row{display:flex;justify-content:space-between;align-items:center;padding:.45rem 0;border-bottom:1px solid var(--bg);font-size:.88rem}
+.cost-row:last-child{border:none;font-weight:700;font-size:.95rem;padding-top:.7rem}
+.cost-row-val{font-family:'Bricolage Grotesque',sans-serif;font-weight:600}
+
+/* AI insights */
+.ai-card{background:linear-gradient(135deg,#fffbeb,#fff);border:1px solid #fde68a;border-radius:var(--r);padding:1.25rem;margin-bottom:1rem}
+.ai-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.9rem;color:#92400e;margin-bottom:.65rem;display:flex;align-items:center;gap:.4rem}
+.ai-items{list-style:none}
+.ai-items li{padding:.35rem 0;font-size:.86rem;display:flex;gap:.5rem;color:var(--ink)}
+.ai-items li::before{content:'→';color:var(--orange);flex-shrink:0;font-weight:700}
+
+/* BiFuel detector */
+.bifuel-card{background:linear-gradient(135deg,#fff7ed,#fff);border:1.5px solid #fed7aa;border-radius:var(--r);padding:1.1rem 1.25rem;margin-bottom:1.2rem}
+.bifuel-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.9rem;color:#c2410c;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
+
+/* Sezione comparazione */
+.compara-intro{background:var(--bg);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:1rem;font-size:.88rem;color:var(--ink);border:1px solid var(--border)}
+.compara-intro strong{color:var(--green-d)}
+.off-card{
+  background:white;border:2px solid var(--border);border-radius:var(--r);
+  padding:1.1rem 1.3rem;display:flex;align-items:center;gap:1rem;
+  margin-bottom:.6rem;transition:all var(--t);position:relative;overflow:hidden;
+}
+.off-card:hover{border-color:var(--blue);box-shadow:var(--shadow);transform:translateX(4px)}
+.off-card.best{border-color:var(--green);background:linear-gradient(135deg,#f0fdf4,white)}
+.best-badge{position:absolute;top:0;right:0;background:var(--green);color:white;font-size:.62rem;font-weight:700;padding:4px 12px;border-radius:0 var(--r) 0 9px;letter-spacing:.3px;text-transform:uppercase}
+.bf-badge{position:absolute;bottom:0;right:0;background:#fed7aa;color:#c2410c;font-size:.6rem;font-weight:700;padding:3px 10px;border-radius:9px 0 var(--r) 0}
+.off-rank{font-family:'Bricolage Grotesque',sans-serif;font-size:1.3rem;font-weight:800;color:var(--border);min-width:2rem;text-align:center;flex-shrink:0}
+.off-card.best .off-rank{color:var(--green)}
+.off-info{flex:1;min-width:0}
+.off-nome{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.92rem;color:var(--ink)}
+.off-forn{font-size:.8rem;color:var(--muted);margin-top:1px}
+.off-note{font-size:.73rem;color:var(--muted);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:280px}
+.off-tags{display:flex;gap:3px;flex-wrap:wrap;margin-top:5px}
+.tag{display:inline-flex;align-items:center;font-size:.67rem;font-weight:600;padding:2px 8px;border-radius:100px}
 .t-fix{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}
 .t-var{background:#fdf4ff;color:#7e22ce}
-.t-real{background:#dcfce7;color:var(--green)}
-.t-stim{background:#fef9c3;color:var(--yellow)}
-.t-bf{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa}
+.t-lib{background:var(--green-l);color:var(--green-d)}
+.t-bf{background:#ffedd5;color:#c2410c;border:1px solid #fed7aa}
+.off-num{text-align:right;flex-shrink:0}
+.off-costo{font-family:'Bricolage Grotesque',sans-serif;font-size:1.25rem;font-weight:800;letter-spacing:-.4px;color:var(--ink)}
+.off-annuo{font-size:.72rem;color:var(--muted)}
+.risp-badge{display:inline-block;font-size:.79rem;font-weight:700;padding:2px 8px;border-radius:6px;margin-top:3px}
+.risp-pos{background:var(--green-l);color:var(--green-d)}
+.risp-neg{background:#fee2e2;color:var(--red)}
 
-/* ── Buttons ── */
-.btn{display:inline-flex;align-items:center;gap:.45rem;border:none;border-radius:var(--r-sm);font-family:'Syne',sans-serif;font-weight:700;font-size:.875rem;padding:10px 20px;cursor:pointer;transition:all var(--t)}
-.b-primary{background:var(--accent);color:#fff}
-.b-primary:hover{background:#c94d10;transform:translateY(-1px);box-shadow:0 5px 18px rgba(232,93,26,.28)}
-.b-blue{background:var(--blue);color:#fff}
-.b-blue:hover{background:#1e3fa8;transform:translateY(-1px);box-shadow:0 5px 18px rgba(29,78,216,.28)}
-.b-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--border)}
-.b-ghost:hover{border-color:var(--ink);background:var(--warm)}
-.b-green{background:var(--green);color:#fff}
-.b-green:hover{background:#15803d;transform:translateY(-1px)}
-.b-sm{padding:6px 13px;font-size:.76rem}
-.b-danger{background:#fee2e2;color:var(--red);border:none}
-.b-danger:hover{background:var(--red);color:#fff}
-.btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+/* Email results */
+.email-cta{background:linear-gradient(135deg,#f0f6ff,white);border:1px solid var(--blue-l);border-radius:var(--r);padding:1.25rem;margin-top:1.25rem;text-align:center}
+.email-cta h4{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.95rem;color:var(--navy);margin-bottom:.5rem}
+.email-cta p{font-size:.82rem;color:var(--muted);margin-bottom:.9rem}
+.email-row{display:flex;gap:.5rem}
+.email-row input{flex:1;background:white;border:1.5px solid var(--border);border-radius:var(--r-sm);padding:9px 12px;font-size:.88rem;font-family:'DM Sans',sans-serif;outline:none;transition:border-color var(--t)}
+.email-row input:focus{border-color:var(--blue)}
+.btn-email{background:var(--blue);color:white;border:none;border-radius:var(--r-sm);padding:9px 18px;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;white-space:nowrap;transition:all var(--t)}
+.btn-email:hover{background:#1d4ed8;transform:translateY(-1px)}
 
-/* ── Alerts ── */
-.alert{padding:.85rem 1rem;border-radius:var(--r-sm);font-size:.87rem;margin-bottom:.9rem;display:flex;gap:.6rem;align-items:flex-start}
-.a-err{background:#fee2e2;color:#991b1b;border:1px solid #fecaca}
-.a-ok{background:#dcfce7;color:#14532d;border:1px solid #bbf7d0}
-.a-info{background:#dbeafe;color:#1e3a8a;border:1px solid #bfdbfe}
-.a-warn{background:#fef9c3;color:#713f12;border:1px solid #fde68a}
+/* ══ SEZIONI INFORMATIVE ═════════════════════════════════════════════════ */
+.section{padding:5rem 1.5rem}
+.section-inner{max-width:1000px;margin:0 auto}
+.section-badge{display:inline-block;background:var(--blue-l);color:var(--blue);font-size:.72rem;font-weight:700;padding:4px 12px;border-radius:100px;letter-spacing:.6px;text-transform:uppercase;margin-bottom:1rem}
+.section-title{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;color:var(--navy);letter-spacing:-.8px;margin-bottom:.75rem}
+.section-sub{color:var(--muted);font-size:.95rem;max-width:520px;line-height:1.65}
+.section.alt{background:var(--bg)}
 
-/* ── Tabs ── */
-.tabs{display:flex;gap:3px;background:var(--warm);padding:3px;border-radius:var(--r-sm);margin-bottom:1.4rem;width:fit-content}
-.tb{background:none;border:none;padding:7px 16px;border-radius:6px;font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;color:var(--muted);cursor:pointer;transition:all var(--t)}
-.tb.active{background:var(--card);color:var(--ink);box-shadow:var(--shadow-sm)}
+/* Come funziona */
+.steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;margin-top:3rem;position:relative}
+.step-card{background:white;border:1px solid var(--border);border-radius:var(--r-lg);padding:2rem 1.5rem;box-shadow:var(--shadow-sm);position:relative}
+.step-num{font-family:'Bricolage Grotesque',sans-serif;font-size:3.5rem;font-weight:800;line-height:1;margin-bottom:1rem;background:linear-gradient(135deg,var(--blue),#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.step-icon{font-size:1.8rem;margin-bottom:.75rem;display:block}
+.step-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1rem;color:var(--ink);margin-bottom:.4rem}
+.step-text{font-size:.88rem;color:var(--muted);line-height:1.6}
 
-/* ── Profilo selector ── */
-.profilo-row{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.5rem}
-.profilo-btn{background:var(--warm);border:2px solid transparent;border-radius:var(--r-sm);padding:.55rem 1rem;font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;transition:all var(--t);text-align:left;line-height:1.3}
-.profilo-btn small{display:block;font-family:'DM Sans',sans-serif;font-weight:300;font-size:.7rem;color:var(--muted);margin-top:2px}
-.profilo-btn:hover{border-color:var(--border);background:var(--card)}
-.profilo-btn.active{border-color:var(--accent);background:#fff8f5;color:var(--accent)}
-.profilo-btn.active small{color:var(--accent)}
+/* Benefici */
+.benefits-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-top:2.5rem}
+.ben-card{padding:1.5rem;border-radius:var(--r);transition:all var(--t)}
+.ben-card:hover{background:white;box-shadow:var(--shadow)}
+.ben-icon{font-size:1.75rem;margin-bottom:.75rem;display:block}
+.ben-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.95rem;color:var(--ink);margin-bottom:.35rem}
+.ben-text{font-size:.84rem;color:var(--muted);line-height:1.6}
 
-/* ── Upload ── */
-.uzone{border:2px dashed var(--border);border-radius:var(--r);padding:2.5rem 1.5rem;text-align:center;background:var(--card);cursor:pointer;transition:all .22s}
-.uzone:hover,.uzone.drag-over{border-color:var(--accent);background:#fff8f5;transform:translateY(-2px);box-shadow:var(--shadow)}
-.uzone h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin-bottom:.35rem}
-.uzone p{color:var(--muted);font-size:.85rem}
-.u-icon{font-size:2.2rem;display:block;margin-bottom:.85rem}
+/* Partner logos */
+.partner-section{padding:3.5rem 1.5rem;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.partner-label{text-align:center;font-size:.75rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:2rem}
+.partner-grid{display:flex;align-items:center;justify-content:center;gap:1.5rem;flex-wrap:wrap;max-width:800px;margin:0 auto}
+.partner-logo{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:.6rem 1.2rem;display:flex;align-items:center;justify-content:center;min-width:90px;min-height:44px;transition:all var(--t)}
+.partner-logo:hover{box-shadow:var(--shadow);background:white}
+.partner-logo img{max-height:28px;max-width:90px;object-fit:contain;filter:grayscale(30%);transition:filter var(--t)}
+.partner-logo:hover img{filter:none}
 
-/* ── Loading ── */
-.lcard{background:var(--card);border-radius:var(--r);padding:2.5rem 2rem;text-align:center;box-shadow:var(--shadow);display:none}
-.spin{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 1.4rem}
-@keyframes sp{to{transform:rotate(360deg)}}
-.lsteps{list-style:none;text-align:left;max-width:280px;margin:.9rem auto 0}
-.lsteps li{padding:4px 0;color:var(--muted);font-size:.86rem;display:flex;align-items:center;gap:9px}
-.lsteps li.done{color:var(--green)}.lsteps li.act{color:var(--ink);font-weight:500}
-.sdot{width:7px;height:7px;border-radius:50%;background:var(--border);flex-shrink:0;transition:background .35s}
-.lsteps li.done .sdot{background:var(--green)}.lsteps li.act .sdot{background:var(--accent)}
+/* Sicurezza */
+.security-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.25rem;margin-top:2.5rem}
+.sec-card{background:white;border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;box-shadow:var(--shadow-sm)}
+.sec-icon{width:40px;height:40px;background:var(--green-l);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:1rem}
+.sec-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.92rem;color:var(--ink);margin-bottom:.4rem}
+.sec-text{font-size:.83rem;color:var(--muted);line-height:1.6}
 
-/* ── Risultati analisi ── */
-.dtbl{width:100%;font-size:.88rem;border-collapse:collapse}
-.dtbl td{padding:5px 0;vertical-align:top}
-.dtbl td:first-child{color:var(--muted);width:44%;padding-right:.4rem}
-.dtbl td:last-child{font-weight:500}
-.frow{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem}
-.fbox{background:var(--warm);border-radius:var(--r-sm);padding:.7rem;text-align:center}
-.flabel{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted)}
-.fval{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:800;margin:2px 0}
-.fprice{font-size:.7rem;color:var(--muted)}
-.crow{display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--warm);font-size:.88rem}
-.crow:last-child{border:none;font-weight:700;font-size:.95rem;padding-top:.7rem}
-.cval{font-family:'Syne',sans-serif;font-weight:600}
-.ai-box{background:linear-gradient(135deg,#fff7f0,#fff);border:1px solid #fddcc9;border-radius:var(--r);padding:1.15rem;margin-top:.9rem}
-.ai-box h4{font-family:'Syne',sans-serif;font-weight:700;margin-bottom:.45rem;color:var(--accent);font-size:.88rem}
-.ai-list{list-style:none}
-.ai-list li{padding:3px 0;font-size:.85rem;display:flex;gap:.45rem}
-.ai-list li::before{content:'→';color:var(--accent);flex-shrink:0}
-.bifuel-box{background:linear-gradient(135deg,#fff7ed,#fff);border:1.5px solid #fed7aa;border-radius:var(--r);padding:1rem 1.2rem;margin-top:.75rem}
-.bifuel-box h4{font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;color:#c2410c;margin-bottom:.4rem}
+/* Consulente CTA */
+.cta-section{background:linear-gradient(135deg,var(--navy) 0%,#1e3a5f 100%);padding:5rem 1.5rem;text-align:center}
+.cta-title{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;color:white;letter-spacing:-.8px;margin-bottom:.75rem}
+.cta-sub{color:rgba(255,255,255,.65);font-size:.95rem;max-width:480px;margin:0 auto 2rem;line-height:1.65}
+.cta-btn{display:inline-flex;align-items:center;gap:.5rem;background:white;color:var(--navy);border:none;border-radius:var(--r);padding:1rem 2.2rem;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;transition:all var(--t)}
+.cta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.25)}
 
-/* ── Offerte ranking ── */
-.off-row{background:var(--card);border-radius:var(--r);border:1.5px solid var(--border);padding:1rem 1.3rem;display:flex;align-items:center;gap:1.15rem;transition:all var(--t);margin-bottom:.6rem;position:relative;overflow:hidden}
-.off-row:hover{border-color:var(--blue);box-shadow:var(--shadow);transform:translateX(3px)}
-.off-row.best{border-color:var(--green);background:linear-gradient(135deg,#f0fdf4,#fff)}
-.best-lbl{position:absolute;top:0;right:0;background:var(--green);color:#fff;font-size:.63rem;font-weight:700;padding:4px 11px;border-radius:0 var(--r) 0 8px;letter-spacing:.4px}
-.bf-lbl{position:absolute;bottom:0;right:0;background:#fed7aa;color:#c2410c;font-size:.6rem;font-weight:700;padding:3px 9px;border-radius:8px 0 var(--r) 0}
-.rank{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:var(--border);min-width:2rem;text-align:center}
-.off-row.best .rank{color:var(--green)}
-.oi{flex:1;min-width:0}
-.on{font-family:'Syne',sans-serif;font-weight:700;font-size:.92rem}
-.of{color:var(--muted);font-size:.8rem}
-.onote{font-size:.75rem;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:290px}
-.otags{margin-top:5px;display:flex;gap:3px;flex-wrap:wrap}
-.onum{text-align:right;flex-shrink:0}
-.ocosto{font-family:'Syne',sans-serif;font-size:1.35rem;font-weight:800;letter-spacing:-.5px}
-.oann{font-size:.73rem;color:var(--muted)}
-.risp{font-size:.8rem;font-weight:600;padding:2px 8px;border-radius:6px;display:inline-block;margin-top:3px}
-.risp.pos{background:#dcfce7;color:var(--green)}.risp.neg{background:#fee2e2;color:var(--red)}
+/* FAQ */
+.faq-list{margin-top:2rem;max-width:680px}
+.faq-item{border-bottom:1px solid var(--border);overflow:hidden}
+.faq-q{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 0;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:.95rem;color:var(--ink);transition:color var(--t)}
+.faq-q:hover{color:var(--blue)}
+.faq-arrow{font-size:.7rem;color:var(--muted);transition:transform .25s;flex-shrink:0;margin-left:1rem}
+.faq-item.open .faq-arrow{transform:rotate(180deg)}
+.faq-a{display:none;padding-bottom:1rem;font-size:.88rem;color:var(--muted);line-height:1.7}
+.faq-item.open .faq-a{display:block}
 
-/* ── Tabella storico ── */
-.tbl{width:100%;border-collapse:collapse;font-size:.86rem}
-.tbl th{background:var(--warm);padding:9px 11px;text-align:left;font-family:'Syne',sans-serif;font-size:.69rem;font-weight:700;letter-spacing:.5px;color:var(--muted);text-transform:uppercase;white-space:nowrap}
-.tbl td{padding:10px 11px;border-bottom:1px solid var(--warm);vertical-align:middle}
-.tbl tr:last-child td{border:none}.tbl tr:hover td{background:#fafaf8}
-.acts{display:flex;gap:.3rem;flex-wrap:wrap}
+/* Footer */
+.footer{background:var(--navy);padding:3rem 1.5rem;color:rgba(255,255,255,.5)}
+.footer-inner{max-width:1000px;margin:0 auto}
+.footer-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1.5rem;margin-bottom:2rem;padding-bottom:2rem;border-bottom:1px solid rgba(255,255,255,.08)}
+.footer-logo{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.1rem;color:white}
+.footer-logo span{color:var(--blue)}
+.footer-links{display:flex;gap:1.2rem;flex-wrap:wrap}
+.footer-links a{color:rgba(255,255,255,.4);text-decoration:none;font-size:.82rem;transition:color var(--t)}
+.footer-links a:hover{color:rgba(255,255,255,.8)}
+.footer-bottom{font-size:.78rem;line-height:1.7}
 
-/* ── Form ── */
-.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.9rem;margin-bottom:.9rem}
-.field{display:flex;flex-direction:column;gap:.3rem}
-.field label{font-size:.75rem;font-weight:600;color:var(--muted)}
-.field input,.field select,.field textarea{background:var(--warm);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:8px 11px;font-size:.88rem;color:var(--ink);transition:border-color var(--t);outline:none;width:100%}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue)}
-.field .hint{font-size:.7rem;color:var(--muted)}
-
-/* ── Indici PUN/PSV ── */
-.indice-card{background:var(--card);border-radius:var(--r);border:1.5px solid var(--border);padding:1rem 1.3rem;margin-bottom:.5rem;display:flex;align-items:center;gap:1rem}
-.ic-tipo{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;min-width:3.5rem}
-.ic-periodo{color:var(--muted);font-size:.82rem}
-.ic-val{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;margin-left:auto}
-.ic-fonte{font-size:.7rem;color:var(--muted);margin-left:.75rem}
-
-/* ── Chart ── */
-.chart-wrap{position:relative;height:210px}
-
-/* ── Overlay / Modal ── */
-.overlay{position:fixed;inset:0;background:rgba(13,17,23,.5);z-index:500;display:none;place-items:center;padding:1rem;backdrop-filter:blur(3px)}
+/* ══ MODAL CONSULENTE ════════════════════════════════════════════════════ */
+.overlay{position:fixed;inset:0;background:rgba(13,27,42,.6);z-index:500;display:none;place-items:center;padding:1rem;backdrop-filter:blur(6px)}
 .overlay.open{display:grid}
-.modal{background:var(--card);border-radius:var(--r);padding:1.75rem;max-width:640px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:fi .2s ease}
-.mhdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.4rem}
-.mtitle{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem}
-.mclose{background:none;border:none;font-size:1.4rem;color:var(--muted);cursor:pointer;line-height:1}
-.mclose:hover{color:var(--ink)}
-.mfoot{display:flex;gap:.7rem;justify-content:flex-end;margin-top:1.4rem;padding-top:1.4rem;border-top:1px solid var(--border)}
+.modal{background:white;border-radius:var(--r-xl);padding:2.25rem;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:slideUp .25s ease}
+.modal-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem}
+.modal-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.2rem;color:var(--navy);line-height:1.3}
+.modal-close{background:var(--bg);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;color:var(--muted);flex-shrink:0;transition:all var(--t);display:flex;align-items:center;justify-content:center}
+.modal-close:hover{background:var(--border);color:var(--ink)}
+.modal-footer{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);display:flex;gap:.7rem;flex-direction:column}
+.btn-primary{width:100%;padding:.9rem;border:none;border-radius:var(--r);background:var(--navy);color:white;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.95rem;cursor:pointer;transition:all var(--t)}
+.btn-primary:hover{background:#1e3a5f;transform:translateY(-1px)}
+.btn-secondary{width:100%;padding:.9rem;border:1.5px solid var(--border);border-radius:var(--r);background:white;color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:500;font-size:.9rem;cursor:pointer;transition:all var(--t)}
+.btn-secondary:hover{border-color:var(--ink)}
 
-/* ── Misc ── */
-.gap{margin-top:1.4rem}.fbetween{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.7rem;margin-bottom:.9rem}
-.empty{text-align:center;padding:2.5rem 1rem;color:var(--muted)}
-.empty .ei{font-size:2.2rem;margin-bottom:.65rem;display:block;opacity:.4}
+/* Success state */
+.success-state{text-align:center;padding:2rem 0}
+.success-icon{width:64px;height:64px;background:var(--green-l);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.75rem;margin:0 auto 1.25rem}
+.success-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.2rem;color:var(--navy);margin-bottom:.5rem}
+.success-text{font-size:.88rem;color:var(--muted);line-height:1.65}
+
+/* Alerts */
+.alert{padding:.8rem 1rem;border-radius:var(--r-sm);font-size:.85rem;margin-bottom:.9rem;display:flex;gap:.5rem;align-items:flex-start}
+.a-err{background:#fee2e2;color:#991b1b;border:1px solid #fecaca}
+.a-ok{background:var(--green-l);color:var(--green-d);border:1px solid #6ee7b7}
+
+@media(max-width:600px){
+  .field-row{grid-template-columns:1fr}
+  .off-card{flex-wrap:wrap}
+  .email-row{flex-direction:column}
+}
 </style>
 </head>
 <body>
 
-<div class="mob-hdr">
-  <div style="font-family:'Syne',sans-serif;font-weight:800;color:#fff;font-size:1.15rem">Bolletta<span style="color:var(--accent)">AI</span></div>
-  <button class="burger" onclick="document.getElementById('sb').classList.toggle('open')">☰</button>
-</div>
-
-<div class="sidebar" id="sb">
-  <div class="sb-logo">
-    <div class="logo-t">Bolletta<span>AI</span></div>
-    <div class="logo-sub">Comparatore v3.0</div>
+<!-- NAV -->
+<nav class="nav">
+  <a href="/" class="nav-logo">
+    <div class="nav-logo-icon">⚡</div>
+    <span class="nav-logo-text">Bolletta<span>AI</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="#come-funziona" class="hide-mob">Come funziona</a>
+    <a href="#sicurezza" class="hide-mob">Sicurezza</a>
+    <a href="#faq" class="hide-mob">FAQ</a>
+    <a href="/admin" class="nav-cta">Accedi</a>
   </div>
-  <nav class="sb-nav">
-    <div class="nav-sec">Analisi</div>
-    <button class="nav-btn active" onclick="goTo('dashboard')" id="nav-dashboard"><span class="ic">📊</span>Dashboard</button>
-    <button class="nav-btn" onclick="goTo('luce')" id="nav-luce"><span class="ic">⚡</span>Analizza Luce</button>
-    <button class="nav-btn" onclick="goTo('gas')" id="nav-gas"><span class="ic">🔥</span>Analizza Gas</button>
-    <div class="nav-sec">Gestione</div>
-    <button class="nav-btn" onclick="goTo('storico')" id="nav-storico"><span class="ic">📋</span>Storico</button>
-    <button class="nav-btn" onclick="goTo('offerte')" id="nav-offerte"><span class="ic">🏷️</span>Offerte</button>
-    <button class="nav-btn" onclick="goTo('indici')" id="nav-indici"><span class="ic">📈</span>PUN / PSV</button>
-    <div class="nav-sec">Export</div>
-    <button class="nav-btn" onclick="exportCSV()"><span class="ic">📥</span>Esporta CSV</button>
-  </nav>
-  <div class="sb-footer"><span class="h-dot" id="hdot"></span><span id="htext">Connessione...</span></div>
-</div>
+</nav>
 
-<div style="display:flex">
-<div class="content" id="content">
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-inner">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      Servizio gratuito — nessun impegno
+    </div>
+    <h1 class="hero-title">
+      Scopri se paghi<br>troppo su<br><span class="hl">luce e gas</span>
+    </h1>
+    <p class="hero-sub">Carica la bolletta, l'intelligenza artificiale la analizza in secondi e confronta le offerte migliori del mercato libero.</p>
+    <div class="hero-pills">
+      <span class="pill">✅ Gratis</span>
+      <span class="pill">🔒 Privacy garantita</span>
+      <span class="pill">⚡ Risultati in 30 secondi</span>
+      <span class="pill">🏠 Domestico e PMI</span>
+    </div>
 
-<!-- ══ DASHBOARD ══ -->
-<div class="page active" id="page-dashboard">
-  <h1 class="pt">Dashboard <em>Consumi</em></h1>
-  <p class="psub">Panoramica spese, risparmi identificati e andamento PUN/PSV</p>
-  <div class="g4" id="dash-kpi">
-    <div class="kpi"><div class="kl">Bollette Luce</div><div class="kv" id="dk-nl">—</div></div>
-    <div class="kpi"><div class="kl">Bollette Gas</div><div class="kv" id="dk-ng">—</div></div>
-    <div class="kpi"><div class="kl">Risparmio Identificato</div><div class="kv" style="color:var(--green)" id="dk-risp">—</div><div class="ks">annuo stimato</div></div>
-    <div class="kpi"><div class="kl">PUN Ultimo Mese</div><div class="kv" id="dk-pun">—</div><div class="ks">€/kWh</div></div>
+    <!-- CARD ANALISI -->
+    <div class="card-analisi" id="uploadCard">
+      <div class="ca-title">📄 Carica la tua bolletta</div>
+
+      <!-- Toggle luce/gas -->
+      <div class="tipo-toggle">
+        <button class="tipo-btn active luce" id="btn-tipo-luce" onclick="setTipo('luce')">⚡ Bolletta Luce</button>
+        <button class="tipo-btn gas" id="btn-tipo-gas" onclick="setTipo('gas')">🔥 Bolletta Gas</button>
+      </div>
+
+      <!-- Profilo utenza -->
+      <div style="font-size:.73rem;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:.5rem">Chi sei?</div>
+      <div class="profilo-grid" id="profilo-grid">
+        <button class="pr-btn active" data-v="D2" onclick="setProfilo('D2',this)"><span class="pr-btn-name">🏠 Domestico Residente</span><span class="pr-btn-sub">Tariffa D2 · IVA 10%</span></button>
+        <button class="pr-btn" data-v="D3" onclick="setProfilo('D3',this)"><span class="pr-btn-name">🏡 Non Residente</span><span class="pr-btn-sub">Tariffa D3 · IVA 10%</span></button>
+        <button class="pr-btn" data-v="BTA" onclick="setProfilo('BTA',this)"><span class="pr-btn-name">🏢 PMI / Azienda</span><span class="pr-btn-sub">Tariffa BTA · IVA 22%</span></button>
+        <button class="pr-btn" data-v="CDO" onclick="setProfilo('CDO',this)"><span class="pr-btn-name">🏗 Condominio</span><span class="pr-btn-sub">Uso comune · IVA 10%</span></button>
+      </div>
+
+      <!-- Drop zone -->
+      <div class="drop-zone" id="dropZone"
+           onclick="document.getElementById('fileInput').click()"
+           ondragover="event.preventDefault();this.classList.add('over')"
+           ondragleave="this.classList.remove('over')"
+           ondrop="onDrop(event)">
+        <span class="dz-icon" id="dzIcon">📂</span>
+        <h4 id="dzTitle">Trascina il PDF qui oppure clicca</h4>
+        <p id="dzSub">Accettiamo PDF fino a 15 MB — qualsiasi fornitore italiano</p>
+        <div class="dz-privacy">🔒 Il tuo documento non viene salvato sui nostri server</div>
+        <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="onFileSelect(event)">
+      </div>
+
+      <!-- Dati personali -->
+      <div class="field-row">
+        <div class="field"><label>Nome</label><input id="inp-nome" placeholder="Mario" type="text"></div>
+        <div class="field"><label>Cognome</label><input id="inp-cognome" placeholder="Rossi" type="text"></div>
+      </div>
+      <div class="field" style="margin-bottom:.9rem">
+        <label>Email — riceverai i risultati</label>
+        <input id="inp-email" type="email" placeholder="mario.rossi@email.it">
+      </div>
+
+      <!-- Consenso -->
+      <label class="consenso-row">
+        <input type="checkbox" id="chk-privacy">
+        <span>Ho letto e accetto l'<a href="/privacy" target="_blank">informativa sulla privacy</a>. Il trattamento dei miei dati è necessario all'erogazione del servizio.</span>
+      </label>
+
+      <div id="upload-alert"></div>
+
+      <button class="btn-analizza" id="btnAnalizza" onclick="avviaAnalisi()">
+        🔍 Analizza Bolletta Gratis
+      </button>
+      <button class="btn-consulente" onclick="openConsulente()">
+        👤 Preferisci parlare con un consulente?
+      </button>
+    </div>
+    <!-- /CARD ANALISI -->
+
   </div>
-  <div class="g2 gap">
-    <div class="card"><div class="ctitle">⚡ Spese Luce</div><div class="chart-wrap"><canvas id="ch-luce"></canvas></div></div>
-    <div class="card"><div class="ctitle">🔥 Spese Gas</div><div class="chart-wrap"><canvas id="ch-gas"></canvas></div></div>
-  </div>
-  <div class="gap card">
-    <div class="ctitle">👤 Bollette per Profilo Utenza</div>
-    <div id="dash-profili"></div>
-  </div>
-</div>
+</section>
 
-<!-- ══ UPLOAD LUCE ══ -->
-<div class="page" id="page-luce">
-  <h1 class="pt">Analizza Bolletta <em>Luce</em></h1>
-  <p class="psub">Seleziona prima il profilo utenza, poi carica il PDF</p>
-  <div id="al-luce"></div>
+<!-- LOADING -->
+<section id="loading-section">
+  <div class="spinner"></div>
+  <div class="loading-title">L'AI sta analizzando la tua bolletta...</div>
+  <ul class="loading-steps" id="loading-steps">
+    <li id="ls1"><span class="step-ic">1</span>Caricamento PDF</li>
+    <li id="ls2"><span class="step-ic">2</span>Riconoscimento fornitore e dati</li>
+    <li id="ls3"><span class="step-ic">3</span>Estrazione consumi e fasce</li>
+    <li id="ls4"><span class="step-ic">4</span>Analisi costi e accise</li>
+    <li id="ls5"><span class="step-ic">5</span>Confronto offerte di mercato</li>
+  </ul>
+</section>
 
-  <div style="margin-bottom:1.2rem">
-    <div style="font-size:.78rem;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:.5rem">Profilo Utenza</div>
-    <div class="profilo-row" id="profilo-luce">
-      <button class="profilo-btn active" data-v="D2" onclick="setProfilo('luce','D2',this)">Domestico Residente<small>Tariffa D2 · IVA 10%</small></button>
-      <button class="profilo-btn" data-v="D3" onclick="setProfilo('luce','D3',this)">Domestico Non Residente<small>Tariffa D3 · IVA 10%</small></button>
-      <button class="profilo-btn" data-v="BTA" onclick="setProfilo('luce','BTA',this)">PMI / Non Domestico<small>Tariffa BTA · IVA 22%</small></button>
-      <button class="profilo-btn" data-v="CDO" onclick="setProfilo('luce','CDO',this)">Condominio<small>Uso comune · IVA 10%</small></button>
+<!-- RISULTATI -->
+<section id="risultati-section">
+  <div class="ris-header">
+    <div class="ris-title" id="ris-title">Ecco la tua analisi</div>
+    <div class="ris-subtitle" id="ris-subtitle"></div>
+  </div>
+  <div id="ris-content"></div>
+</section>
+
+<!-- COME FUNZIONA -->
+<section class="section" id="come-funziona">
+  <div class="section-inner">
+    <div class="section-badge">Come funziona</div>
+    <h2 class="section-title">In tre passi, in meno di un minuto</h2>
+    <p class="section-sub">Nessuna registrazione, nessun impegno. Carica, analizza, risparmia.</p>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <span class="step-icon">📄</span>
+        <div class="step-title">Carica la bolletta</div>
+        <div class="step-text">Scegli il PDF della tua bolletta luce o gas. Funziona con qualsiasi fornitore italiano — Enel, A2A, Eni, Iren, Edison e tutti gli altri.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <span class="step-icon">🤖</span>
+        <div class="step-title">L'AI la analizza</div>
+        <div class="step-text">La nostra intelligenza artificiale estrae automaticamente consumi, fasce orarie, costi dettagliati e identifica eventuali anomalie o addebiti errati.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <span class="step-icon">💰</span>
+        <div class="step-title">Scopri il risparmio</div>
+        <div class="step-text">Visualizzi le offerte migliori ordinate per convenienza, con il risparmio annuo stimato per ciascuna. Tutto trasparente, senza sorprese.</div>
+      </div>
     </div>
   </div>
+</section>
 
-  <div class="uzone" id="uz-luce" onclick="document.getElementById('fi-luce').click()"
-       ondragover="event.preventDefault();this.classList.add('drag-over')"
-       ondragleave="this.classList.remove('drag-over')"
-       ondrop="handleDrop(event,'luce')">
-    <span class="u-icon">📄</span>
-    <h3>Trascina la bolletta elettrica (PDF)</h3>
-    <p>Enel · A2A · Eni · Acea · Hera · Edison · Sorgenia · Iberdrola · Illumia...</p>
-    <div style="display:flex;gap:.7rem;justify-content:center;margin-top:1.1rem;flex-wrap:wrap">
-      <button class="btn b-primary" onclick="event.stopPropagation();document.getElementById('fi-luce').click()">Seleziona PDF</button>
-    </div>
-    <input type="file" id="fi-luce" accept=".pdf" onchange="handleSel(event,'luce')" style="display:none">
-  </div>
-
-  <div class="lcard" id="lc-luce">
-    <div class="spin"></div>
-    <p style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.05rem">Gemini AI analizza la bolletta...</p>
-    <ul class="lsteps" id="ls-luce">
-      <li id="ll1"><span class="sdot"></span>Caricamento PDF</li>
-      <li id="ll2"><span class="sdot"></span>Riconoscimento fornitore e POD</li>
-      <li id="ll3"><span class="sdot"></span>Estrazione consumi F1/F2/F3/F23</li>
-      <li id="ll4"><span class="sdot"></span>Analisi dettaglio costi e accise</li>
-      <li id="ll5"><span class="sdot"></span>Insight AI e anomalie</li>
-      <li id="ll6"><span class="sdot"></span>Salvataggio database</li>
-    </ul>
-  </div>
-  <div id="res-luce" style="display:none;margin-top:1.75rem"></div>
-</div>
-
-<!-- ══ UPLOAD GAS ══ -->
-<div class="page" id="page-gas">
-  <h1 class="pt">Analizza Bolletta <em>Gas</em></h1>
-  <p class="psub">Seleziona prima il profilo utenza, poi carica il PDF</p>
-  <div id="al-gas"></div>
-
-  <div style="margin-bottom:1.2rem">
-    <div style="font-size:.78rem;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:.5rem">Profilo Utenza</div>
-    <div class="profilo-row" id="profilo-gas">
-      <button class="profilo-btn active" data-v="D2" onclick="setProfilo('gas','D2',this)">Domestico Residente<small>CACR · IVA 10%</small></button>
-      <button class="profilo-btn" data-v="D3" onclick="setProfilo('gas','D3',this)">Domestico Non Residente<small>CACR · IVA 10%</small></button>
-      <button class="profilo-btn" data-v="BTA" onclick="setProfilo('gas','BTA',this)">PMI / Non Domestico<small>IVA 22% · accise industria</small></button>
+<!-- BENEFICI -->
+<section class="section alt">
+  <div class="section-inner">
+    <div class="section-badge">Perché sceglierci</div>
+    <h2 class="section-title">Analisi professionale, gratis</h2>
+    <div class="benefits-grid">
+      <div class="ben-card"><span class="ben-icon">⚡</span><div class="ben-title">Veloce</div><div class="ben-text">Analisi completata in meno di 30 secondi grazie all'AI di Google Gemini.</div></div>
+      <div class="ben-card"><span class="ben-icon">🎯</span><div class="ben-title">Preciso</div><div class="ben-text">Estrae ogni voce della bolletta: fasce F1/F2/F3, accise, oneri di sistema e IVA corretta per il tuo profilo.</div></div>
+      <div class="ben-card"><span class="ben-icon">🏷️</span><div class="ben-title">Aggiornato</div><div class="ben-text">I prezzi delle offerte e gli indici PUN/PSV vengono aggiornati mensilmente da ARERA.</div></div>
+      <div class="ben-card"><span class="ben-icon">🔗</span><div class="ben-title">BiFuel</div><div class="ben-text">Carica sia luce che gas per scoprire i fornitori che offrono sconti sulle offerte combinate.</div></div>
     </div>
   </div>
+</section>
 
-  <div class="uzone" id="uz-gas" onclick="document.getElementById('fi-gas').click()"
-       ondragover="event.preventDefault();this.classList.add('drag-over')"
-       ondragleave="this.classList.remove('drag-over')"
-       ondrop="handleDrop(event,'gas')">
-    <span class="u-icon">🔥</span>
-    <h3>Trascina la bolletta gas (PDF)</h3>
-    <p>Analisi Smc, PSV, accise e comparazione offerte mercato libero</p>
-    <div style="display:flex;gap:.7rem;justify-content:center;margin-top:1.1rem;flex-wrap:wrap">
-      <button class="btn b-blue" onclick="event.stopPropagation();document.getElementById('fi-gas').click()">Seleziona PDF</button>
-    </div>
-    <input type="file" id="fi-gas" accept=".pdf" onchange="handleSel(event,'gas')" style="display:none">
-  </div>
-
-  <div class="lcard" id="lc-gas">
-    <div class="spin" style="border-top-color:var(--blue)"></div>
-    <p style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.05rem">Analisi bolletta gas in corso...</p>
-    <ul class="lsteps" id="ls-gas">
-      <li id="lg1"><span class="sdot"></span>Caricamento PDF</li>
-      <li id="lg2"><span class="sdot"></span>Riconoscimento fornitore e PDR</li>
-      <li id="lg3"><span class="sdot"></span>Estrazione consumi Smc e conversioni</li>
-      <li id="lg4"><span class="sdot"></span>Analisi costi, accise e addizionali</li>
-      <li id="lg5"><span class="sdot"></span>Insight AI</li>
-      <li id="lg6"><span class="sdot"></span>Salvataggio database</li>
-    </ul>
-  </div>
-  <div id="res-gas" style="display:none;margin-top:1.75rem"></div>
-</div>
-
-<!-- ══ STORICO ══ -->
-<div class="page" id="page-storico">
-  <div class="fbetween">
-    <div><h1 class="pt">Storico <em>Bollette</em></h1><p class="psub">Tutte le bollette analizzate</p></div>
-    <button class="btn b-ghost b-sm" onclick="exportCSV()">📥 CSV</button>
-  </div>
-  <div class="tabs">
-    <button class="tb active" onclick="switchStorico('luce',this)">⚡ Luce</button>
-    <button class="tb" onclick="switchStorico('gas',this)">🔥 Gas</button>
-    <button class="tb" onclick="switchStorico(null,this)">📋 Tutti</button>
-  </div>
-  <div class="card" style="padding:0;overflow:hidden"><div id="storico-body"><div class="empty"><span class="ei">⏳</span><p>Caricamento...</p></div></div></div>
-</div>
-
-<!-- ══ OFFERTE ══ -->
-<div class="page" id="page-offerte">
-  <div class="fbetween">
-    <div><h1 class="pt">Offerte <em>Mercato</em></h1><p class="psub">Database offerte — aggiungibile da PDF, URL o manualmente</p></div>
-    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-      <button class="btn b-ghost b-sm" onclick="openAddFromPDF()">📄 Da PDF</button>
-      <button class="btn b-ghost b-sm" onclick="openAddFromURL()">🔗 Da URL</button>
-      <button class="btn b-primary b-sm" onclick="openAddManuale()">+ Manuale</button>
-    </div>
-  </div>
-  <div class="tabs">
-    <button class="tb active" onclick="switchOfferte('luce',this)">⚡ Luce</button>
-    <button class="tb" onclick="switchOfferte('gas',this)">🔥 Gas</button>
-  </div>
-  <div id="offerte-body"><div class="empty"><span class="ei">⏳</span><p>Caricamento...</p></div></div>
-</div>
-
-<!-- ══ INDICI PUN/PSV ══ -->
-<div class="page" id="page-indici">
-  <div class="fbetween">
-    <div><h1 class="pt">Indici <em>PUN / PSV</em></h1><p class="psub">Prezzi di mercato usati nel calcolo delle offerte variabili</p></div>
-    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-      <button class="btn b-green b-sm" onclick="aggiornaIndici()" id="btn-aggiorna">🔄 Aggiorna da Portale ARERA</button>
-      <button class="btn b-ghost b-sm" onclick="openIndiceManuale()">+ Inserisci</button>
-    </div>
-  </div>
-  <div class="alert a-info" style="margin-bottom:1.2rem">
-    I valori PUN e PSV vengono usati automaticamente per calcolare le offerte a prezzo <strong>VARIABILE</strong>.
-    La fonte ufficiale è il Portale Offerte ARERA (<a href="https://www.ilportaleofferte.it/portaleOfferte/it/open-data.page" target="_blank">ilportaleofferte.it</a>).
-    Registrazione GME non necessaria.
-  </div>
-  <div class="g2">
-    <div class="card">
-      <div class="ctitle">⚡ PUN Index GME (€/kWh)</div>
-      <div id="pun-list"><div class="empty"><span class="ei">📈</span><p>Nessun dato</p></div></div>
-    </div>
-    <div class="card">
-      <div class="ctitle">🔥 PSV Gas (€/Smc)</div>
-      <div id="psv-list"><div class="empty"><span class="ei">📈</span><p>Nessun dato</p></div></div>
-    </div>
+<!-- PARTNER -->
+<div class="partner-section">
+  <div class="partner-label">I principali fornitori nel nostro database</div>
+  <div class="partner-grid">
+    <div class="partner-logo"><img src="https://cdn3.comparasemplice.it/images/loghi_energia/logo_enel.jpg" alt="Enel" onerror="this.parentNode.innerHTML='<span style=font-size:.82rem;font-weight:700;color:var(--muted)>ENEL</span>'"></div>
+    <div class="partner-logo"><img src="https://cdn3.comparasemplice.it/images/loghi_energia/logo_plenitude.jpg" alt="Eni Plenitude" onerror="this.parentNode.innerHTML='<span style=font-size:.75rem;font-weight:700;color:var(--muted)>ENI PLENITUDE</span>'"></div>
+    <div class="partner-logo"><img src="https://cdn3.comparasemplice.it/images/loghi_energia/logo_iren.jpg" alt="Iren" onerror="this.parentNode.innerHTML='<span style=font-size:.82rem;font-weight:700;color:var(--muted)>IREN</span>'"></div>
+    <div class="partner-logo"><img src="https://cdn3.comparasemplice.it/images/loghi_energia/logo_a2a.jpg" alt="A2A" onerror="this.parentNode.innerHTML='<span style=font-size:.82rem;font-weight:700;color:var(--muted)>A2A</span>'"></div>
+    <div class="partner-logo"><img src="https://cdn3.comparasemplice.it/images/loghi_energia/logo_edison.jpg" alt="Edison" onerror="this.parentNode.innerHTML='<span style=font-size:.82rem;font-weight:700;color:var(--muted)>EDISON</span>'"></div>
+    <div class="partner-logo"><img src="https://cdn3.comparasemplice.it/images/loghi_energia/logo_octopus.jpg" alt="Octopus" onerror="this.parentNode.innerHTML='<span style=font-size:.82rem;font-weight:700;color:var(--muted)>OCTOPUS</span>'"></div>
+    <div class="partner-logo" style="min-width:70px"><span style="font-size:.75rem;font-weight:700;color:var(--muted)">SORGENIA</span></div>
+    <div class="partner-logo" style="min-width:70px"><span style="font-size:.75rem;font-weight:700;color:var(--muted)">WEKIWI</span></div>
+    <div class="partner-logo" style="min-width:70px"><span style="font-size:.75rem;font-weight:700;color:var(--muted)">ILLUMIA</span></div>
   </div>
 </div>
 
-</div></div>
+<!-- SICUREZZA -->
+<section class="section" id="sicurezza">
+  <div class="section-inner">
+    <div class="section-badge">Privacy & Sicurezza</div>
+    <h2 class="section-title">I tuoi dati sono al sicuro</h2>
+    <div class="security-grid">
+      <div class="sec-card"><div class="sec-icon">📄</div><div class="sec-title">Il documento non viene salvato</div><div class="sec-text">Una volta completata l'analisi, il PDF non viene conservato. I dati estratti vengono trattati nel rispetto del GDPR.</div></div>
+      <div class="sec-card"><div class="sec-icon">🔒</div><div class="sec-title">Trasmissione cifrata</div><div class="sec-text">Tutte le comunicazioni avvengono via HTTPS. Il PDF viene trasmesso solo a Google Gemini AI per l'analisi.</div></div>
+      <div class="sec-card"><div class="sec-icon">👁</div><div class="sec-title">Chi accede ai tuoi dati</div><div class="sec-text">Solo il sistema AI e, su richiesta esplicita, un consulente umano per il servizio di analisi manuale.</div></div>
+      <div class="sec-card"><div class="sec-icon">🇪🇺</div><div class="sec-title">Conforme GDPR</div><div class="sec-text">Trattiamo i tuoi dati secondo il Regolamento Europeo sulla protezione dei dati personali (GDPR 2016/679).</div></div>
+    </div>
+  </div>
+</section>
 
-<!-- Modal offerta -->
-<div class="overlay" id="ov-offerta" onclick="if(event.target===this)closeModal('ov-offerta')">
+<!-- CONSULENTE CTA -->
+<section class="cta-section">
+  <div class="cta-title">Vuoi un'analisi personalizzata?</div>
+  <p class="cta-sub">I nostri consulenti specializzati in tariffe energetiche possono analizzare la tua bolletta e guidarti verso l'offerta più adatta.</p>
+  <button class="cta-btn" onclick="openConsulente()">👤 Parla con un consulente →</button>
+</section>
+
+<!-- FAQ -->
+<section class="section" id="faq">
+  <div class="section-inner">
+    <div class="section-badge">FAQ</div>
+    <h2 class="section-title">Domande frequenti</h2>
+    <div class="faq-list" id="faq-list"></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">Bolletta<span>AI</span></div>
+        <div style="font-size:.8rem;margin-top:.4rem">Analisi intelligente bollette luce e gas per l'Italia</div>
+      </div>
+      <div class="footer-links">
+        <a href="/privacy">Privacy</a>
+        <a href="/termini">Termini e condizioni</a>
+        <a href="/cookie">Cookie policy</a>
+        <a href="#faq">FAQ</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      © 2025 BollettaAI — Servizio di analisi bollette con intelligenza artificiale.<br>
+      I risultati sono stime indicative basate sui dati estratti dalla bolletta e sui prezzi delle offerte nel database.
+    </div>
+  </div>
+</footer>
+
+<!-- MODAL CONSULENTE -->
+<div class="overlay" id="modal-consulente" onclick="if(event.target===this)closeModal()">
   <div class="modal">
-    <div class="mhdr"><div class="mtitle" id="modal-title">Nuova Offerta</div><button class="mclose" onclick="closeModal('ov-offerta')">×</button></div>
-    <div id="modal-body"></div>
-    <div class="mfoot">
-      <button class="btn b-ghost" onclick="closeModal('ov-offerta')">Annulla</button>
-      <button class="btn b-primary" id="modal-save-btn">Salva</button>
+    <div class="modal-hdr">
+      <div class="modal-title">Parla con un consulente</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
-  </div>
-</div>
-
-<!-- Modal indice manuale -->
-<div class="overlay" id="ov-indice" onclick="if(event.target===this)closeModal('ov-indice')">
-  <div class="modal" style="max-width:400px">
-    <div class="mhdr"><div class="mtitle">Inserisci Indice Manuale</div><button class="mclose" onclick="closeModal('ov-indice')">×</button></div>
-    <div class="fgrid" style="grid-template-columns:1fr 1fr 1fr">
-      <div class="field"><label>Tipo</label><select id="im-tipo"><option>PUN</option><option>PSV</option></select></div>
-      <div class="field"><label>Periodo (YYYY-MM)</label><input id="im-periodo" placeholder="2026-02"></div>
-      <div class="field"><label>Valore (€/kWh o €/Smc)</label><input id="im-valore" type="number" step="0.0001" placeholder="0.1327"></div>
+    <div id="modal-body">
+      <p style="font-size:.87rem;color:var(--muted);margin-bottom:1.4rem;line-height:1.65">I nostri consulenti analizzeranno la tua bolletta e ti contatteranno per proporti le offerte più convenienti disponibili.</p>
+      <div class="field-row">
+        <div class="field"><label>Nome *</label><input id="c-nome" placeholder="Mario"></div>
+        <div class="field"><label>Cognome *</label><input id="c-cognome" placeholder="Rossi"></div>
+      </div>
+      <div class="field" style="margin-bottom:.7rem"><label>Email *</label><input id="c-email" type="email" placeholder="mario@email.it"></div>
+      <div class="field" style="margin-bottom:.9rem"><label>Telefono *</label><input id="c-tel" type="tel" placeholder="3XX XXX XXXX"></div>
+      <div id="c-alert"></div>
+      <label class="consenso-row"><input type="checkbox" id="c-privacy"><span>Accetto l'<a href="/privacy" target="_blank">informativa privacy</a> e autorizzo il trattamento dei dati per essere contattato.</span></label>
+      <label class="consenso-row" style="margin-top:.4rem"><input type="checkbox" id="c-mkt"><span>Acconsento a ricevere comunicazioni commerciali sulle migliori offerte energetiche.</span></label>
     </div>
-    <div class="mfoot">
-      <button class="btn b-ghost" onclick="closeModal('ov-indice')">Annulla</button>
-      <button class="btn b-primary" onclick="salvaIndiceManuale()">Salva</button>
+    <div class="modal-footer">
+      <button class="btn-primary" onclick="inviaConsulente()">Richiedi consulenza gratuita</button>
+      <button class="btn-secondary" onclick="closeModal()">Annulla</button>
     </div>
   </div>
 </div>
 
 <script>
 const API = 'http://localhost:8000';
-let bid = {luce: null, gas: null};
-let profilo = {luce: 'D2', gas: 'D2'};
-let storicoTipo = 'luce', offerteTipo = 'luce';
-let ch = {luce: null, gas: null};
-let modalTipo = 'luce', modalMode = 'manual';
+const PROFILI = {D2:'Domestico Residente',D3:'Domestico Non Residente',BTA:'PMI / Non Domestico',CDO:'Condominio'};
+const FAQ_DATA = [
+  {q:'È davvero gratuito?',a:'Sì, completamente gratuito e senza impegno. Non richiede registrazione. Se trovi un\'offerta conveniente e decidi di cambiare, potresti ricevere un contatto da uno dei nostri partner (con tua esplicita autorizzazione).'},
+  {q:'Quali formati di bolletta accettate?',a:'Accettiamo PDF (preferito), JPEG e PNG. La bolletta può essere di qualsiasi fornitore italiano: Enel, A2A, Eni Plenitude, Edison, Iren, Sorgenia, Wekiwi, Illumia, Acea e tutti gli altri.'},
+  {q:'I miei dati personali sono al sicuro?',a:'Sì. Il PDF viene analizzato in tempo reale e non viene salvato sui nostri server. I dati estratti (consumi, costi) vengono conservati solo per generare il confronto e inviarti i risultati via email, nel rispetto del GDPR.'},
+  {q:'Come vengono calcolati i risparmi stimati?',a:'Utilizziamo i consumi reali estratti dalla tua bolletta, i prezzi delle offerte nel nostro database (aggiornati mensilmente da ARERA), l\'IVA corretta per il tuo profilo utenza (10% domestico, 22% PMI) e gli indici PUN/PSV per le offerte a prezzo variabile.'},
+  {q:'Cosa sono le fasce F1, F2, F3?',a:'Sono le fasce orarie in cui viene suddiviso il consumo elettrico. F1 (ore di punta, solitamente 8-19 nei giorni feriali) ha il prezzo più alto. F2 (ore intermedie) ha un prezzo medio. F3 (notti e festivi) ha il prezzo più basso. Le tariffe domestiche usano spesso il biorario F1/F23.'},
+  {q:'Cos\'è la tariffa BiFuel?',a:'Alcuni fornitori offrono uno sconto se attivi sia la fornitura luce che quella gas con loro. Caricando entrambe le bollette, il nostro sistema identifica automaticamente questi sconti e li applica nel calcolo comparativo.'},
+  {q:'Quanto sono affidabili le stime?',a:'Le stime sono indicative, basate sui consumi dell\'ultimo periodo di fatturazione proiettati su 12 mesi. Non includono eventuali variazioni stagionali, bonus ARERA o promozioni temporanee non ancora nel nostro database. Per un\'analisi più precisa, usa il servizio di consulenza.'},
+];
 
-/* ── Nav ── */
-function goTo(pg){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-'+pg)?.classList.add('active');
-  document.getElementById('nav-'+pg)?.classList.add('active');
-  document.getElementById('sb').classList.remove('open');
-  if(pg==='dashboard') loadDashboard();
-  if(pg==='storico')   loadStorico(storicoTipo);
-  if(pg==='offerte')   loadOfferte(offerteTipo);
-  if(pg==='indici')    loadIndici();
+let selectedTipo = 'luce';
+let selectedProfilo = 'D2';
+let selectedFile = null;
+let currentBollettaId = null;
+let currentLeadId = null;
+
+/* ── UI Setup ────────────────────────────────────────────────── */
+function setTipo(t){
+  selectedTipo=t;
+  document.getElementById('btn-tipo-luce').className='tipo-btn'+(t==='luce'?' active luce':'');
+  document.getElementById('btn-tipo-gas').className='tipo-btn'+(t==='gas'?' active gas':'');
+  const dz=document.getElementById('dropZone');
+  dz.style.borderColor=t==='luce'?'':'';
 }
-
-/* ── Profilo ── */
-function setProfilo(tipo, val, btn){
-  profilo[tipo] = val;
-  document.querySelectorAll(`#profilo-${tipo} .profilo-btn`).forEach(b=>b.classList.remove('active'));
+function setProfilo(v,btn){
+  selectedProfilo=v;
+  document.querySelectorAll('#profilo-grid .pr-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
 }
+function onDrop(e){
+  e.preventDefault();document.getElementById('dropZone').classList.remove('over');
+  const f=e.dataTransfer.files[0];if(f)setFile(f);
+}
+function onFileSelect(e){const f=e.target.files[0];if(f)setFile(f);e.target.value='';}
+function setFile(f){
+  selectedFile=f;
+  document.getElementById('dzIcon').textContent='✅';
+  document.getElementById('dzTitle').textContent=f.name;
+  document.getElementById('dzSub').textContent=`${(f.size/1024).toFixed(0)} KB — pronto per l'analisi`;
+  document.getElementById('dropZone').style.borderStyle='solid';
+  document.getElementById('dropZone').style.borderColor='var(--green)';
+}
 
-/* ── Upload ── */
-function handleDrop(e, tipo){ e.preventDefault(); document.getElementById('uz-'+tipo).classList.remove('drag-over'); const f=e.dataTransfer.files[0]; if(f?.type==='application/pdf') upload(f,tipo); else alert('Solo PDF'); }
-function handleSel(e, tipo){ const f=e.target.files[0]; if(f) upload(f,tipo); e.target.value=''; }
+/* ── Analisi principale ──────────────────────────────────────── */
+async function avviaAnalisi(){
+  clearAlert('upload-alert');
+  if(!selectedFile){showAlert('upload-alert','Seleziona prima la bolletta PDF.','err');return;}
+  const nome=document.getElementById('inp-nome').value.trim();
+  const cognome=document.getElementById('inp-cognome').value.trim();
+  const email=document.getElementById('inp-email').value.trim();
+  if(!document.getElementById('chk-privacy').checked){showAlert('upload-alert','Devi accettare l\'informativa sulla privacy per continuare.','err');return;}
 
-async function upload(file, tipo){
-  const steps = tipo==='luce' ? ['ll1','ll2','ll3','ll4','ll5','ll6'] : ['lg1','lg2','lg3','lg4','lg5','lg6'];
-  showUI(tipo,'loading'); clearAlert(tipo);
+  document.getElementById('uploadCard').style.display='none';
+  document.getElementById('loading-section').style.display='block';
+
+  const steps=['ls1','ls2','ls3','ls4','ls5'];
   let si=0; setSt(steps[0],'act');
-  const iv = setInterval(()=>{ if(si<steps.length-1){setSt(steps[si],'done');si++;setSt(steps[si],'act');} },1500);
+  const iv=setInterval(()=>{if(si<steps.length-1){setSt(steps[si],'done');si++;setSt(steps[si],'act');}},1800);
+
   try {
-    const form = new FormData(); form.append('file',file);
-    const res = await fetch(`${API}/api/analizza/${tipo}?profilo=${profilo[tipo]}`,{method:'POST',body:form});
+    // 1. Salva lead prima dell'analisi (se ha email)
+    if(email){
+      const lr=await fetch(`${API}/api/leads`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome,cognome,email,tipo:'analisi',consenso_privacy:true})});
+      if(lr.ok) currentLeadId=(await lr.json()).lead_id;
+    }
+
+    // 2. Analizza bolletta
+    const form=new FormData(); form.append('file',selectedFile);
+    const url=`${API}/api/analizza/${selectedTipo}?profilo=${selectedProfilo}${currentLeadId?'&lead_id='+currentLeadId:''}`;
+    const ar=await fetch(url,{method:'POST',body:form});
+    if(!ar.ok){const e=await ar.json().catch(()=>({}));throw new Error(e.detail||`Errore HTTP ${ar.status}`);}
+    const analisi=await ar.json();
+    currentBollettaId=analisi.bolletta_id;
+
+    // 3. Compara offerte
+    setSt(steps[4],'act');
+    const cr=await fetch(`${API}/api/compara/${currentBollettaId}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({})});
+    if(!cr.ok) throw new Error('Errore nella comparazione offerte');
+    const compara=await cr.json();
+
     clearInterval(iv); steps.forEach(s=>setSt(s,'done'));
-    if(!res.ok){ const e=await res.json().catch(()=>({})); throw new Error(e.detail||'Errore server'); }
-    const data = await res.json();
-    bid[tipo] = data.bolletta_id;
-    await sleep(350); showUI(tipo,'results'); renderRisultati(data, tipo);
+    await sleep(400);
+
+    document.getElementById('loading-section').style.display='none';
+    mostraRisultati(analisi,compara);
   } catch(e){
-    clearInterval(iv); showUI(tipo,'upload'); showAlert(e.message,'err',tipo);
+    clearInterval(iv);
+    document.getElementById('loading-section').style.display='none';
+    document.getElementById('uploadCard').style.display='block';
+    showAlert('upload-alert',`❌ ${e.message}. Riprova o usa il servizio di consulenza.`,'err');
   }
 }
 
-function showUI(tipo, st){
-  document.getElementById('uz-'+tipo).style.display   = st==='upload'   ? 'block':'none';
-  document.getElementById('lc-'+tipo).style.display   = st==='loading'  ? 'block':'none';
-  document.getElementById('res-'+tipo).style.display  = st==='results'  ? 'block':'none';
-}
+/* ── Render risultati ────────────────────────────────────────── */
+function mostraRisultati(analisi,compara){
+  const sec=document.getElementById('risultati-section');
+  sec.style.display='block';
+  document.getElementById('ris-title').textContent=`Analisi completata ✓`;
+  document.getElementById('ris-subtitle').textContent=`Profilo: ${compara.profilo_label} · IVA applicata: ${compara.iva_perc}% · ${selectedTipo==='luce'?'Bolletta elettrica':'Bolletta gas'}`;
 
-/* ── Render risultati ── */
-function renderRisultati(data, tipo){
-  const d=data.dati||{}, dg=d.dati_generali||{}, dt=d.dati_tecnici||{};
-  const lc=d.letture_e_consumi||{}, dc=d.dettaglio_costi||{};
-  const ai=d.analisi_ai||{}, pf=dg.periodo_fatturazione||{};
-  const unita=data.unita_misura||(tipo==='luce'?'kWh':'Smc');
-  const isL=tipo==='luce';
+  const d=analisi.dati||{};
+  const dg=d.dati_generali||{};
+  const lc=d.letture_e_consumi||{};
+  const dc=d.dettaglio_costi||{};
+  const ai=d.analisi_ai||{};
+  const pf=dg.periodo_fatturazione||{};
+  const unita=analisi.unita||'kWh';
+  const isL=selectedTipo==='luce';
 
-  // Fasce
+  const consumo=isL?lc.consumo_totale_periodo:lc.consumo_totale_smc;
+  const costoU=analisi.costo_unitario;
+  const best=compara.offerte?.[0];
+  const rispMax=best?.risparmio_annuo||0;
+
+  // KPI
+  const kpiHtml=`<div class="kpi-row">
+    <div class="kpi-card"><div class="kpi-label">Totale Fattura</div><div class="kpi-value">${fmtEur(dg.totale_fattura)}</div><div class="kpi-sub">${pf.inizio||'—'} → ${pf.fine||'—'}</div></div>
+    <div class="kpi-card"><div class="kpi-label">Consumo</div><div class="kpi-value">${fmtN(consumo,0)||'—'}</div><div class="kpi-sub">${unita}</div></div>
+    <div class="kpi-card"><div class="kpi-label">${isL?'Costo/kWh':'Costo/Smc'}</div><div class="kpi-value">${costoU?(costoU*100).toFixed(2)+' c€':'—'}</div><div class="kpi-sub">solo materia</div></div>
+    ${rispMax>0?`<div class="kpi-card highlight"><div class="kpi-label">Risparmio Max</div><div class="kpi-value">${fmtEur(rispMax)}</div><div class="kpi-sub">annuo stimato</div></div>`:`<div class="kpi-card"><div class="kpi-label">Fornitore</div><div class="kpi-value" style="font-size:1rem">${dg.fornitore||'—'}</div><div class="kpi-sub">${dg.mercato||''}</div></div>`}
+  </div>`;
+
+  // Costi
+  const voci=isL?[['⚡ Materia Energia',dc.spesa_materia_energia],['🚛 Trasporto & Contatore',dc.trasporto_gestione_contatore],['🏛 Oneri di Sistema',dc.oneri_sistema],['📜 Accise',dc.accise],['📺 Canone RAI',dc.canone_rai],['📦 Altre partite',dc.altre_partite],['🧾 Imposte & IVA',dc.imposte_iva]]:[['🔥 Materia Gas',dc.spesa_materia_gas],['🚛 Trasporto & Distribuzione',dc.trasporto_distribuzione],['🏛 Oneri di Sistema',dc.oneri_sistema],['📜 Accise',dc.accise],['🏙 Add. Regionale',dc.addizionale_regionale],['📦 Altre partite',dc.altre_partite],['🧾 Imposte & IVA',dc.imposte_iva]];
+  const costiHtml=voci.filter(([,v])=>v!=null).map(([l,v])=>`<div class="cost-row"><span>${l}</span><span class="cost-row-val">${fmtEur(v)}</span></div>`).join('')+`<div class="cost-row"><span><strong>Totale fattura</strong></span><span class="cost-row-val">${fmtEur(dg.totale_fattura)}</span></div>`;
+
+  // Fasce luce
   let fasceHtml='';
   if(isL){
     const f=lc.ripartizione_fasce||{};
-    const cols=f.F23?.consumo ? [['F1','Picco',f.F1],['F23','Fuori Picco',f.F23]] : [['F1','Picco',f.F1],['F2','Intermedio',f.F2],['F3','Fuori Picco',f.F3]];
-    fasceHtml=`<div class="card gap"><div class="ctitle">⏱ Consumi per Fascia</div><div class="frow" style="grid-template-columns:repeat(${cols.length},1fr)">
-      ${cols.map(([n,l,fv])=>`<div class="fbox"><div class="flabel">${n} · ${l}</div><div class="fval">${(fv||{}).consumo!=null?fmtN((fv||{}).consumo,0)+' kWh':'—'}</div><div class="fprice">${(fv||{}).prezzo_unitario?((fv||{}).prezzo_unitario*100).toFixed(3)+' c€/kWh':'—'}</div></div>`).join('')}
-    </div></div>`;
+    const cols=f.F23?.consumo?[['F1','Picco (8-19 feriali)',f.F1],['F23','Fuori Picco',f.F23]]:[['F1','Picco',f.F1],['F2','Intermedio',f.F2],['F3','Fuori Picco',f.F3]];
+    fasceHtml=`<div class="cost-card" style="margin-bottom:1rem"><div class="cost-card-title">⏱ Consumi per Fascia</div><div style="display:grid;grid-template-columns:repeat(${cols.length},1fr);gap:.7rem">${cols.map(([n,l,fv])=>`<div style="background:var(--bg);border-radius:var(--r-sm);padding:.75rem;text-align:center"><div style="font-size:.67rem;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.5px">${n}</div><div style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.1rem;font-weight:800;margin:4px 0">${(fv||{}).consumo!=null?fmtN((fv||{}).consumo,0)+' kWh':'—'}</div><div style="font-size:.7rem;color:var(--muted)">${(fv||{}).prezzo_unitario?((fv||{}).prezzo_unitario*100).toFixed(3)+' c€/kWh':l}</div></div>`).join('')}</div></div>`;
   }
 
-  // Costi
-  const voci=isL ? [['⚡ Materia Energia',dc.spesa_materia_energia],['🚛 Trasporto & Contatore',dc.trasporto_gestione_contatore],['🏛 Oneri di Sistema',dc.oneri_sistema],['📜 Accise',dc.accise],['📺 Canone RAI',dc.canone_rai],['📦 Altre Partite',dc.altre_partite],['🧾 Imposte & IVA',dc.imposte_iva]] : [['🔥 Materia Gas',dc.spesa_materia_gas],['🚛 Trasporto & Distribuzione',dc.trasporto_distribuzione],['🏛 Oneri di Sistema',dc.oneri_sistema],['📜 Accise',dc.accise],['🏙 Add. Regionale',dc.addizionale_regionale],['📦 Altre Partite',dc.altre_partite],['🧾 Imposte & IVA',dc.imposte_iva]];
-  const costiH = voci.filter(([,v])=>v!=null).map(([l,v])=>`<div class="crow"><span>${l}</span><span class="cval">${fmtEur(v)}</span></div>`).join('') + `<div class="crow"><span><strong>TOTALE FATTURA</strong></span><span class="cval">${fmtEur(dg.totale_fattura)}</span></div>`;
-
-  // Dati tecnici
-  const tv = isL ? [['POD',dt.pod_pdr],['Potenza',dt.potenza_impegnata!=null?dt.potenza_impegnata+' kW':null],['Tipologia',dt.tipologia_uso],['Indirizzo',dt.indirizzo_fornitura]] : [['PDR',dt.pdr],['REMI',dt.remi],['Classe',dt.classe_contatore],['Tipologia',dt.tipologia_uso],['Indirizzo',dt.indirizzo_fornitura]];
-  const tecH = tv.filter(([,v])=>v).map(([l,v])=>`<tr><td>${l}</td><td>${v}</td></tr>`).join('');
-
-  const prLabel=isL?'Costo/kWh eff.':'Costo/Smc eff.';
-  const prVal=data.costo_unitario_effettivo?(data.costo_unitario_effettivo*100).toFixed(isL?2:3)+' c€':'—';
-  const consumoVal = isL ? lc.consumo_totale_periodo : lc.consumo_totale_smc;
-
-  // AI box
-  let aiH='';
+  // AI insights
+  let aiHtml='';
   if(ai.anomalie_rilevate?.length||ai.suggerimenti?.length){
-    aiH=`<div class="ai-box">${ai.anomalie_rilevate?.length?`<h4>⚠️ Anomalie rilevate</h4><ul class="ai-list">${ai.anomalie_rilevate.map(a=>`<li>${a}</li>`).join('')}</ul>`:''}${ai.suggerimenti?.length?`<h4 style="margin-top:.6rem">💡 Suggerimenti</h4><ul class="ai-list">${ai.suggerimenti.map(s=>`<li>${s}</li>`).join('')}</ul>`:''}</div>`;
+    aiHtml=`<div class="ai-card"><div class="ai-title">🤖 Analisi AI</div>${ai.anomalie_rilevate?.length?`<p style="font-size:.78rem;font-weight:700;color:#92400e;margin-bottom:.3rem">Possibili anomalie:</p><ul class="ai-items">${ai.anomalie_rilevate.map(a=>`<li>${a}</li>`).join('')}</ul>`:''}<br>${ai.suggerimenti?.length?`<p style="font-size:.78rem;font-weight:700;color:var(--green-d);margin-bottom:.3rem">Suggerimenti:</p><ul class="ai-items" style="--orange:var(--green)">${ai.suggerimenti.map(s=>`<li style="&:before{content:'✓'}">${s}</li>`).join('')}</ul>`:''}</div>`;
   }
 
-  const el = document.getElementById('res-'+tipo);
-  el.innerHTML = `
-    <div class="g4">
-      <div class="kpi"><div class="kl">Totale Fattura</div><div class="kv">${fmtEur(dg.totale_fattura)}</div><div class="ks">${pf.inizio||'—'} → ${pf.fine||'—'}</div></div>
-      <div class="kpi"><div class="kl">Consumo</div><div class="kv">${fmtU(consumoVal,unita)}</div><div class="ks"><span class="tag ${lc.lettura_stimata_o_reale?.toLowerCase().includes('reale')?'t-real':'t-stim'}">${lc.lettura_stimata_o_reale||'—'}</span></div></div>
-      <div class="kpi"><div class="kl">${prLabel}</div><div class="kv">${prVal}</div><div class="ks">solo energia</div></div>
-      <div class="kpi"><div class="kl">Profilo / Fornitore</div><div class="kv" style="font-size:1rem">${dg.fornitore||'—'}</div><div class="ks"><span class="tag t-${data.profilo_utenza?.toLowerCase()}">${data.profilo_label||data.profilo_utenza}</span> <span class="tag ${dg.mercato==='Libero'?'t-lib':'t-tut'}">${dg.mercato||'—'}</span></div></div>
+  // Comparazione
+  const offerte=compara.offerte||[];
+  const comparaHtml=`
+    <div class="compara-intro">
+      Confrontando con le offerte del mercato libero compatibili con il tuo profilo <strong>${compara.profilo_label}</strong>:
+      ${rispMax>0?`puoi risparmiare fino a <strong style="color:var(--green-d)">${fmtEur(rispMax)}/anno</strong> con l'offerta migliore.`:'La tua offerta attuale è già tra le più competitive.'}
+      <span style="font-size:.77rem;color:var(--muted)"> (Spesa annua attuale stimata: ${fmtEur(compara.costo_annuo_attuale)})</span>
     </div>
-    <div class="g2 gap">
-      <div class="card"><div class="ctitle">🔌 Dati Tecnici</div><table class="dtbl"><tbody>${tecH}</tbody></table></div>
-      <div class="card"><div class="ctitle">💶 Dettaglio Costi</div>${costiH}</div>
-    </div>
-    ${fasceHtml}
-    ${aiH}
-    <div class="bifuel-box gap" id="bifuel-${tipo}">
-      <h4>🔗 Offerta BiFuel (Luce + Gas)</h4>
-      <p style="font-size:.84rem;color:var(--muted);margin-bottom:.6rem">Hai bollette di entrambe le tipologie? Seleziona l'altra bolletta per attivare lo sconto BiFuel nelle offerte che lo prevedono.</p>
-      <select id="bifuel-sel-${tipo}" style="background:var(--warm);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:7px 11px;font-size:.85rem;width:100%;margin-bottom:.7rem">
-        <option value="">-- Nessuna (non applicare sconto BiFuel) --</option>
-      </select>
-    </div>
-    <button class="btn b-blue" style="width:100%;padding:13px;font-size:.95rem;justify-content:center;margin-top:1rem" onclick="comparaOfferte('${tipo}')">
-      🏆 Confronta con le migliori offerte →
-    </button>
-    <div id="compara-res-${tipo}" style="margin-top:1.4rem"></div>
-  `;
-
-  // Popola select bifuel
-  _loadBifuelOptions(tipo);
-}
-
-async function _loadBifuelOptions(tipo){
-  const altroTipo = tipo==='luce'?'gas':'luce';
-  try{
-    const rows = await fetch(`${API}/api/bollette?tipo=${altroTipo}&limit=20`).then(r=>r.json());
-    const sel = document.getElementById(`bifuel-sel-${tipo}`);
-    if(!sel) return;
-    rows.forEach(b=>{
-      const opt=document.createElement('option');
-      opt.value=b.id;
-      opt.textContent=`${b.fornitore||'?'} · ${b.periodo_inizio||'?'} → ${b.periodo_fine||'?'} · ${fmtEur(b.totale_fattura)}`;
-      sel.appendChild(opt);
-    });
-  } catch{}
-}
-
-/* ── Comparazione ── */
-async function comparaOfferte(tipo){
-  const id=bid[tipo]; if(!id) return;
-  const btn=document.querySelector(`[onclick="comparaOfferte('${tipo}')"]`);
-  if(btn){btn.disabled=true;btn.textContent='⏳ Analisi in corso...';}
-  const bifuelId=document.getElementById(`bifuel-sel-${tipo}`)?.value||null;
-  try{
-    const res=await fetch(`${API}/api/compara/${id}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(bifuelId?{bifuel_bolletta_id:bifuelId}:{})});
-    if(!res.ok) throw new Error('Errore comparazione');
-    renderCompara(await res.json(), tipo);
-  } catch(e){ showAlert(e.message,'err',tipo); }
-  finally{ if(btn){btn.disabled=false;btn.innerHTML='🏆 Confronta con le migliori offerte →';} }
-}
-
-function renderCompara(data, tipo){
-  const offerte=data.offerte||[];
-  const best=offerte[0]; const unita=data.unita_misura||'kWh';
-  const info=`<div class="alert a-info">Consumo: <strong>${fmtU(data.consumo_totale,unita)}</strong> · Spesa annua attuale stimata: <strong>${fmtEur(data.costo_attuale_annuo_stimato)}</strong> · IVA applicata: <strong>${data.iva_applicata_perc}%</strong> · Profilo: <strong>${data.profilo_label}</strong>${data.bifuel_attivo?' · <span class="tag t-bf">✓ BiFuel attivo</span>':''}${best?.risparmio_annuo_vs_attuale>0?` · Con l'offerta migliore <strong style="color:var(--green)">${fmtEur(best.risparmio_annuo_vs_attuale)}/anno</strong> in meno`:''}</div>`;
-
-  const html=offerte.map((o,i)=>`
-    <div class="off-row ${i===0?'best':''}">
-      ${i===0?'<div class="best-lbl">MIGLIORE</div>':''}
-      ${o.bifuel_applicato&&o.sconto_bifuel_perc?`<div class="bf-lbl">BiFuel -${o.sconto_bifuel_perc}%</div>`:''}
-      <div class="rank">${i+1}</div>
-      <div class="oi">
-        <div class="on">${o.nome_offerta}</div>
-        <div class="of">${o.fornitore}</div>
-        ${o.note?`<div class="onote" title="${o.note}">${o.note}</div>`:''}
-        <div class="otags">
-          <span class="tag ${o.tipo==='FISSO'?'t-fix':'t-var'}">${o.tipo}</span>
-          ${o.spread_pun?`<span class="tag t-var">PUN+${(o.spread_pun*100).toFixed(1)}c€</span>`:''}
-          ${o.spread_psv?`<span class="tag t-var">PSV+${(o.spread_psv*100).toFixed(1)}c€</span>`:''}
-          <span class="tag t-lib">${o.mercato}</span>
-          ${o.valida_fino?`<span style="font-size:.7rem;color:var(--muted)">fino ${o.valida_fino}</span>`:''}
+    ${offerte.map((o,i)=>`
+      <div class="off-card ${i===0?'best':''}">
+        ${i===0?'<div class="best-badge">⭐ Migliore</div>':''}
+        ${o.bifuel_applicato&&o.sconto_bifuel?`<div class="bf-badge">BiFuel -${o.sconto_bifuel}%</div>`:''}
+        <div class="off-rank">${i+1}</div>
+        <div class="off-info">
+          <div class="off-nome">${o.nome}</div>
+          <div class="off-forn">${o.fornitore}</div>
+          ${o.note?`<div class="off-note" title="${o.note}">${o.note}</div>`:''}
+          <div class="off-tags">
+            <span class="tag ${o.tipo==='FISSO'?'t-fix':'t-var'}">${o.tipo}</span>
+            ${o.spread_pun?`<span class="tag t-var">PUN+${(o.spread_pun*100).toFixed(1)}c€</span>`:''}
+            <span class="tag t-lib">${o.mercato}</span>
+            ${o.valida_fino?`<span style="font-size:.69rem;color:var(--muted)">fino ${o.valida_fino}</span>`:''}
+          </div>
         </div>
+        <div class="off-num">
+          <div class="off-costo">${fmtEur(o.costo_periodo)}</div>
+          <div class="off-annuo">${fmtEur(o.costo_annuo)}/anno</div>
+          <div class="risp-badge ${o.risparmio_annuo>=0?'risp-pos':'risp-neg'}">${o.risparmio_annuo>=0?'↓':'↑'} ${fmtEur(Math.abs(o.risparmio_annuo))}/anno</div>
+        </div>
+        ${o.url?`<a href="${o.url}" target="_blank" style="flex-shrink:0;display:inline-flex;align-items:center;gap:.3rem;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:7px 12px;font-size:.78rem;font-weight:600;color:var(--ink);text-decoration:none;transition:all .2s;white-space:nowrap" onmouseover="this.style.borderColor='var(--ink)'" onmouseout="this.style.borderColor='var(--border)'">Vai →</a>`:''}
       </div>
-      <div class="onum">
-        <div class="ocosto">${fmtEur(o.costo_stimato_periodo)}</div>
-        <div class="oann">${fmtEur(o.costo_stimato_annuo)}/anno</div>
-        <div class="risp ${o.risparmio_annuo_vs_attuale>=0?'pos':'neg'}">${o.risparmio_annuo_vs_attuale>=0?'↓':'↑'} ${fmtEur(Math.abs(o.risparmio_annuo_vs_attuale))}/anno</div>
-      </div>
-      ${o.url_offerta?`<a href="${o.url_offerta}" target="_blank" class="btn b-ghost b-sm" onclick="event.stopPropagation()">Vai →</a>`:''}
-    </div>
-  `).join('');
-
-  const el=document.getElementById(`compara-res-${tipo}`);
-  if(el){ el.innerHTML=`<h2 style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:.9rem">🏆 Offerte compatibili con profilo ${data.profilo_label}</h2>${info}${html}`; el.scrollIntoView({behavior:'smooth',block:'start'}); }
-}
-
-/* ── Dashboard ── */
-async function loadDashboard(){
-  try{
-    const stats=await fetch(`${API}/api/statistiche`).then(r=>r.json());
-    document.getElementById('dk-nl').textContent=stats.luce?.n??'0';
-    document.getElementById('dk-ng').textContent=stats.gas?.n??'0';
-    document.getElementById('dk-risp').textContent=fmtEur(stats.risparmio_totale_identificato||0);
-    document.getElementById('dk-pun').textContent=stats.pun_ultimi_mesi?.[0]?.valore?.toFixed(4)||'—';
-    buildChart('ch-luce',stats.trend_mensile?.filter(r=>r.tipo_utenza==='luce'),'#e85d1a','luce');
-    buildChart('ch-gas', stats.trend_mensile?.filter(r=>r.tipo_utenza==='gas'), '#1d4ed8','gas');
-    const pp=stats.per_profilo||[];
-    const PLAB={D2:'Dom. Residente',D3:'Dom. Non Res.',BTA:'PMI/BTA',CDO:'Condominio'};
-    document.getElementById('dash-profili').innerHTML=pp.length?`<div style="display:flex;gap:.6rem;flex-wrap:wrap">${pp.map(r=>`<div style="background:var(--warm);border-radius:var(--r-sm);padding:.6rem 1rem;font-size:.85rem"><strong>${PLAB[r.profilo_utenza]||r.profilo_utenza}</strong> <span class="tag ${r.tipo_utenza==='luce'?'t-luce':'t-gas'}">${r.tipo_utenza}</span><br><span style="font-family:'Syne',sans-serif;font-weight:700">${r.n}</span> bollette · media ${fmtEur(r.avg_f)}</div>`).join('')}</div>`:'<div class="empty"><span class="ei">👤</span><p>Nessuna bolletta ancora</p></div>';
-  }catch(e){console.warn(e)}
-}
-
-function buildChart(id, data, color, tipo){
-  const cv=document.getElementById(id); if(!cv) return;
-  const ctx=cv.getContext('2d');
-  if(ch[tipo]) ch[tipo].destroy();
-  if(!data?.length){ ctx.fillStyle='#aaa';ctx.font='13px DM Sans';ctx.textAlign='center';ctx.fillText('Nessun dato',cv.width/2,cv.height/2); return; }
-  const s=[...data].sort((a,b)=>a.mese?.localeCompare(b.mese));
-  ch[tipo]=new Chart(ctx,{type:'line',data:{labels:s.map(r=>r.mese),datasets:[{data:s.map(r=>r.tot??0),borderColor:color,backgroundColor:color+'18',borderWidth:2,fill:true,tension:.4,pointRadius:4,pointBackgroundColor:color}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+fmtEur(c.raw)}}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'#f0ece3'},ticks:{font:{size:10},callback:v=>fmtEur(v)}}}}});
-}
-
-/* ── Storico ── */
-async function loadStorico(tipo){
-  storicoTipo=tipo;
-  const el=document.getElementById('storico-body');
-  el.innerHTML='<div class="empty"><span class="ei">⏳</span><p>Caricamento...</p></div>';
-  try{
-    const url=tipo?`${API}/api/bollette?tipo=${tipo}`:`${API}/api/bollette`;
-    const rows=await fetch(url).then(r=>r.json());
-    if(!rows.length){el.innerHTML='<div class="empty" style="padding:3rem"><span class="ei">📋</span><p>Nessuna bolletta. Carica la prima da "Analizza".</p></div>';return;}
-    const PLAB={D2:'D2',D3:'D3',BTA:'BTA',CDO:'CDO'};
-    el.innerHTML=`<table class="tbl"><thead><tr><th>Tipo</th><th>Profilo</th><th>Fornitore</th><th>Periodo</th><th>Totale</th><th>Consumo</th><th>€/un.</th><th></th></tr></thead><tbody>${rows.map(b=>`<tr><td><span class="tag ${b.tipo_utenza==='luce'?'t-luce':'t-gas'}">${b.tipo_utenza==='luce'?'⚡':'🔥'} ${b.tipo_utenza}</span></td><td><span class="tag t-${(b.profilo_utenza||'d2').toLowerCase()}">${PLAB[b.profilo_utenza]||b.profilo_utenza}</span></td><td><strong>${b.fornitore||'—'}</strong></td><td style="font-size:.78rem;color:var(--muted)">${b.periodo_inizio||'—'}<br>${b.periodo_fine||''}</td><td><strong>${fmtEur(b.totale_fattura)}</strong></td><td>${fmtU(b.consumo_totale,b.unita_misura||'kWh')}</td><td>${b.costo_unitario_eff?(b.costo_unitario_eff*100).toFixed(2)+' c€':'—'}</td><td><div class="acts"><button class="btn b-sm b-blue" onclick="comparaDaStorico('${b.id}','${b.tipo_utenza}')">⚡</button><button class="btn b-sm b-danger" onclick="eliminaBolletta('${b.id}')">🗑</button></div></td></tr>`).join('')}</tbody></table>`;
-  }catch{el.innerHTML='<div class="alert a-err" style="margin:1rem">Impossibile caricare. Server attivo?</div>';}
-}
-function switchStorico(tipo,btn){document.querySelectorAll('#page-storico .tb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');loadStorico(tipo);}
-async function eliminaBolletta(id){if(!confirm('Eliminare?'))return;await fetch(`${API}/api/bollette/${id}`,{method:'DELETE'});loadStorico(storicoTipo);}
-async function comparaDaStorico(id,tipo){
-  bid[tipo]=id; profilo[tipo]=null; goTo(tipo); showUI(tipo,'loading');
-  await sleep(200);
-  try{
-    const data=await fetch(`${API}/api/bollette/${id}`).then(r=>r.json());
-    const w={bolletta_id:id,tipo_utenza:tipo,profilo_utenza:data.profilo_utenza,profilo_label:({D2:'Domestico Residente',D3:'Domestico Non Residente',BTA:'PMI/BTA',CDO:'Condominio'}[data.profilo_utenza]),dati:data.dati||JSON.parse(data.dati_json||'{}'),costo_unitario_effettivo:data.costo_unitario_eff,unita_misura:data.unita_misura||(tipo==='luce'?'kWh':'Smc')};
-    showUI(tipo,'results'); renderRisultati(w,tipo); await comparaOfferte(tipo);
-  }catch(e){showUI(tipo,'upload');showAlert(e.message,'err',tipo);}
-}
-
-/* ── Offerte ── */
-async function loadOfferte(tipo){
-  offerteTipo=tipo; const el=document.getElementById('offerte-body');
-  el.innerHTML='<div class="empty"><span class="ei">⏳</span><p>Caricamento...</p></div>';
-  try{
-    const rows=await fetch(`${API}/api/offerte/${tipo}`).then(r=>r.json());
-    if(!rows.length){el.innerHTML='<div class="empty"><span class="ei">🏷️</span><p>Nessuna offerta</p></div>';return;}
-    const isL=tipo==='luce';
-    el.innerHTML=`<div style="color:var(--muted);font-size:.82rem;margin-bottom:.75rem">${rows.length} offerte attive</div><table class="tbl"><thead><tr><th>Fornitore</th><th>Offerta</th><th>Tipo</th><th>Profili</th>${isL?'<th>F1 c€</th><th>F2 c€</th><th>F3 c€</th><th>F23 c€</th>':'<th>€/Smc</th>'}<th>BiFuel%</th><th>QF/anno</th><th>Valida</th><th></th></tr></thead><tbody>${rows.map(o=>`<tr><td><strong>${o.fornitore}</strong></td><td><div>${o.nome_offerta}</div>${o.note?`<div style="font-size:.72rem;color:var(--muted)">${o.note}</div>`:''}</td><td><span class="tag ${o.tipo==='FISSO'?'t-fix':'t-var'}">${o.tipo}</span></td><td style="font-size:.75rem">${o.profili_compatibili||'—'}</td>${isL?`<td>${o.prezzo_f1!=null?(o.prezzo_f1*100).toFixed(3):'—'}</td><td>${o.prezzo_f2!=null?(o.prezzo_f2*100).toFixed(3):'—'}</td><td>${o.prezzo_f3!=null?(o.prezzo_f3*100).toFixed(3):'—'}</td><td>${o.prezzo_f23!=null?(o.prezzo_f23*100).toFixed(3):'—'}</td>`:`<td>${o.prezzo_smc!=null?fmtEur(o.prezzo_smc):'—'}</td>`}<td>${o.sconto_bifuel_perc?`<span class="tag t-bf">${o.sconto_bifuel_perc}%</span>`:'—'}</td><td>${fmtEur(o.quota_fissa_annua)}</td><td style="font-size:.75rem;color:var(--muted)">${o.valida_fino||'—'}</td><td><div class="acts">${o.url_offerta?`<a href="${o.url_offerta}" target="_blank" class="btn b-sm b-ghost">🔗</a>`:''}<button class="btn b-sm b-danger" onclick="delOfferta('${o.id}','${tipo}')">🗑</button></div></td></tr>`).join('')}</tbody></table>`;
-  }catch{el.innerHTML='<div class="alert a-err">Errore caricamento offerte</div>';}
-}
-function switchOfferte(tipo,btn){document.querySelectorAll('#page-offerte .tb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');loadOfferte(tipo);}
-async function delOfferta(id,tipo){if(!confirm('Disattivare?'))return;await fetch(`${API}/api/offerte/${tipo}/${id}`,{method:'DELETE'});loadOfferte(tipo);}
-
-/* ── Aggiungi offerta da PDF ── */
-function openAddFromPDF(){
-  modalMode='pdf'; modalTipo=offerteTipo;
-  document.getElementById('modal-title').textContent='Aggiungi Offerta da PDF';
-  document.getElementById('modal-body').innerHTML=`
-    <div class="alert a-info">Carica il PDF del documento dell'offerta commerciale. L'AI estrarrà automaticamente i prezzi.</div>
-    <div class="uzone" style="padding:1.5rem" onclick="document.getElementById('fi-offerta').click()">
-      <span style="font-size:1.8rem">📄</span>
-      <p style="margin-top:.5rem;font-size:.88rem">Clicca per selezionare il PDF dell'offerta</p>
-      <input type="file" id="fi-offerta" accept=".pdf" onchange="estraiDaPDF(event)" style="display:none">
-    </div>
-    <div id="pdf-estratto" style="margin-top:.75rem"></div>`;
-  document.getElementById('modal-save-btn').style.display='none';
-  document.getElementById('ov-offerta').classList.add('open');
-}
-
-async function estraiDaPDF(e){
-  const file=e.target.files[0]; if(!file) return;
-  document.getElementById('pdf-estratto').innerHTML='<div class="alert a-info">⏳ AI in elaborazione...</div>';
-  try{
-    const form=new FormData(); form.append('file',file);
-    const res=await fetch(`${API}/api/offerte/estrai-da-pdf`,{method:'POST',body:form});
-    if(!res.ok) throw new Error('Errore estrazione');
-    const {dati}=await res.json();
-    // Mostra form precompilato
-    document.getElementById('pdf-estratto').innerHTML='<div class="alert a-ok">✅ Dati estratti — verifica e conferma</div>';
-    document.getElementById('modal-save-btn').style.display='';
-    _buildFormOfferta(dati);
-  }catch(e2){document.getElementById('pdf-estratto').innerHTML=`<div class="alert a-err">❌ ${e2.message}</div>`;}
-}
-
-function openAddFromURL(){
-  modalMode='url'; modalTipo=offerteTipo;
-  document.getElementById('modal-title').textContent='Aggiungi Offerta da URL';
-  document.getElementById('modal-body').innerHTML=`
-    <div class="alert a-info">Incolla l'URL della pagina dell'offerta commerciale. L'AI tenterà di estrarre i prezzi.</div>
-    <div class="field"><label>URL Pagina Offerta</label><input id="url-offerta-input" type="url" placeholder="https://www.fornitore.it/offerta-luce-pmi"></div>
-    <div style="margin-top:.75rem"><button class="btn b-blue" onclick="estraiDaURL()">🔍 Analizza URL</button></div>
-    <div id="url-estratto" style="margin-top:.75rem"></div>`;
-  document.getElementById('modal-save-btn').style.display='none';
-  document.getElementById('ov-offerta').classList.add('open');
-}
-
-async function estraiDaURL(){
-  const url=document.getElementById('url-offerta-input')?.value?.trim();
-  if(!url){alert('Inserisci un URL valido');return;}
-  document.getElementById('url-estratto').innerHTML='<div class="alert a-info">⏳ AI analizza la pagina...</div>';
-  try{
-    const res=await fetch(`${API}/api/offerte/estrai-da-url`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
-    if(!res.ok) throw new Error('Errore analisi URL');
-    const {dati}=await res.json();
-    document.getElementById('url-estratto').innerHTML='<div class="alert a-ok">✅ Dati estratti — verifica e conferma</div>';
-    document.getElementById('modal-save-btn').style.display='';
-    _buildFormOfferta(dati);
-  }catch(e){document.getElementById('url-estratto').innerHTML=`<div class="alert a-err">❌ ${e.message}. Prova il caricamento manuale.</div>`;}
-}
-
-function openAddManuale(){
-  modalMode='manual'; modalTipo=offerteTipo;
-  document.getElementById('modal-title').textContent=`Nuova Offerta ${offerteTipo==='luce'?'Luce':'Gas'}`;
-  document.getElementById('modal-save-btn').style.display='';
-  document.getElementById('modal-save-btn').onclick=salvaOfferta;
-  _buildFormOfferta(null);
-  document.getElementById('ov-offerta').classList.add('open');
-}
-
-function _buildFormOfferta(precomp){
-  const p=precomp||{};
-  const tipoForm=p.tipo_utenza||modalTipo;
-  const isL=tipoForm==='luce';
-  // Aggiorna anche modalTipo in base a quanto estratto
-  if(p.tipo_utenza) modalTipo=p.tipo_utenza;
-
-  document.getElementById('modal-body').innerHTML=`
-    ${precomp?'':''}
-    <div class="fgrid">
-      <div class="field"><label>Tipo utenza</label><select id="of-tutype" onchange="modalTipo=this.value;_buildFormOfferta(null)"><option value="luce" ${isL?'selected':''}>⚡ Luce</option><option value="gas" ${!isL?'selected':''}>🔥 Gas</option></select></div>
-      <div class="field"><label>Fornitore *</label><input id="of-forn" value="${p.fornitore||''}" placeholder="es. Enel Energia"></div>
-      <div class="field"><label>Nome Offerta *</label><input id="of-nome" value="${p.nome_offerta||''}" placeholder="es. Luce Web"></div>
-      <div class="field"><label>Tipo Prezzo</label><select id="of-tipo"><option ${p.tipo_prezzo==='FISSO'?'selected':''}>FISSO</option><option ${p.tipo_prezzo==='VARIABILE'?'selected':''}>VARIABILE</option></select></div>
-    </div>
-    <div class="fgrid">
-      <div class="field"><label>Profili Compatibili</label><select id="of-profili" multiple style="height:80px"><option value="D2" selected>D2 - Domestico Residente</option><option value="D3" selected>D3 - Non Residente</option><option value="BTA" selected>BTA - PMI</option><option value="CDO" selected>CDO - Condominio</option></select><div class="hint">Tieni Ctrl per selezione multipla</div></div>
-      ${isL?`
-      <div class="field"><label>Prezzo F1 €/kWh</label><input id="of-f1" type="number" step="0.0001" value="${p.prezzo_f1_eur_kwh||''}" placeholder="0.1823"></div>
-      <div class="field"><label>Prezzo F2 €/kWh</label><input id="of-f2" type="number" step="0.0001" value="${p.prezzo_f2_eur_kwh||''}" placeholder="0.1523"></div>
-      <div class="field"><label>Prezzo F3 €/kWh</label><input id="of-f3" type="number" step="0.0001" value="${p.prezzo_f3_eur_kwh||''}" placeholder="0.1423"></div>
-      `:``}
-      ${isL?`<div class="field"><label>Prezzo F23 €/kWh (biorario dom.)</label><input id="of-f23" type="number" step="0.0001" value="${p.prezzo_f23_eur_kwh||''}" placeholder="0.1473"><div class="hint">Solo per tariffe domestiche biorarie</div></div>`:``}
-      ${isL?`<div class="field"><label>Spread PUN (se VARIABILE)</label><input id="of-spun" type="number" step="0.0001" value="${p.spread_pun||''}" placeholder="0.018"></div>`:``}
-      ${!isL?`<div class="field"><label>Prezzo €/Smc</label><input id="of-smc" type="number" step="0.001" value="${p.prezzo_smc||''}" placeholder="0.50"></div>`:``}
-      ${!isL?`<div class="field"><label>Spread PSV (se VARIABILE)</label><input id="of-spsv" type="number" step="0.001" value="${p.spread_psv||''}" placeholder="0.02"></div>`:``}
-      ${!isL?`<div class="field"><label>Quota Var. €/Smc</label><input id="of-qvar" type="number" step="0.001" placeholder="0.02"></div>`:``}
-    </div>
-    <div class="fgrid">
-      <div class="field"><label>Quota Fissa €/anno</label><input id="of-qf" type="number" value="${p.quota_fissa_annua_eur||''}" placeholder="72"></div>
-      ${isL?`<div class="field"><label>Stima Oneri Trasp. €/mese</label><input id="of-trasp" type="number" placeholder="45"></div>`:``}
-      <div class="field"><label>Sconto BiFuel %</label><input id="of-bifuel" type="number" step="0.1" value="${p.sconto_bifuel_percentuale||''}" placeholder="5"><div class="hint">Sconto % se cliente attiva anche l'altra fornitura</div></div>
-      <div class="field"><label>Valida fino</label><input id="of-valida" type="date" value="${p.valida_fino||''}"></div>
-      <div class="field"><label>URL Offerta</label><input id="of-url" type="url" placeholder="https://..."></div>
-    </div>
-    <div class="field"><label>Note</label><textarea id="of-note" rows="2" placeholder="Descrizione breve">${p.note||''}</textarea></div>
+    `).join('')}
   `;
-  document.getElementById('modal-save-btn').onclick=salvaOfferta;
+
+  // Email results
+  const emailCta=`<div class="email-cta">
+    <h4>📧 Ricevi i risultati via email</h4>
+    <p>Ti inviamo l'analisi completa e il confronto offerte in PDF, da conservare o condividere.</p>
+    <div class="email-row">
+      <input id="save-email" type="email" placeholder="la-tua@email.it" value="${document.getElementById('inp-email').value||''}">
+      <button class="btn-email" onclick="salvaEmail()">Invia →</button>
+    </div>
+    <div id="email-alert" style="margin-top:.5rem"></div>
+  </div>`;
+
+  document.getElementById('ris-content').innerHTML=kpiHtml+`<div class="cost-card">${costiHtml}</div>`+fasceHtml+aiHtml+`<h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.15rem;color:var(--navy);margin:1.5rem 0 .9rem">🏆 Offerte compatibili con il tuo profilo</h3>`+comparaHtml+emailCta+`<div style="text-align:center;margin-top:1.5rem"><button onclick="nuovaAnalisi()" style="background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r);padding:.75rem 1.5rem;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;color:var(--ink)">← Analizza un'altra bolletta</button></div>`;
+
+  sec.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-async function salvaOfferta(){
-  const isL=modalTipo==='luce';
-  const forn=document.getElementById('of-forn')?.value?.trim();
-  const nome=document.getElementById('of-nome')?.value?.trim();
-  if(!forn||!nome){alert('Fornitore e Nome obbligatori');return;}
-  const profiliSel=Array.from(document.getElementById('of-profili')?.selectedOptions||[]).map(o=>o.value);
-  const payload=isL?{
-    fornitore:forn,nome_offerta:nome,tipo:document.getElementById('of-tipo')?.value,
-    profili_compatibili:profiliSel.join(','),
-    prezzo_f1:pfloat('of-f1'),prezzo_f2:pfloat('of-f2'),prezzo_f3:pfloat('of-f3'),
-    prezzo_f23:pfloat('of-f23'),spread_pun:pfloat('of-spun'),
-    quota_fissa_annua:pfloat('of-qf')||0,oneri_trasporto_stima:pfloat('of-trasp')||0,
-    sconto_bifuel_perc:pfloat('of-bifuel')||0,
-    valida_fino:document.getElementById('of-valida')?.value||null,
-    url_offerta:document.getElementById('of-url')?.value||null,
-    note:document.getElementById('of-note')?.value||null,mercato:'Libero'
-  }:{
-    fornitore:forn,nome_offerta:nome,tipo:document.getElementById('of-tipo')?.value,
-    profili_compatibili:profiliSel.join(','),
-    prezzo_smc:pfloat('of-smc'),spread_psv:pfloat('of-spsv'),
-    quota_variabile_smc:pfloat('of-qvar')||0,
-    quota_fissa_annua:pfloat('of-qf')||0,
-    sconto_bifuel_perc:pfloat('of-bifuel')||0,
-    valida_fino:document.getElementById('of-valida')?.value||null,
-    url_offerta:document.getElementById('of-url')?.value||null,
-    note:document.getElementById('of-note')?.value||null,mercato:'Libero'
-  };
+async function salvaEmail(){
+  const email=document.getElementById('save-email').value.trim();
+  if(!email){document.getElementById('email-alert').innerHTML='<div class="alert a-err">Inserisci un indirizzo email valido</div>';return;}
   try{
-    const res=await fetch(`${API}/api/offerte/${modalTipo}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    if(!res.ok) throw new Error('Errore salvataggio');
-    closeModal('ov-offerta');loadOfferte(modalTipo);
-  }catch(e){alert('Errore: '+e.message);}
+    await fetch(`${API}/api/leads`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,tipo:'email_risultati',bolletta_id:currentBollettaId,consenso_privacy:true})});
+    document.getElementById('email-alert').innerHTML='<div class="alert a-ok">✅ Riceverai presto i risultati all\'indirizzo indicato.</div>';
+  }catch(e){document.getElementById('email-alert').innerHTML='<div class="alert a-err">Errore. Riprova.</div>';}
 }
 
-/* ── Indici ── */
-async function loadIndici(){
+function nuovaAnalisi(){
+  currentBollettaId=null; selectedFile=null;
+  document.getElementById('risultati-section').style.display='none';
+  document.getElementById('uploadCard').style.display='block';
+  document.getElementById('dzIcon').textContent='📂';
+  document.getElementById('dzTitle').textContent='Trascina il PDF qui oppure clicca';
+  document.getElementById('dzSub').textContent='Accettiamo PDF fino a 15 MB — qualsiasi fornitore italiano';
+  document.getElementById('dropZone').style.borderStyle='dashed';
+  document.getElementById('dropZone').style.borderColor='var(--border)';
+  document.getElementById('uploadCard').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ── Consulente modal ────────────────────────────────────────── */
+function openConsulente(){document.getElementById('modal-consulente').classList.add('open')}
+function closeModal(){document.getElementById('modal-consulente').classList.remove('open')}
+
+async function inviaConsulente(){
+  clearAlert('c-alert');
+  const nome=document.getElementById('c-nome').value.trim();
+  const cognome=document.getElementById('c-cognome').value.trim();
+  const email=document.getElementById('c-email').value.trim();
+  const tel=document.getElementById('c-tel').value.trim();
+  if(!nome||!email||!tel){showAlert('c-alert','Compila tutti i campi obbligatori (*)','err');return;}
+  if(!document.getElementById('c-privacy').checked){showAlert('c-alert','Devi accettare l\'informativa sulla privacy','err');return;}
   try{
-    const data=await fetch(`${API}/api/indici`).then(r=>r.json());
-    const pun=data.PUN||[]; const psv=data.PSV||[];
-    const fmt=arr=>arr.length?arr.map(i=>`<div class="indice-card"><div class="ic-tipo">${i.tipo}</div><div class="ic-periodo">${i.periodo}</div><div class="ic-val">${parseFloat(i.valore).toFixed(4)}</div><div class="ic-fonte">${i.fonte||'—'}</div></div>`).join(''):'<div class="empty"><span class="ei">📈</span><p>Nessun dato</p></div>';
-    document.getElementById('pun-list').innerHTML=fmt(pun.slice(0,8));
-    document.getElementById('psv-list').innerHTML=fmt(psv.slice(0,8));
-  }catch(e){console.warn(e);}
+    await fetch(`${API}/api/leads`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome,cognome,email,telefono:tel,tipo:'consulente',bolletta_id:currentBollettaId,consenso_privacy:true,consenso_marketing:document.getElementById('c-mkt').checked})});
+    document.getElementById('modal-body').innerHTML=`<div class="success-state"><div class="success-icon">✅</div><div class="success-title">Richiesta inviata!</div><div class="success-text">Un nostro consulente ti contatterà entro 24 ore all'indirizzo <strong>${email}</strong> o al numero <strong>${tel}</strong>.</div></div>`;
+    document.querySelector('.modal-footer').innerHTML=`<button class="btn-secondary" onclick="closeModal()">Chiudi</button>`;
+  }catch(e){showAlert('c-alert','Errore invio. Riprova tra poco.','err');}
 }
 
-async function aggiornaIndici(){
-  const btn=document.getElementById('btn-aggiorna');
-  btn.disabled=true;btn.textContent='⏳ Aggiornamento in corso...';
-  try{
-    await fetch(`${API}/api/indici/aggiorna`,{method:'POST'});
-    btn.textContent='✅ Aggiornamento avviato!';
-    setTimeout(()=>{btn.disabled=false;btn.textContent='🔄 Aggiorna da Portale ARERA';loadIndici();},5000);
-  }catch{btn.disabled=false;btn.textContent='🔄 Aggiorna da Portale ARERA';}
+/* ── FAQ ─────────────────────────────────────────────────────── */
+function buildFaq(){
+  const el=document.getElementById('faq-list');
+  el.innerHTML=FAQ_DATA.map((item,i)=>`
+    <div class="faq-item" id="faq-${i}">
+      <div class="faq-q" onclick="toggleFaq(${i})">${item.q}<span class="faq-arrow">▼</span></div>
+      <div class="faq-a">${item.a}</div>
+    </div>`).join('');
+}
+function toggleFaq(i){document.getElementById('faq-'+i).classList.toggle('open')}
+
+/* ── Loading steps ───────────────────────────────────────────── */
+function setSt(id,st){
+  const el=document.getElementById(id); if(!el) return;
+  el.classList.remove('act','done');
+  if(st) el.classList.add(st);
+  const ic=el.querySelector('.step-ic');
+  if(ic) ic.textContent=st==='done'?'✓':ic.textContent;
 }
 
-function openIndiceManuale(){document.getElementById('ov-indice').classList.add('open');}
-async function salvaIndiceManuale(){
-  const tipo=document.getElementById('im-tipo').value;
-  const periodo=document.getElementById('im-periodo').value;
-  const valore=parseFloat(document.getElementById('im-valore').value);
-  if(!periodo||isNaN(valore)){alert('Periodo e valore obbligatori');return;}
-  await fetch(`${API}/api/indici/manuale`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tipo,periodo,valore})});
-  closeModal('ov-indice');loadIndici();
-}
-
-/* ── Health ── */
-async function checkHealth(){
-  try{
-    const d=await fetch(`${API}/api/health`,{signal:AbortSignal.timeout(3000)}).then(r=>r.json());
-    const dot=document.getElementById('hdot'),txt=document.getElementById('htext');
-    dot.style.background=d.gemini_key_set?'#22c55e':'#f59e0b';
-    txt.textContent=d.gemini_key_set?`OK · PUN ${d.indici?.PUN_ultimo?.toFixed(4)}`:'Chiave API mancante';
-  }catch{document.getElementById('hdot').style.background='#ef4444';document.getElementById('htext').textContent='Server offline';}
-}
-
-/* ── Utils ── */
+/* ── Utilities ───────────────────────────────────────────────── */
 function fmtEur(v){if(v==null)return '—';return new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',maximumFractionDigits:2}).format(v);}
 function fmtN(v,d=0){if(v==null)return '—';return new Intl.NumberFormat('it-IT',{maximumFractionDigits:d}).format(v);}
-function fmtU(v,u){if(v==null)return '—';return fmtN(v,0)+' '+(u||'');}
-function pfloat(id){const v=parseFloat(document.getElementById(id)?.value);return isNaN(v)?null:v;}
 function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-function showAlert(msg,type,tipo){const el=document.getElementById('al-'+tipo);if(!el)return;el.innerHTML=`<div class="alert a-${type}">${msg}</div>`;setTimeout(()=>el.innerHTML='',7000);}
-function clearAlert(tipo){const el=document.getElementById('al-'+tipo);if(el)el.innerHTML='';}
-function setSt(id,st){const el=document.getElementById(id);if(!el)return;el.classList.remove('act','done');if(st)el.classList.add(st);}
-function closeModal(id){document.getElementById(id).classList.remove('open');}
-function exportCSV(){window.open(`${API}/api/export/csv`,'_blank');}
+function showAlert(id,msg,type){const el=document.getElementById(id);if(el)el.innerHTML=`<div class="alert a-${type}">${msg}</div>`;}
+function clearAlert(id){const el=document.getElementById(id);if(el)el.innerHTML='';}
 
-window.addEventListener('DOMContentLoaded',()=>{
-  checkHealth();setInterval(checkHealth,30000);loadDashboard();
-});
+window.addEventListener('DOMContentLoaded',buildFaq);
 </script>
 </body>
 </html>
