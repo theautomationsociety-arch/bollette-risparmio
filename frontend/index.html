@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BollettaAI v3 — Comparatore Luce & Gas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --ink:#0d1117;--paper:#f6f4ef;--warm:#edead9;--card:#fff;
+  --muted:#7a7570;--border:#e0dbd0;
+  --accent:#e85d1a;--blue:#1d4ed8;--green:#16a34a;
+  --yellow:#d97706;--red:#dc2626;--purple:#7c3aed;
+  --shadow:0 4px 20px rgba(13,17,23,.09);
+  --shadow-sm:0 1px 4px rgba(13,17,23,.06);
+  --r:14px;--r-sm:8px;--t:.18s ease;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;line-height:1.55}
+button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inherit}
+
+/* ── Sidebar ── */
+.sidebar{width:230px;background:var(--ink);position:fixed;top:0;left:0;height:100vh;display:flex;flex-direction:column;z-index:200;transition:transform .2s}
+.sb-logo{padding:1.4rem 1.4rem 1rem;border-bottom:1px solid rgba(255,255,255,.08)}
+.logo-t{font-family:'Syne',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;letter-spacing:-.5px}
+.logo-t span{color:var(--accent)}
+.logo-sub{font-size:.65rem;color:rgba(255,255,255,.3);letter-spacing:.8px;text-transform:uppercase;margin-top:2px}
+.sb-nav{padding:.75rem 0;flex:1;overflow-y:auto}
+.nav-sec{padding:.5rem 1.4rem .2rem;font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.22)}
+.nav-btn{display:flex;align-items:center;gap:.7rem;padding:.6rem 1.4rem;color:rgba(255,255,255,.55);font-size:.88rem;cursor:pointer;border:none;background:none;width:100%;text-align:left;transition:all var(--t);border-right:3px solid transparent}
+.nav-btn:hover{color:#fff;background:rgba(255,255,255,.06)}
+.nav-btn.active{color:#fff;background:rgba(232,93,26,.14);border-right-color:var(--accent)}
+.nav-btn .ic{font-size:.95rem;width:18px;text-align:center;flex-shrink:0}
+.sb-footer{padding:1rem 1.4rem;border-top:1px solid rgba(255,255,255,.07);font-size:.72rem;color:rgba(255,255,255,.28)}
+.h-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#22c55e;margin-right:5px;animation:blink 2.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* ── Layout ── */
+.content{margin-left:230px;padding:2.2rem 2.5rem;max-width:1120px}
+.page{display:none;animation:fi .22s ease}
+.page.active{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+/* ── Mobile ── */
+.mob-hdr{display:none;background:var(--ink);padding:.7rem 1rem;position:sticky;top:0;z-index:100;align-items:center;justify-content:space-between}
+@media(max-width:860px){
+  .mob-hdr{display:flex}
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:none}
+  .content{margin-left:0;padding:1.2rem 1rem}
+}
+.burger{background:none;border:none;color:#fff;font-size:1.5rem;padding:2px}
+
+/* ── Typography ── */
+h1.pt{font-family:'Syne',sans-serif;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;letter-spacing:-1px;margin-bottom:.3rem}
+h1.pt em{color:var(--accent);font-style:normal}
+.psub{color:var(--muted);font-size:.92rem;font-weight:300;margin-bottom:1.75rem}
+
+/* ── Cards ── */
+.card{background:var(--card);border-radius:var(--r);padding:1.4rem;box-shadow:var(--shadow-sm);border:1px solid var(--border)}
+.ctitle{font-family:'Syne',sans-serif;font-weight:700;font-size:.92rem;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.ctitle::after{content:'';flex:1;height:1px;background:var(--warm)}
+.kpi{background:var(--card);border-radius:var(--r);padding:1.15rem 1.4rem;border:1px solid var(--border);box-shadow:var(--shadow-sm)}
+.kl{font-size:.68rem;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem}
+.kv{font-family:'Syne',sans-serif;font-size:1.75rem;font-weight:800;letter-spacing:-.8px;line-height:1}
+.ks{font-size:.73rem;color:var(--muted);margin-top:.2rem}
+
+/* ── Grid ── */
+.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.9rem}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+@media(max-width:680px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+/* ── Tags ── */
+.tag{display:inline-flex;align-items:center;gap:3px;font-size:.7rem;font-weight:600;padding:3px 9px;border-radius:20px}
+.t-luce{background:#fff7ed;color:#c2410c}
+.t-gas{background:#eff6ff;color:#1e40af}
+.t-d2{background:#f0fdf4;color:#166534}
+.t-d3{background:#ecfdf5;color:#065f46}
+.t-bta{background:#faf5ff;color:#6b21a8}
+.t-cdo{background:#f8fafc;color:#374151;border:1px solid #e2e8f0}
+.t-lib{background:#dcfce7;color:#14532d}
+.t-tut{background:#fefce8;color:#713f12}
+.t-fix{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}
+.t-var{background:#fdf4ff;color:#7e22ce}
+.t-real{background:#dcfce7;color:var(--green)}
+.t-stim{background:#fef9c3;color:var(--yellow)}
+.t-bf{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;gap:.45rem;border:none;border-radius:var(--r-sm);font-family:'Syne',sans-serif;font-weight:700;font-size:.875rem;padding:10px 20px;cursor:pointer;transition:all var(--t)}
+.b-primary{background:var(--accent);color:#fff}
+.b-primary:hover{background:#c94d10;transform:translateY(-1px);box-shadow:0 5px 18px rgba(232,93,26,.28)}
+.b-blue{background:var(--blue);color:#fff}
+.b-blue:hover{background:#1e3fa8;transform:translateY(-1px);box-shadow:0 5px 18px rgba(29,78,216,.28)}
+.b-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--border)}
+.b-ghost:hover{border-color:var(--ink);background:var(--warm)}
+.b-green{background:var(--green);color:#fff}
+.b-green:hover{background:#15803d;transform:translateY(-1px)}
+.b-sm{padding:6px 13px;font-size:.76rem}
+.b-danger{background:#fee2e2;color:var(--red);border:none}
+.b-danger:hover{background:var(--red);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+
+/* ── Alerts ── */
+.alert{padding:.85rem 1rem;border-radius:var(--r-sm);font-size:.87rem;margin-bottom:.9rem;display:flex;gap:.6rem;align-items:flex-start}
+.a-err{background:#fee2e2;color:#991b1b;border:1px solid #fecaca}
+.a-ok{background:#dcfce7;color:#14532d;border:1px solid #bbf7d0}
+.a-info{background:#dbeafe;color:#1e3a8a;border:1px solid #bfdbfe}
+.a-warn{background:#fef9c3;color:#713f12;border:1px solid #fde68a}
+
+/* ── Tabs ── */
+.tabs{display:flex;gap:3px;background:var(--warm);padding:3px;border-radius:var(--r-sm);margin-bottom:1.4rem;width:fit-content}
+.tb{background:none;border:none;padding:7px 16px;border-radius:6px;font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;color:var(--muted);cursor:pointer;transition:all var(--t)}
+.tb.active{background:var(--card);color:var(--ink);box-shadow:var(--shadow-sm)}
+
+/* ── Profilo selector ── */
+.profilo-row{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.profilo-btn{background:var(--warm);border:2px solid transparent;border-radius:var(--r-sm);padding:.55rem 1rem;font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;transition:all var(--t);text-align:left;line-height:1.3}
+.profilo-btn small{display:block;font-family:'DM Sans',sans-serif;font-weight:300;font-size:.7rem;color:var(--muted);margin-top:2px}
+.profilo-btn:hover{border-color:var(--border);background:var(--card)}
+.profilo-btn.active{border-color:var(--accent);background:#fff8f5;color:var(--accent)}
+.profilo-btn.active small{color:var(--accent)}
+
+/* ── Upload ── */
+.uzone{border:2px dashed var(--border);border-radius:var(--r);padding:2.5rem 1.5rem;text-align:center;background:var(--card);cursor:pointer;transition:all .22s}
+.uzone:hover,.uzone.drag-over{border-color:var(--accent);background:#fff8f5;transform:translateY(-2px);box-shadow:var(--shadow)}
+.uzone h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin-bottom:.35rem}
+.uzone p{color:var(--muted);font-size:.85rem}
+.u-icon{font-size:2.2rem;display:block;margin-bottom:.85rem}
+
+/* ── Loading ── */
+.lcard{background:var(--card);border-radius:var(--r);padding:2.5rem 2rem;text-align:center;box-shadow:var(--shadow);display:none}
+.spin{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 1.4rem}
+@keyframes sp{to{transform:rotate(360deg)}}
+.lsteps{list-style:none;text-align:left;max-width:280px;margin:.9rem auto 0}
+.lsteps li{padding:4px 0;color:var(--muted);font-size:.86rem;display:flex;align-items:center;gap:9px}
+.lsteps li.done{color:var(--green)}.lsteps li.act{color:var(--ink);font-weight:500}
+.sdot{width:7px;height:7px;border-radius:50%;background:var(--border);flex-shrink:0;transition:background .35s}
+.lsteps li.done .sdot{background:var(--green)}.lsteps li.act .sdot{background:var(--accent)}
+
+/* ── Risultati analisi ── */
+.dtbl{width:100%;font-size:.88rem;border-collapse:collapse}
+.dtbl td{padding:5px 0;vertical-align:top}
+.dtbl td:first-child{color:var(--muted);width:44%;padding-right:.4rem}
+.dtbl td:last-child{font-weight:500}
+.frow{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem}
+.fbox{background:var(--warm);border-radius:var(--r-sm);padding:.7rem;text-align:center}
+.flabel{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted)}
+.fval{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:800;margin:2px 0}
+.fprice{font-size:.7rem;color:var(--muted)}
+.crow{display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--warm);font-size:.88rem}
+.crow:last-child{border:none;font-weight:700;font-size:.95rem;padding-top:.7rem}
+.cval{font-family:'Syne',sans-serif;font-weight:600}
+.ai-box{background:linear-gradient(135deg,#fff7f0,#fff);border:1px solid #fddcc9;border-radius:var(--r);padding:1.15rem;margin-top:.9rem}
+.ai-box h4{font-family:'Syne',sans-serif;font-weight:700;margin-bottom:.45rem;color:var(--accent);font-size:.88rem}
+.ai-list{list-style:none}
+.ai-list li{padding:3px 0;font-size:.85rem;display:flex;gap:.45rem}
+.ai-list li::before{content:'→';color:var(--accent);flex-shrink:0}
+.bifuel-box{background:linear-gradient(135deg,#fff7ed,#fff);border:1.5px solid #fed7aa;border-radius:var(--r);padding:1rem 1.2rem;margin-top:.75rem}
+.bifuel-box h4{font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;color:#c2410c;margin-bottom:.4rem}
+
+/* ── Offerte ranking ── */
+.off-row{background:var(--card);border-radius:var(--r);border:1.5px solid var(--border);padding:1rem 1.3rem;display:flex;align-items:center;gap:1.15rem;transition:all var(--t);margin-bottom:.6rem;position:relative;overflow:hidden}
+.off-row:hover{border-color:var(--blue);box-shadow:var(--shadow);transform:translateX(3px)}
+.off-row.best{border-color:var(--green);background:linear-gradient(135deg,#f0fdf4,#fff)}
+.best-lbl{position:absolute;top:0;right:0;background:var(--green);color:#fff;font-size:.63rem;font-weight:700;padding:4px 11px;border-radius:0 var(--r) 0 8px;letter-spacing:.4px}
+.bf-lbl{position:absolute;bottom:0;right:0;background:#fed7aa;color:#c2410c;font-size:.6rem;font-weight:700;padding:3px 9px;border-radius:8px 0 var(--r) 0}
+.rank{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:var(--border);min-width:2rem;text-align:center}
+.off-row.best .rank{color:var(--green)}
+.oi{flex:1;min-width:0}
+.on{font-family:'Syne',sans-serif;font-weight:700;font-size:.92rem}
+.of{color:var(--muted);font-size:.8rem}
+.onote{font-size:.75rem;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:290px}
+.otags{margin-top:5px;display:flex;gap:3px;flex-wrap:wrap}
+.onum{text-align:right;flex-shrink:0}
+.ocosto{font-family:'Syne',sans-serif;font-size:1.35rem;font-weight:800;letter-spacing:-.5px}
+.oann{font-size:.73rem;color:var(--muted)}
+.risp{font-size:.8rem;font-weight:600;padding:2px 8px;border-radius:6px;display:inline-block;margin-top:3px}
+.risp.pos{background:#dcfce7;color:var(--green)}.risp.neg{background:#fee2e2;color:var(--red)}
+
+/* ── Tabella storico ── */
+.tbl{width:100%;border-collapse:collapse;font-size:.86rem}
+.tbl th{background:var(--warm);padding:9px 11px;text-align:left;font-family:'Syne',sans-serif;font-size:.69rem;font-weight:700;letter-spacing:.5px;color:var(--muted);text-transform:uppercase;white-space:nowrap}
+.tbl td{padding:10px 11px;border-bottom:1px solid var(--warm);vertical-align:middle}
+.tbl tr:last-child td{border:none}.tbl tr:hover td{background:#fafaf8}
+.acts{display:flex;gap:.3rem;flex-wrap:wrap}
+
+/* ── Form ── */
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.9rem;margin-bottom:.9rem}
+.field{display:flex;flex-direction:column;gap:.3rem}
+.field label{font-size:.75rem;font-weight:600;color:var(--muted)}
+.field input,.field select,.field textarea{background:var(--warm);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:8px 11px;font-size:.88rem;color:var(--ink);transition:border-color var(--t);outline:none;width:100%}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue)}
+.field .hint{font-size:.7rem;color:var(--muted)}
+
+/* ── Indici PUN/PSV ── */
+.indice-card{background:var(--card);border-radius:var(--r);border:1.5px solid var(--border);padding:1rem 1.3rem;margin-bottom:.5rem;display:flex;align-items:center;gap:1rem}
+.ic-tipo{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;min-width:3.5rem}
+.ic-periodo{color:var(--muted);font-size:.82rem}
+.ic-val{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;margin-left:auto}
+.ic-fonte{font-size:.7rem;color:var(--muted);margin-left:.75rem}
+
+/* ── Chart ── */
+.chart-wrap{position:relative;height:210px}
+
+/* ── Overlay / Modal ── */
+.overlay{position:fixed;inset:0;background:rgba(13,17,23,.5);z-index:500;display:none;place-items:center;padding:1rem;backdrop-filter:blur(3px)}
+.overlay.open{display:grid}
+.modal{background:var(--card);border-radius:var(--r);padding:1.75rem;max-width:640px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:fi .2s ease}
+.mhdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.4rem}
+.mtitle{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem}
+.mclose{background:none;border:none;font-size:1.4rem;color:var(--muted);cursor:pointer;line-height:1}
+.mclose:hover{color:var(--ink)}
+.mfoot{display:flex;gap:.7rem;justify-content:flex-end;margin-top:1.4rem;padding-top:1.4rem;border-top:1px solid var(--border)}
+
+/* ── Misc ── */
+.gap{margin-top:1.4rem}.fbetween{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.7rem;margin-bottom:.9rem}
+.empty{text-align:center;padding:2.5rem 1rem;color:var(--muted)}
+.empty .ei{font-size:2.2rem;margin-bottom:.65rem;display:block;opacity:.4}
+</style>
+</head>
+<body>
+
+<div class="mob-hdr">
+  <div style="font-family:'Syne',sans-serif;font-weight:800;color:#fff;font-size:1.15rem">Bolletta<span style="color:var(--accent)">AI</span></div>
+  <button class="burger" onclick="document.getElementById('sb').classList.toggle('open')">☰</button>
+</div>
+
+<div class="sidebar" id="sb">
+  <div class="sb-logo">
+    <div class="logo-t">Bolletta<span>AI</span></div>
+    <div class="logo-sub">Comparatore v3.0</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="nav-sec">Analisi</div>
+    <button class="nav-btn active" onclick="goTo('dashboard')" id="nav-dashboard"><span class="ic">📊</span>Dashboard</button>
+    <button class="nav-btn" onclick="goTo('luce')" id="nav-luce"><span class="ic">⚡</span>Analizza Luce</button>
+    <button class="nav-btn" onclick="goTo('gas')" id="nav-gas"><span class="ic">🔥</span>Analizza Gas</button>
+    <div class="nav-sec">Gestione</div>
+    <button class="nav-btn" onclick="goTo('storico')" id="nav-storico"><span class="ic">📋</span>Storico</button>
+    <button class="nav-btn" onclick="goTo('offerte')" id="nav-offerte"><span class="ic">🏷️</span>Offerte</button>
+    <button class="nav-btn" onclick="goTo('indici')" id="nav-indici"><span class="ic">📈</span>PUN / PSV</button>
+    <div class="nav-sec">Export</div>
+    <button class="nav-btn" onclick="exportCSV()"><span class="ic">📥</span>Esporta CSV</button>
+  </nav>
+  <div class="sb-footer"><span class="h-dot" id="hdot"></span><span id="htext">Connessione...</span></div>
+</div>
+
+<div style="display:flex">
+<div class="content" id="content">
+
+<!-- ══ DASHBOARD ══ -->
+<div class="page active" id="page-dashboard">
+  <h1 class="pt">Dashboard <em>Consumi</em></h1>
+  <p class="psub">Panoramica spese, risparmi identificati e andamento PUN/PSV</p>
+  <div class="g4" id="dash-kpi">
+    <div class="kpi"><div class="kl">Bollette Luce</div><div class="kv" id="dk-nl">—</div></div>
+    <div class="kpi"><div class="kl">Bollette Gas</div><div class="kv" id="dk-ng">—</div></div>
+    <div class="kpi"><div class="kl">Risparmio Identificato</div><div class="kv" style="color:var(--green)" id="dk-risp">—</div><div class="ks">annuo stimato</div></div>
+    <div class="kpi"><div class="kl">PUN Ultimo Mese</div><div class="kv" id="dk-pun">—</div><div class="ks">€/kWh</div></div>
+  </div>
+  <div class="g2 gap">
+    <div class="card"><div class="ctitle">⚡ Spese Luce</div><div class="chart-wrap"><canvas id="ch-luce"></canvas></div></div>
+    <div class="card"><div class="ctitle">🔥 Spese Gas</div><div class="chart-wrap"><canvas id="ch-gas"></canvas></div></div>
+  </div>
+  <div class="gap card">
+    <div class="ctitle">👤 Bollette per Profilo Utenza</div>
+    <div id="dash-profili"></div>
+  </div>
+</div>
+
+<!-- ══ UPLOAD LUCE ══ -->
+<div class="page" id="page-luce">
+  <h1 class="pt">Analizza Bolletta <em>Luce</em></h1>
+  <p class="psub">Seleziona prima il profilo utenza, poi carica il PDF</p>
+  <div id="al-luce"></div>
+
+  <div style="margin-bottom:1.2rem">
+    <div style="font-size:.78rem;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:.5rem">Profilo Utenza</div>
+    <div class="profilo-row" id="profilo-luce">
+      <button class="profilo-btn active" data-v="D2" onclick="setProfilo('luce','D2',this)">Domestico Residente<small>Tariffa D2 · IVA 10%</small></button>
+      <button class="profilo-btn" data-v="D3" onclick="setProfilo('luce','D3',this)">Domestico Non Residente<small>Tariffa D3 · IVA 10%</small></button>
+      <button class="profilo-btn" data-v="BTA" onclick="setProfilo('luce','BTA',this)">PMI / Non Domestico<small>Tariffa BTA · IVA 22%</small></button>
+      <button class="profilo-btn" data-v="CDO" onclick="setProfilo('luce','CDO',this)">Condominio<small>Uso comune · IVA 10%</small></button>
+    </div>
+  </div>
+
+  <div class="uzone" id="uz-luce" onclick="document.getElementById('fi-luce').click()"
+       ondragover="event.preventDefault();this.classList.add('drag-over')"
+       ondragleave="this.classList.remove('drag-over')"
+       ondrop="handleDrop(event,'luce')">
+    <span class="u-icon">📄</span>
+    <h3>Trascina la bolletta elettrica (PDF)</h3>
+    <p>Enel · A2A · Eni · Acea · Hera · Edison · Sorgenia · Iberdrola · Illumia...</p>
+    <div style="display:flex;gap:.7rem;justify-content:center;margin-top:1.1rem;flex-wrap:wrap">
+      <button class="btn b-primary" onclick="event.stopPropagation();document.getElementById('fi-luce').click()">Seleziona PDF</button>
+    </div>
+    <input type="file" id="fi-luce" accept=".pdf" onchange="handleSel(event,'luce')" style="display:none">
+  </div>
+
+  <div class="lcard" id="lc-luce">
+    <div class="spin"></div>
+    <p style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.05rem">Gemini AI analizza la bolletta...</p>
+    <ul class="lsteps" id="ls-luce">
+      <li id="ll1"><span class="sdot"></span>Caricamento PDF</li>
+      <li id="ll2"><span class="sdot"></span>Riconoscimento fornitore e POD</li>
+      <li id="ll3"><span class="sdot"></span>Estrazione consumi F1/F2/F3/F23</li>
+      <li id="ll4"><span class="sdot"></span>Analisi dettaglio costi e accise</li>
+      <li id="ll5"><span class="sdot"></span>Insight AI e anomalie</li>
+      <li id="ll6"><span class="sdot"></span>Salvataggio database</li>
+    </ul>
+  </div>
+  <div id="res-luce" style="display:none;margin-top:1.75rem"></div>
+</div>
+
+<!-- ══ UPLOAD GAS ══ -->
+<div class="page" id="page-gas">
+  <h1 class="pt">Analizza Bolletta <em>Gas</em></h1>
+  <p class="psub">Seleziona prima il profilo utenza, poi carica il PDF</p>
+  <div id="al-gas"></div>
+
+  <div style="margin-bottom:1.2rem">
+    <div style="font-size:.78rem;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:.5rem">Profilo Utenza</div>
+    <div class="profilo-row" id="profilo-gas">
+      <button class="profilo-btn active" data-v="D2" onclick="setProfilo('gas','D2',this)">Domestico Residente<small>CACR · IVA 10%</small></button>
+      <button class="profilo-btn" data-v="D3" onclick="setProfilo('gas','D3',this)">Domestico Non Residente<small>CACR · IVA 10%</small></button>
+      <button class="profilo-btn" data-v="BTA" onclick="setProfilo('gas','BTA',this)">PMI / Non Domestico<small>IVA 22% · accise industria</small></button>
+    </div>
+  </div>
+
+  <div class="uzone" id="uz-gas" onclick="document.getElementById('fi-gas').click()"
+       ondragover="event.preventDefault();this.classList.add('drag-over')"
+       ondragleave="this.classList.remove('drag-over')"
+       ondrop="handleDrop(event,'gas')">
+    <span class="u-icon">🔥</span>
+    <h3>Trascina la bolletta gas (PDF)</h3>
+    <p>Analisi Smc, PSV, accise e comparazione offerte mercato libero</p>
+    <div style="display:flex;gap:.7rem;justify-content:center;margin-top:1.1rem;flex-wrap:wrap">
+      <button class="btn b-blue" onclick="event.stopPropagation();document.getElementById('fi-gas').click()">Seleziona PDF</button>
+    </div>
+    <input type="file" id="fi-gas" accept=".pdf" onchange="handleSel(event,'gas')" style="display:none">
+  </div>
+
+  <div class="lcard" id="lc-gas">
+    <div class="spin" style="border-top-color:var(--blue)"></div>
+    <p style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.05rem">Analisi bolletta gas in corso...</p>
+    <ul class="lsteps" id="ls-gas">
+      <li id="lg1"><span class="sdot"></span>Caricamento PDF</li>
+      <li id="lg2"><span class="sdot"></span>Riconoscimento fornitore e PDR</li>
+      <li id="lg3"><span class="sdot"></span>Estrazione consumi Smc e conversioni</li>
+      <li id="lg4"><span class="sdot"></span>Analisi costi, accise e addizionali</li>
+      <li id="lg5"><span class="sdot"></span>Insight AI</li>
+      <li id="lg6"><span class="sdot"></span>Salvataggio database</li>
+    </ul>
+  </div>
+  <div id="res-gas" style="display:none;margin-top:1.75rem"></div>
+</div>
+
+<!-- ══ STORICO ══ -->
+<div class="page" id="page-storico">
+  <div class="fbetween">
+    <div><h1 class="pt">Storico <em>Bollette</em></h1><p class="psub">Tutte le bollette analizzate</p></div>
+    <button class="btn b-ghost b-sm" onclick="exportCSV()">📥 CSV</button>
+  </div>
+  <div class="tabs">
+    <button class="tb active" onclick="switchStorico('luce',this)">⚡ Luce</button>
+    <button class="tb" onclick="switchStorico('gas',this)">🔥 Gas</button>
+    <button class="tb" onclick="switchStorico(null,this)">📋 Tutti</button>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden"><div id="storico-body"><div class="empty"><span class="ei">⏳</span><p>Caricamento...</p></div></div></div>
+</div>
+
+<!-- ══ OFFERTE ══ -->
+<div class="page" id="page-offerte">
+  <div class="fbetween">
+    <div><h1 class="pt">Offerte <em>Mercato</em></h1><p class="psub">Database offerte — aggiungibile da PDF, URL o manualmente</p></div>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+      <button class="btn b-ghost b-sm" onclick="openAddFromPDF()">📄 Da PDF</button>
+      <button class="btn b-ghost b-sm" onclick="openAddFromURL()">🔗 Da URL</button>
+      <button class="btn b-primary b-sm" onclick="openAddManuale()">+ Manuale</button>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tb active" onclick="switchOfferte('luce',this)">⚡ Luce</button>
+    <button class="tb" onclick="switchOfferte('gas',this)">🔥 Gas</button>
+  </div>
+  <div id="offerte-body"><div class="empty"><span class="ei">⏳</span><p>Caricamento...</p></div></div>
+</div>
+
+<!-- ══ INDICI PUN/PSV ══ -->
+<div class="page" id="page-indici">
+  <div class="fbetween">
+    <div><h1 class="pt">Indici <em>PUN / PSV</em></h1><p class="psub">Prezzi di mercato usati nel calcolo delle offerte variabili</p></div>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+      <button class="btn b-green b-sm" onclick="aggiornaIndici()" id="btn-aggiorna">🔄 Aggiorna da Portale ARERA</button>
+      <button class="btn b-ghost b-sm" onclick="openIndiceManuale()">+ Inserisci</button>
+    </div>
+  </div>
+  <div class="alert a-info" style="margin-bottom:1.2rem">
+    I valori PUN e PSV vengono usati automaticamente per calcolare le offerte a prezzo <strong>VARIABILE</strong>.
+    La fonte ufficiale è il Portale Offerte ARERA (<a href="https://www.ilportaleofferte.it/portaleOfferte/it/open-data.page" target="_blank">ilportaleofferte.it</a>).
+    Registrazione GME non necessaria.
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ctitle">⚡ PUN Index GME (€/kWh)</div>
+      <div id="pun-list"><div class="empty"><span class="ei">📈</span><p>Nessun dato</p></div></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">🔥 PSV Gas (€/Smc)</div>
+      <div id="psv-list"><div class="empty"><span class="ei">📈</span><p>Nessun dato</p></div></div>
+    </div>
+  </div>
+</div>
+
+</div></div>
+
+<!-- Modal offerta -->
+<div class="overlay" id="ov-offerta" onclick="if(event.target===this)closeModal('ov-offerta')">
+  <div class="modal">
+    <div class="mhdr"><div class="mtitle" id="modal-title">Nuova Offerta</div><button class="mclose" onclick="closeModal('ov-offerta')">×</button></div>
+    <div id="modal-body"></div>
+    <div class="mfoot">
+      <button class="btn b-ghost" onclick="closeModal('ov-offerta')">Annulla</button>
+      <button class="btn b-primary" id="modal-save-btn">Salva</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal indice manuale -->
+<div class="overlay" id="ov-indice" onclick="if(event.target===this)closeModal('ov-indice')">
+  <div class="modal" style="max-width:400px">
+    <div class="mhdr"><div class="mtitle">Inserisci Indice Manuale</div><button class="mclose" onclick="closeModal('ov-indice')">×</button></div>
+    <div class="fgrid" style="grid-template-columns:1fr 1fr 1fr">
+      <div class="field"><label>Tipo</label><select id="im-tipo"><option>PUN</option><option>PSV</option></select></div>
+      <div class="field"><label>Periodo (YYYY-MM)</label><input id="im-periodo" placeholder="2026-02"></div>
+      <div class="field"><label>Valore (€/kWh o €/Smc)</label><input id="im-valore" type="number" step="0.0001" placeholder="0.1327"></div>
+    </div>
+    <div class="mfoot">
+      <button class="btn b-ghost" onclick="closeModal('ov-indice')">Annulla</button>
+      <button class="btn b-primary" onclick="salvaIndiceManuale()">Salva</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:8000';
+let bid = {luce: null, gas: null};
+let profilo = {luce: 'D2', gas: 'D2'};
+let storicoTipo = 'luce', offerteTipo = 'luce';
+let ch = {luce: null, gas: null};
+let modalTipo = 'luce', modalMode = 'manual';
+
+/* ── Nav ── */
+function goTo(pg){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+pg)?.classList.add('active');
+  document.getElementById('nav-'+pg)?.classList.add('active');
+  document.getElementById('sb').classList.remove('open');
+  if(pg==='dashboard') loadDashboard();
+  if(pg==='storico')   loadStorico(storicoTipo);
+  if(pg==='offerte')   loadOfferte(offerteTipo);
+  if(pg==='indici')    loadIndici();
+}
+
+/* ── Profilo ── */
+function setProfilo(tipo, val, btn){
+  profilo[tipo] = val;
+  document.querySelectorAll(`#profilo-${tipo} .profilo-btn`).forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+/* ── Upload ── */
+function handleDrop(e, tipo){ e.preventDefault(); document.getElementById('uz-'+tipo).classList.remove('drag-over'); const f=e.dataTransfer.files[0]; if(f?.type==='application/pdf') upload(f,tipo); else alert('Solo PDF'); }
+function handleSel(e, tipo){ const f=e.target.files[0]; if(f) upload(f,tipo); e.target.value=''; }
+
+async function upload(file, tipo){
+  const steps = tipo==='luce' ? ['ll1','ll2','ll3','ll4','ll5','ll6'] : ['lg1','lg2','lg3','lg4','lg5','lg6'];
+  showUI(tipo,'loading'); clearAlert(tipo);
+  let si=0; setSt(steps[0],'act');
+  const iv = setInterval(()=>{ if(si<steps.length-1){setSt(steps[si],'done');si++;setSt(steps[si],'act');} },1500);
+  try {
+    const form = new FormData(); form.append('file',file);
+    const res = await fetch(`${API}/api/analizza/${tipo}?profilo=${profilo[tipo]}`,{method:'POST',body:form});
+    clearInterval(iv); steps.forEach(s=>setSt(s,'done'));
+    if(!res.ok){ const e=await res.json().catch(()=>({})); throw new Error(e.detail||'Errore server'); }
+    const data = await res.json();
+    bid[tipo] = data.bolletta_id;
+    await sleep(350); showUI(tipo,'results'); renderRisultati(data, tipo);
+  } catch(e){
+    clearInterval(iv); showUI(tipo,'upload'); showAlert(e.message,'err',tipo);
+  }
+}
+
+function showUI(tipo, st){
+  document.getElementById('uz-'+tipo).style.display   = st==='upload'   ? 'block':'none';
+  document.getElementById('lc-'+tipo).style.display   = st==='loading'  ? 'block':'none';
+  document.getElementById('res-'+tipo).style.display  = st==='results'  ? 'block':'none';
+}
+
+/* ── Render risultati ── */
+function renderRisultati(data, tipo){
+  const d=data.dati||{}, dg=d.dati_generali||{}, dt=d.dati_tecnici||{};
+  const lc=d.letture_e_consumi||{}, dc=d.dettaglio_costi||{};
+  const ai=d.analisi_ai||{}, pf=dg.periodo_fatturazione||{};
+  const unita=data.unita_misura||(tipo==='luce'?'kWh':'Smc');
+  const isL=tipo==='luce';
+
+  // Fasce
+  let fasceHtml='';
+  if(isL){
+    const f=lc.ripartizione_fasce||{};
+    const cols=f.F23?.consumo ? [['F1','Picco',f.F1],['F23','Fuori Picco',f.F23]] : [['F1','Picco',f.F1],['F2','Intermedio',f.F2],['F3','Fuori Picco',f.F3]];
+    fasceHtml=`<div class="card gap"><div class="ctitle">⏱ Consumi per Fascia</div><div class="frow" style="grid-template-columns:repeat(${cols.length},1fr)">
+      ${cols.map(([n,l,fv])=>`<div class="fbox"><div class="flabel">${n} · ${l}</div><div class="fval">${(fv||{}).consumo!=null?fmtN((fv||{}).consumo,0)+' kWh':'—'}</div><div class="fprice">${(fv||{}).prezzo_unitario?((fv||{}).prezzo_unitario*100).toFixed(3)+' c€/kWh':'—'}</div></div>`).join('')}
+    </div></div>`;
+  }
+
+  // Costi
+  const voci=isL ? [['⚡ Materia Energia',dc.spesa_materia_energia],['🚛 Trasporto & Contatore',dc.trasporto_gestione_contatore],['🏛 Oneri di Sistema',dc.oneri_sistema],['📜 Accise',dc.accise],['📺 Canone RAI',dc.canone_rai],['📦 Altre Partite',dc.altre_partite],['🧾 Imposte & IVA',dc.imposte_iva]] : [['🔥 Materia Gas',dc.spesa_materia_gas],['🚛 Trasporto & Distribuzione',dc.trasporto_distribuzione],['🏛 Oneri di Sistema',dc.oneri_sistema],['📜 Accise',dc.accise],['🏙 Add. Regionale',dc.addizionale_regionale],['📦 Altre Partite',dc.altre_partite],['🧾 Imposte & IVA',dc.imposte_iva]];
+  const costiH = voci.filter(([,v])=>v!=null).map(([l,v])=>`<div class="crow"><span>${l}</span><span class="cval">${fmtEur(v)}</span></div>`).join('') + `<div class="crow"><span><strong>TOTALE FATTURA</strong></span><span class="cval">${fmtEur(dg.totale_fattura)}</span></div>`;
+
+  // Dati tecnici
+  const tv = isL ? [['POD',dt.pod_pdr],['Potenza',dt.potenza_impegnata!=null?dt.potenza_impegnata+' kW':null],['Tipologia',dt.tipologia_uso],['Indirizzo',dt.indirizzo_fornitura]] : [['PDR',dt.pdr],['REMI',dt.remi],['Classe',dt.classe_contatore],['Tipologia',dt.tipologia_uso],['Indirizzo',dt.indirizzo_fornitura]];
+  const tecH = tv.filter(([,v])=>v).map(([l,v])=>`<tr><td>${l}</td><td>${v}</td></tr>`).join('');
+
+  const prLabel=isL?'Costo/kWh eff.':'Costo/Smc eff.';
+  const prVal=data.costo_unitario_effettivo?(data.costo_unitario_effettivo*100).toFixed(isL?2:3)+' c€':'—';
+  const consumoVal = isL ? lc.consumo_totale_periodo : lc.consumo_totale_smc;
+
+  // AI box
+  let aiH='';
+  if(ai.anomalie_rilevate?.length||ai.suggerimenti?.length){
+    aiH=`<div class="ai-box">${ai.anomalie_rilevate?.length?`<h4>⚠️ Anomalie rilevate</h4><ul class="ai-list">${ai.anomalie_rilevate.map(a=>`<li>${a}</li>`).join('')}</ul>`:''}${ai.suggerimenti?.length?`<h4 style="margin-top:.6rem">💡 Suggerimenti</h4><ul class="ai-list">${ai.suggerimenti.map(s=>`<li>${s}</li>`).join('')}</ul>`:''}</div>`;
+  }
+
+  const el = document.getElementById('res-'+tipo);
+  el.innerHTML = `
+    <div class="g4">
+      <div class="kpi"><div class="kl">Totale Fattura</div><div class="kv">${fmtEur(dg.totale_fattura)}</div><div class="ks">${pf.inizio||'—'} → ${pf.fine||'—'}</div></div>
+      <div class="kpi"><div class="kl">Consumo</div><div class="kv">${fmtU(consumoVal,unita)}</div><div class="ks"><span class="tag ${lc.lettura_stimata_o_reale?.toLowerCase().includes('reale')?'t-real':'t-stim'}">${lc.lettura_stimata_o_reale||'—'}</span></div></div>
+      <div class="kpi"><div class="kl">${prLabel}</div><div class="kv">${prVal}</div><div class="ks">solo energia</div></div>
+      <div class="kpi"><div class="kl">Profilo / Fornitore</div><div class="kv" style="font-size:1rem">${dg.fornitore||'—'}</div><div class="ks"><span class="tag t-${data.profilo_utenza?.toLowerCase()}">${data.profilo_label||data.profilo_utenza}</span> <span class="tag ${dg.mercato==='Libero'?'t-lib':'t-tut'}">${dg.mercato||'—'}</span></div></div>
+    </div>
+    <div class="g2 gap">
+      <div class="card"><div class="ctitle">🔌 Dati Tecnici</div><table class="dtbl"><tbody>${tecH}</tbody></table></div>
+      <div class="card"><div class="ctitle">💶 Dettaglio Costi</div>${costiH}</div>
+    </div>
+    ${fasceHtml}
+    ${aiH}
+    <div class="bifuel-box gap" id="bifuel-${tipo}">
+      <h4>🔗 Offerta BiFuel (Luce + Gas)</h4>
+      <p style="font-size:.84rem;color:var(--muted);margin-bottom:.6rem">Hai bollette di entrambe le tipologie? Seleziona l'altra bolletta per attivare lo sconto BiFuel nelle offerte che lo prevedono.</p>
+      <select id="bifuel-sel-${tipo}" style="background:var(--warm);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:7px 11px;font-size:.85rem;width:100%;margin-bottom:.7rem">
+        <option value="">-- Nessuna (non applicare sconto BiFuel) --</option>
+      </select>
+    </div>
+    <button class="btn b-blue" style="width:100%;padding:13px;font-size:.95rem;justify-content:center;margin-top:1rem" onclick="comparaOfferte('${tipo}')">
+      🏆 Confronta con le migliori offerte →
+    </button>
+    <div id="compara-res-${tipo}" style="margin-top:1.4rem"></div>
+  `;
+
+  // Popola select bifuel
+  _loadBifuelOptions(tipo);
+}
+
+async function _loadBifuelOptions(tipo){
+  const altroTipo = tipo==='luce'?'gas':'luce';
+  try{
+    const rows = await fetch(`${API}/api/bollette?tipo=${altroTipo}&limit=20`).then(r=>r.json());
+    const sel = document.getElementById(`bifuel-sel-${tipo}`);
+    if(!sel) return;
+    rows.forEach(b=>{
+      const opt=document.createElement('option');
+      opt.value=b.id;
+      opt.textContent=`${b.fornitore||'?'} · ${b.periodo_inizio||'?'} → ${b.periodo_fine||'?'} · ${fmtEur(b.totale_fattura)}`;
+      sel.appendChild(opt);
+    });
+  } catch{}
+}
+
+/* ── Comparazione ── */
+async function comparaOfferte(tipo){
+  const id=bid[tipo]; if(!id) return;
+  const btn=document.querySelector(`[onclick="comparaOfferte('${tipo}')"]`);
+  if(btn){btn.disabled=true;btn.textContent='⏳ Analisi in corso...';}
+  const bifuelId=document.getElementById(`bifuel-sel-${tipo}`)?.value||null;
+  try{
+    const res=await fetch(`${API}/api/compara/${id}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(bifuelId?{bifuel_bolletta_id:bifuelId}:{})});
+    if(!res.ok) throw new Error('Errore comparazione');
+    renderCompara(await res.json(), tipo);
+  } catch(e){ showAlert(e.message,'err',tipo); }
+  finally{ if(btn){btn.disabled=false;btn.innerHTML='🏆 Confronta con le migliori offerte →';} }
+}
+
+function renderCompara(data, tipo){
+  const offerte=data.offerte||[];
+  const best=offerte[0]; const unita=data.unita_misura||'kWh';
+  const info=`<div class="alert a-info">Consumo: <strong>${fmtU(data.consumo_totale,unita)}</strong> · Spesa annua attuale stimata: <strong>${fmtEur(data.costo_attuale_annuo_stimato)}</strong> · IVA applicata: <strong>${data.iva_applicata_perc}%</strong> · Profilo: <strong>${data.profilo_label}</strong>${data.bifuel_attivo?' · <span class="tag t-bf">✓ BiFuel attivo</span>':''}${best?.risparmio_annuo_vs_attuale>0?` · Con l'offerta migliore <strong style="color:var(--green)">${fmtEur(best.risparmio_annuo_vs_attuale)}/anno</strong> in meno`:''}</div>`;
+
+  const html=offerte.map((o,i)=>`
+    <div class="off-row ${i===0?'best':''}">
+      ${i===0?'<div class="best-lbl">MIGLIORE</div>':''}
+      ${o.bifuel_applicato&&o.sconto_bifuel_perc?`<div class="bf-lbl">BiFuel -${o.sconto_bifuel_perc}%</div>`:''}
+      <div class="rank">${i+1}</div>
+      <div class="oi">
+        <div class="on">${o.nome_offerta}</div>
+        <div class="of">${o.fornitore}</div>
+        ${o.note?`<div class="onote" title="${o.note}">${o.note}</div>`:''}
+        <div class="otags">
+          <span class="tag ${o.tipo==='FISSO'?'t-fix':'t-var'}">${o.tipo}</span>
+          ${o.spread_pun?`<span class="tag t-var">PUN+${(o.spread_pun*100).toFixed(1)}c€</span>`:''}
+          ${o.spread_psv?`<span class="tag t-var">PSV+${(o.spread_psv*100).toFixed(1)}c€</span>`:''}
+          <span class="tag t-lib">${o.mercato}</span>
+          ${o.valida_fino?`<span style="font-size:.7rem;color:var(--muted)">fino ${o.valida_fino}</span>`:''}
+        </div>
+      </div>
+      <div class="onum">
+        <div class="ocosto">${fmtEur(o.costo_stimato_periodo)}</div>
+        <div class="oann">${fmtEur(o.costo_stimato_annuo)}/anno</div>
+        <div class="risp ${o.risparmio_annuo_vs_attuale>=0?'pos':'neg'}">${o.risparmio_annuo_vs_attuale>=0?'↓':'↑'} ${fmtEur(Math.abs(o.risparmio_annuo_vs_attuale))}/anno</div>
+      </div>
+      ${o.url_offerta?`<a href="${o.url_offerta}" target="_blank" class="btn b-ghost b-sm" onclick="event.stopPropagation()">Vai →</a>`:''}
+    </div>
+  `).join('');
+
+  const el=document.getElementById(`compara-res-${tipo}`);
+  if(el){ el.innerHTML=`<h2 style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:.9rem">🏆 Offerte compatibili con profilo ${data.profilo_label}</h2>${info}${html}`; el.scrollIntoView({behavior:'smooth',block:'start'}); }
+}
+
+/* ── Dashboard ── */
+async function loadDashboard(){
+  try{
+    const stats=await fetch(`${API}/api/statistiche`).then(r=>r.json());
+    document.getElementById('dk-nl').textContent=stats.luce?.n??'0';
+    document.getElementById('dk-ng').textContent=stats.gas?.n??'0';
+    document.getElementById('dk-risp').textContent=fmtEur(stats.risparmio_totale_identificato||0);
+    document.getElementById('dk-pun').textContent=stats.pun_ultimi_mesi?.[0]?.valore?.toFixed(4)||'—';
+    buildChart('ch-luce',stats.trend_mensile?.filter(r=>r.tipo_utenza==='luce'),'#e85d1a','luce');
+    buildChart('ch-gas', stats.trend_mensile?.filter(r=>r.tipo_utenza==='gas'), '#1d4ed8','gas');
+    const pp=stats.per_profilo||[];
+    const PLAB={D2:'Dom. Residente',D3:'Dom. Non Res.',BTA:'PMI/BTA',CDO:'Condominio'};
+    document.getElementById('dash-profili').innerHTML=pp.length?`<div style="display:flex;gap:.6rem;flex-wrap:wrap">${pp.map(r=>`<div style="background:var(--warm);border-radius:var(--r-sm);padding:.6rem 1rem;font-size:.85rem"><strong>${PLAB[r.profilo_utenza]||r.profilo_utenza}</strong> <span class="tag ${r.tipo_utenza==='luce'?'t-luce':'t-gas'}">${r.tipo_utenza}</span><br><span style="font-family:'Syne',sans-serif;font-weight:700">${r.n}</span> bollette · media ${fmtEur(r.avg_f)}</div>`).join('')}</div>`:'<div class="empty"><span class="ei">👤</span><p>Nessuna bolletta ancora</p></div>';
+  }catch(e){console.warn(e)}
+}
+
+function buildChart(id, data, color, tipo){
+  const cv=document.getElementById(id); if(!cv) return;
+  const ctx=cv.getContext('2d');
+  if(ch[tipo]) ch[tipo].destroy();
+  if(!data?.length){ ctx.fillStyle='#aaa';ctx.font='13px DM Sans';ctx.textAlign='center';ctx.fillText('Nessun dato',cv.width/2,cv.height/2); return; }
+  const s=[...data].sort((a,b)=>a.mese?.localeCompare(b.mese));
+  ch[tipo]=new Chart(ctx,{type:'line',data:{labels:s.map(r=>r.mese),datasets:[{data:s.map(r=>r.tot??0),borderColor:color,backgroundColor:color+'18',borderWidth:2,fill:true,tension:.4,pointRadius:4,pointBackgroundColor:color}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+fmtEur(c.raw)}}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'#f0ece3'},ticks:{font:{size:10},callback:v=>fmtEur(v)}}}}});
+}
+
+/* ── Storico ── */
+async function loadStorico(tipo){
+  storicoTipo=tipo;
+  const el=document.getElementById('storico-body');
+  el.innerHTML='<div class="empty"><span class="ei">⏳</span><p>Caricamento...</p></div>';
+  try{
+    const url=tipo?`${API}/api/bollette?tipo=${tipo}`:`${API}/api/bollette`;
+    const rows=await fetch(url).then(r=>r.json());
+    if(!rows.length){el.innerHTML='<div class="empty" style="padding:3rem"><span class="ei">📋</span><p>Nessuna bolletta. Carica la prima da "Analizza".</p></div>';return;}
+    const PLAB={D2:'D2',D3:'D3',BTA:'BTA',CDO:'CDO'};
+    el.innerHTML=`<table class="tbl"><thead><tr><th>Tipo</th><th>Profilo</th><th>Fornitore</th><th>Periodo</th><th>Totale</th><th>Consumo</th><th>€/un.</th><th></th></tr></thead><tbody>${rows.map(b=>`<tr><td><span class="tag ${b.tipo_utenza==='luce'?'t-luce':'t-gas'}">${b.tipo_utenza==='luce'?'⚡':'🔥'} ${b.tipo_utenza}</span></td><td><span class="tag t-${(b.profilo_utenza||'d2').toLowerCase()}">${PLAB[b.profilo_utenza]||b.profilo_utenza}</span></td><td><strong>${b.fornitore||'—'}</strong></td><td style="font-size:.78rem;color:var(--muted)">${b.periodo_inizio||'—'}<br>${b.periodo_fine||''}</td><td><strong>${fmtEur(b.totale_fattura)}</strong></td><td>${fmtU(b.consumo_totale,b.unita_misura||'kWh')}</td><td>${b.costo_unitario_eff?(b.costo_unitario_eff*100).toFixed(2)+' c€':'—'}</td><td><div class="acts"><button class="btn b-sm b-blue" onclick="comparaDaStorico('${b.id}','${b.tipo_utenza}')">⚡</button><button class="btn b-sm b-danger" onclick="eliminaBolletta('${b.id}')">🗑</button></div></td></tr>`).join('')}</tbody></table>`;
+  }catch{el.innerHTML='<div class="alert a-err" style="margin:1rem">Impossibile caricare. Server attivo?</div>';}
+}
+function switchStorico(tipo,btn){document.querySelectorAll('#page-storico .tb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');loadStorico(tipo);}
+async function eliminaBolletta(id){if(!confirm('Eliminare?'))return;await fetch(`${API}/api/bollette/${id}`,{method:'DELETE'});loadStorico(storicoTipo);}
+async function comparaDaStorico(id,tipo){
+  bid[tipo]=id; profilo[tipo]=null; goTo(tipo); showUI(tipo,'loading');
+  await sleep(200);
+  try{
+    const data=await fetch(`${API}/api/bollette/${id}`).then(r=>r.json());
+    const w={bolletta_id:id,tipo_utenza:tipo,profilo_utenza:data.profilo_utenza,profilo_label:({D2:'Domestico Residente',D3:'Domestico Non Residente',BTA:'PMI/BTA',CDO:'Condominio'}[data.profilo_utenza]),dati:data.dati||JSON.parse(data.dati_json||'{}'),costo_unitario_effettivo:data.costo_unitario_eff,unita_misura:data.unita_misura||(tipo==='luce'?'kWh':'Smc')};
+    showUI(tipo,'results'); renderRisultati(w,tipo); await comparaOfferte(tipo);
+  }catch(e){showUI(tipo,'upload');showAlert(e.message,'err',tipo);}
+}
+
+/* ── Offerte ── */
+async function loadOfferte(tipo){
+  offerteTipo=tipo; const el=document.getElementById('offerte-body');
+  el.innerHTML='<div class="empty"><span class="ei">⏳</span><p>Caricamento...</p></div>';
+  try{
+    const rows=await fetch(`${API}/api/offerte/${tipo}`).then(r=>r.json());
+    if(!rows.length){el.innerHTML='<div class="empty"><span class="ei">🏷️</span><p>Nessuna offerta</p></div>';return;}
+    const isL=tipo==='luce';
+    el.innerHTML=`<div style="color:var(--muted);font-size:.82rem;margin-bottom:.75rem">${rows.length} offerte attive</div><table class="tbl"><thead><tr><th>Fornitore</th><th>Offerta</th><th>Tipo</th><th>Profili</th>${isL?'<th>F1 c€</th><th>F2 c€</th><th>F3 c€</th><th>F23 c€</th>':'<th>€/Smc</th>'}<th>BiFuel%</th><th>QF/anno</th><th>Valida</th><th></th></tr></thead><tbody>${rows.map(o=>`<tr><td><strong>${o.fornitore}</strong></td><td><div>${o.nome_offerta}</div>${o.note?`<div style="font-size:.72rem;color:var(--muted)">${o.note}</div>`:''}</td><td><span class="tag ${o.tipo==='FISSO'?'t-fix':'t-var'}">${o.tipo}</span></td><td style="font-size:.75rem">${o.profili_compatibili||'—'}</td>${isL?`<td>${o.prezzo_f1!=null?(o.prezzo_f1*100).toFixed(3):'—'}</td><td>${o.prezzo_f2!=null?(o.prezzo_f2*100).toFixed(3):'—'}</td><td>${o.prezzo_f3!=null?(o.prezzo_f3*100).toFixed(3):'—'}</td><td>${o.prezzo_f23!=null?(o.prezzo_f23*100).toFixed(3):'—'}</td>`:`<td>${o.prezzo_smc!=null?fmtEur(o.prezzo_smc):'—'}</td>`}<td>${o.sconto_bifuel_perc?`<span class="tag t-bf">${o.sconto_bifuel_perc}%</span>`:'—'}</td><td>${fmtEur(o.quota_fissa_annua)}</td><td style="font-size:.75rem;color:var(--muted)">${o.valida_fino||'—'}</td><td><div class="acts">${o.url_offerta?`<a href="${o.url_offerta}" target="_blank" class="btn b-sm b-ghost">🔗</a>`:''}<button class="btn b-sm b-danger" onclick="delOfferta('${o.id}','${tipo}')">🗑</button></div></td></tr>`).join('')}</tbody></table>`;
+  }catch{el.innerHTML='<div class="alert a-err">Errore caricamento offerte</div>';}
+}
+function switchOfferte(tipo,btn){document.querySelectorAll('#page-offerte .tb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');loadOfferte(tipo);}
+async function delOfferta(id,tipo){if(!confirm('Disattivare?'))return;await fetch(`${API}/api/offerte/${tipo}/${id}`,{method:'DELETE'});loadOfferte(tipo);}
+
+/* ── Aggiungi offerta da PDF ── */
+function openAddFromPDF(){
+  modalMode='pdf'; modalTipo=offerteTipo;
+  document.getElementById('modal-title').textContent='Aggiungi Offerta da PDF';
+  document.getElementById('modal-body').innerHTML=`
+    <div class="alert a-info">Carica il PDF del documento dell'offerta commerciale. L'AI estrarrà automaticamente i prezzi.</div>
+    <div class="uzone" style="padding:1.5rem" onclick="document.getElementById('fi-offerta').click()">
+      <span style="font-size:1.8rem">📄</span>
+      <p style="margin-top:.5rem;font-size:.88rem">Clicca per selezionare il PDF dell'offerta</p>
+      <input type="file" id="fi-offerta" accept=".pdf" onchange="estraiDaPDF(event)" style="display:none">
+    </div>
+    <div id="pdf-estratto" style="margin-top:.75rem"></div>`;
+  document.getElementById('modal-save-btn').style.display='none';
+  document.getElementById('ov-offerta').classList.add('open');
+}
+
+async function estraiDaPDF(e){
+  const file=e.target.files[0]; if(!file) return;
+  document.getElementById('pdf-estratto').innerHTML='<div class="alert a-info">⏳ AI in elaborazione...</div>';
+  try{
+    const form=new FormData(); form.append('file',file);
+    const res=await fetch(`${API}/api/offerte/estrai-da-pdf`,{method:'POST',body:form});
+    if(!res.ok) throw new Error('Errore estrazione');
+    const {dati}=await res.json();
+    // Mostra form precompilato
+    document.getElementById('pdf-estratto').innerHTML='<div class="alert a-ok">✅ Dati estratti — verifica e conferma</div>';
+    document.getElementById('modal-save-btn').style.display='';
+    _buildFormOfferta(dati);
+  }catch(e2){document.getElementById('pdf-estratto').innerHTML=`<div class="alert a-err">❌ ${e2.message}</div>`;}
+}
+
+function openAddFromURL(){
+  modalMode='url'; modalTipo=offerteTipo;
+  document.getElementById('modal-title').textContent='Aggiungi Offerta da URL';
+  document.getElementById('modal-body').innerHTML=`
+    <div class="alert a-info">Incolla l'URL della pagina dell'offerta commerciale. L'AI tenterà di estrarre i prezzi.</div>
+    <div class="field"><label>URL Pagina Offerta</label><input id="url-offerta-input" type="url" placeholder="https://www.fornitore.it/offerta-luce-pmi"></div>
+    <div style="margin-top:.75rem"><button class="btn b-blue" onclick="estraiDaURL()">🔍 Analizza URL</button></div>
+    <div id="url-estratto" style="margin-top:.75rem"></div>`;
+  document.getElementById('modal-save-btn').style.display='none';
+  document.getElementById('ov-offerta').classList.add('open');
+}
+
+async function estraiDaURL(){
+  const url=document.getElementById('url-offerta-input')?.value?.trim();
+  if(!url){alert('Inserisci un URL valido');return;}
+  document.getElementById('url-estratto').innerHTML='<div class="alert a-info">⏳ AI analizza la pagina...</div>';
+  try{
+    const res=await fetch(`${API}/api/offerte/estrai-da-url`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
+    if(!res.ok) throw new Error('Errore analisi URL');
+    const {dati}=await res.json();
+    document.getElementById('url-estratto').innerHTML='<div class="alert a-ok">✅ Dati estratti — verifica e conferma</div>';
+    document.getElementById('modal-save-btn').style.display='';
+    _buildFormOfferta(dati);
+  }catch(e){document.getElementById('url-estratto').innerHTML=`<div class="alert a-err">❌ ${e.message}. Prova il caricamento manuale.</div>`;}
+}
+
+function openAddManuale(){
+  modalMode='manual'; modalTipo=offerteTipo;
+  document.getElementById('modal-title').textContent=`Nuova Offerta ${offerteTipo==='luce'?'Luce':'Gas'}`;
+  document.getElementById('modal-save-btn').style.display='';
+  document.getElementById('modal-save-btn').onclick=salvaOfferta;
+  _buildFormOfferta(null);
+  document.getElementById('ov-offerta').classList.add('open');
+}
+
+function _buildFormOfferta(precomp){
+  const p=precomp||{};
+  const tipoForm=p.tipo_utenza||modalTipo;
+  const isL=tipoForm==='luce';
+  // Aggiorna anche modalTipo in base a quanto estratto
+  if(p.tipo_utenza) modalTipo=p.tipo_utenza;
+
+  document.getElementById('modal-body').innerHTML=`
+    ${precomp?'':''}
+    <div class="fgrid">
+      <div class="field"><label>Tipo utenza</label><select id="of-tutype" onchange="modalTipo=this.value;_buildFormOfferta(null)"><option value="luce" ${isL?'selected':''}>⚡ Luce</option><option value="gas" ${!isL?'selected':''}>🔥 Gas</option></select></div>
+      <div class="field"><label>Fornitore *</label><input id="of-forn" value="${p.fornitore||''}" placeholder="es. Enel Energia"></div>
+      <div class="field"><label>Nome Offerta *</label><input id="of-nome" value="${p.nome_offerta||''}" placeholder="es. Luce Web"></div>
+      <div class="field"><label>Tipo Prezzo</label><select id="of-tipo"><option ${p.tipo_prezzo==='FISSO'?'selected':''}>FISSO</option><option ${p.tipo_prezzo==='VARIABILE'?'selected':''}>VARIABILE</option></select></div>
+    </div>
+    <div class="fgrid">
+      <div class="field"><label>Profili Compatibili</label><select id="of-profili" multiple style="height:80px"><option value="D2" selected>D2 - Domestico Residente</option><option value="D3" selected>D3 - Non Residente</option><option value="BTA" selected>BTA - PMI</option><option value="CDO" selected>CDO - Condominio</option></select><div class="hint">Tieni Ctrl per selezione multipla</div></div>
+      ${isL?`
+      <div class="field"><label>Prezzo F1 €/kWh</label><input id="of-f1" type="number" step="0.0001" value="${p.prezzo_f1_eur_kwh||''}" placeholder="0.1823"></div>
+      <div class="field"><label>Prezzo F2 €/kWh</label><input id="of-f2" type="number" step="0.0001" value="${p.prezzo_f2_eur_kwh||''}" placeholder="0.1523"></div>
+      <div class="field"><label>Prezzo F3 €/kWh</label><input id="of-f3" type="number" step="0.0001" value="${p.prezzo_f3_eur_kwh||''}" placeholder="0.1423"></div>
+      `:``}
+      ${isL?`<div class="field"><label>Prezzo F23 €/kWh (biorario dom.)</label><input id="of-f23" type="number" step="0.0001" value="${p.prezzo_f23_eur_kwh||''}" placeholder="0.1473"><div class="hint">Solo per tariffe domestiche biorarie</div></div>`:``}
+      ${isL?`<div class="field"><label>Spread PUN (se VARIABILE)</label><input id="of-spun" type="number" step="0.0001" value="${p.spread_pun||''}" placeholder="0.018"></div>`:``}
+      ${!isL?`<div class="field"><label>Prezzo €/Smc</label><input id="of-smc" type="number" step="0.001" value="${p.prezzo_smc||''}" placeholder="0.50"></div>`:``}
+      ${!isL?`<div class="field"><label>Spread PSV (se VARIABILE)</label><input id="of-spsv" type="number" step="0.001" value="${p.spread_psv||''}" placeholder="0.02"></div>`:``}
+      ${!isL?`<div class="field"><label>Quota Var. €/Smc</label><input id="of-qvar" type="number" step="0.001" placeholder="0.02"></div>`:``}
+    </div>
+    <div class="fgrid">
+      <div class="field"><label>Quota Fissa €/anno</label><input id="of-qf" type="number" value="${p.quota_fissa_annua_eur||''}" placeholder="72"></div>
+      ${isL?`<div class="field"><label>Stima Oneri Trasp. €/mese</label><input id="of-trasp" type="number" placeholder="45"></div>`:``}
+      <div class="field"><label>Sconto BiFuel %</label><input id="of-bifuel" type="number" step="0.1" value="${p.sconto_bifuel_percentuale||''}" placeholder="5"><div class="hint">Sconto % se cliente attiva anche l'altra fornitura</div></div>
+      <div class="field"><label>Valida fino</label><input id="of-valida" type="date" value="${p.valida_fino||''}"></div>
+      <div class="field"><label>URL Offerta</label><input id="of-url" type="url" placeholder="https://..."></div>
+    </div>
+    <div class="field"><label>Note</label><textarea id="of-note" rows="2" placeholder="Descrizione breve">${p.note||''}</textarea></div>
+  `;
+  document.getElementById('modal-save-btn').onclick=salvaOfferta;
+}
+
+async function salvaOfferta(){
+  const isL=modalTipo==='luce';
+  const forn=document.getElementById('of-forn')?.value?.trim();
+  const nome=document.getElementById('of-nome')?.value?.trim();
+  if(!forn||!nome){alert('Fornitore e Nome obbligatori');return;}
+  const profiliSel=Array.from(document.getElementById('of-profili')?.selectedOptions||[]).map(o=>o.value);
+  const payload=isL?{
+    fornitore:forn,nome_offerta:nome,tipo:document.getElementById('of-tipo')?.value,
+    profili_compatibili:profiliSel.join(','),
+    prezzo_f1:pfloat('of-f1'),prezzo_f2:pfloat('of-f2'),prezzo_f3:pfloat('of-f3'),
+    prezzo_f23:pfloat('of-f23'),spread_pun:pfloat('of-spun'),
+    quota_fissa_annua:pfloat('of-qf')||0,oneri_trasporto_stima:pfloat('of-trasp')||0,
+    sconto_bifuel_perc:pfloat('of-bifuel')||0,
+    valida_fino:document.getElementById('of-valida')?.value||null,
+    url_offerta:document.getElementById('of-url')?.value||null,
+    note:document.getElementById('of-note')?.value||null,mercato:'Libero'
+  }:{
+    fornitore:forn,nome_offerta:nome,tipo:document.getElementById('of-tipo')?.value,
+    profili_compatibili:profiliSel.join(','),
+    prezzo_smc:pfloat('of-smc'),spread_psv:pfloat('of-spsv'),
+    quota_variabile_smc:pfloat('of-qvar')||0,
+    quota_fissa_annua:pfloat('of-qf')||0,
+    sconto_bifuel_perc:pfloat('of-bifuel')||0,
+    valida_fino:document.getElementById('of-valida')?.value||null,
+    url_offerta:document.getElementById('of-url')?.value||null,
+    note:document.getElementById('of-note')?.value||null,mercato:'Libero'
+  };
+  try{
+    const res=await fetch(`${API}/api/offerte/${modalTipo}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(!res.ok) throw new Error('Errore salvataggio');
+    closeModal('ov-offerta');loadOfferte(modalTipo);
+  }catch(e){alert('Errore: '+e.message);}
+}
+
+/* ── Indici ── */
+async function loadIndici(){
+  try{
+    const data=await fetch(`${API}/api/indici`).then(r=>r.json());
+    const pun=data.PUN||[]; const psv=data.PSV||[];
+    const fmt=arr=>arr.length?arr.map(i=>`<div class="indice-card"><div class="ic-tipo">${i.tipo}</div><div class="ic-periodo">${i.periodo}</div><div class="ic-val">${parseFloat(i.valore).toFixed(4)}</div><div class="ic-fonte">${i.fonte||'—'}</div></div>`).join(''):'<div class="empty"><span class="ei">📈</span><p>Nessun dato</p></div>';
+    document.getElementById('pun-list').innerHTML=fmt(pun.slice(0,8));
+    document.getElementById('psv-list').innerHTML=fmt(psv.slice(0,8));
+  }catch(e){console.warn(e);}
+}
+
+async function aggiornaIndici(){
+  const btn=document.getElementById('btn-aggiorna');
+  btn.disabled=true;btn.textContent='⏳ Aggiornamento in corso...';
+  try{
+    await fetch(`${API}/api/indici/aggiorna`,{method:'POST'});
+    btn.textContent='✅ Aggiornamento avviato!';
+    setTimeout(()=>{btn.disabled=false;btn.textContent='🔄 Aggiorna da Portale ARERA';loadIndici();},5000);
+  }catch{btn.disabled=false;btn.textContent='🔄 Aggiorna da Portale ARERA';}
+}
+
+function openIndiceManuale(){document.getElementById('ov-indice').classList.add('open');}
+async function salvaIndiceManuale(){
+  const tipo=document.getElementById('im-tipo').value;
+  const periodo=document.getElementById('im-periodo').value;
+  const valore=parseFloat(document.getElementById('im-valore').value);
+  if(!periodo||isNaN(valore)){alert('Periodo e valore obbligatori');return;}
+  await fetch(`${API}/api/indici/manuale`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tipo,periodo,valore})});
+  closeModal('ov-indice');loadIndici();
+}
+
+/* ── Health ── */
+async function checkHealth(){
+  try{
+    const d=await fetch(`${API}/api/health`,{signal:AbortSignal.timeout(3000)}).then(r=>r.json());
+    const dot=document.getElementById('hdot'),txt=document.getElementById('htext');
+    dot.style.background=d.gemini_key_set?'#22c55e':'#f59e0b';
+    txt.textContent=d.gemini_key_set?`OK · PUN ${d.indici?.PUN_ultimo?.toFixed(4)}`:'Chiave API mancante';
+  }catch{document.getElementById('hdot').style.background='#ef4444';document.getElementById('htext').textContent='Server offline';}
+}
+
+/* ── Utils ── */
+function fmtEur(v){if(v==null)return '—';return new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',maximumFractionDigits:2}).format(v);}
+function fmtN(v,d=0){if(v==null)return '—';return new Intl.NumberFormat('it-IT',{maximumFractionDigits:d}).format(v);}
+function fmtU(v,u){if(v==null)return '—';return fmtN(v,0)+' '+(u||'');}
+function pfloat(id){const v=parseFloat(document.getElementById(id)?.value);return isNaN(v)?null:v;}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+function showAlert(msg,type,tipo){const el=document.getElementById('al-'+tipo);if(!el)return;el.innerHTML=`<div class="alert a-${type}">${msg}</div>`;setTimeout(()=>el.innerHTML='',7000);}
+function clearAlert(tipo){const el=document.getElementById('al-'+tipo);if(el)el.innerHTML='';}
+function setSt(id,st){const el=document.getElementById(id);if(!el)return;el.classList.remove('act','done');if(st)el.classList.add(st);}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function exportCSV(){window.open(`${API}/api/export/csv`,'_blank');}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  checkHealth();setInterval(checkHealth,30000);loadDashboard();
+});
+</script>
+</body>
+</html>

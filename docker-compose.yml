@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  bollettaai:
+    build: .
+    container_name: bollettaai
+    ports:
+      - "8000:8000"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    volumes:
+      # I dati persistono anche se il container viene ricreato
+      - ./data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+# Per avviare: docker-compose up -d
+# Per fermare: docker-compose down
+# Per i log:   docker-alfacompose logs -f
