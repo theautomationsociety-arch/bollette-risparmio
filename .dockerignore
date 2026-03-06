@@ -1,0 +1,13 @@
+.venv
+__pycache__
+*.pyc
+*.pyo
+.env
+data/
+*.db
+*.log
+.git
+.gitignore
+avvia.bat
+avvia.sh
+*.zip

@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="Analizza la tua bolletta luce o gas gratis con l'intelligenza artificiale. Confronta le offerte e scopri quanto puoi risparmiare.">
+<title>BollettaAI — Analizza e risparmia su luce e gas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,700;12..96,800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ══ RESET & TOKENS ══════════════════════════════════════════════════════ */
+:root{
+  --navy:#0d1b2a; --ink:#1a2332; --muted:#5a6a7e;
+  --border:#e4eaf2; --bg:#f8fafd; --white:#ffffff;
+  --green:#059669; --green-l:#d1fae5; --green-d:#065f46;
+  --blue:#2563eb; --blue-l:#dbeafe;
+  --orange:#ea580c; --orange-l:#ffedd5;
+  --yellow:#d97706; --red:#dc2626;
+  --r:16px; --r-sm:10px; --r-lg:24px; --r-xl:32px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);
+  --shadow:0 4px 16px rgba(13,27,42,.10);
+  --shadow-lg:0 20px 60px rgba(13,27,42,.16);
+  --t:200ms ease;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--ink);-webkit-font-smoothing:antialiased}
+
+/* ══ NAVBAR ══════════════════════════════════════════════════════════════ */
+.nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(255,255,255,.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:0 1.5rem;height:64px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.nav-logo{display:flex;align-items:center;gap:.5rem;text-decoration:none}
+.nav-logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--navy),#1e40af);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.nav-logo-text{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.2rem;color:var(--navy);letter-spacing:-.5px}
+.nav-logo-text span{color:var(--blue)}
+.nav-links{display:flex;align-items:center;gap:.5rem}
+.nav-links a{font-size:.85rem;color:var(--muted);text-decoration:none;padding:6px 14px;border-radius:var(--r-sm);transition:all var(--t);font-weight:500}
+.nav-links a:hover{background:var(--bg);color:var(--ink)}
+.nav-cta{background:var(--navy)!important;color:white!important;font-weight:600!important}
+.nav-cta:hover{background:#1e3a5f!important;transform:translateY(-1px)}
+@media(max-width:600px){.nav-links .hide-mob{display:none}}
+
+/* ══ HERO ════════════════════════════════════════════════════════════════ */
+.hero{
+  background:linear-gradient(160deg,#f0f6ff 0%,#e8f4f8 50%,#f0fff8 100%);
+  padding:5rem 1.5rem 4rem;
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% -20%,rgba(37,99,235,.08) 0%,transparent 70%),
+             radial-gradient(ellipse 50% 40% at 80% 80%,rgba(5,150,105,.06) 0%,transparent 60%);
+  pointer-events:none;
+}
+.hero-inner{max-width:780px;margin:0 auto;text-align:center;position:relative}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:white;border:1px solid var(--border);border-radius:100px;
+  padding:.35rem 1rem .35rem .5rem;
+  font-size:.8rem;font-weight:600;color:var(--green-d);
+  margin-bottom:1.5rem;box-shadow:var(--shadow-sm);
+}
+.hero-badge-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.8)}}
+h1.hero-title{
+  font-family:'Bricolage Grotesque',sans-serif;
+  font-size:clamp(2rem,5vw,3.4rem);font-weight:800;
+  line-height:1.1;letter-spacing:-1.5px;
+  color:var(--navy);margin-bottom:1.25rem;
+}
+h1.hero-title .hl{
+  background:linear-gradient(135deg,var(--blue),#7c3aed);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-sub{font-size:1.05rem;color:var(--muted);font-weight:400;max-width:540px;margin:0 auto 2.5rem;line-height:1.65}
+.hero-pills{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-bottom:2.5rem}
+.pill{background:white;border:1px solid var(--border);border-radius:100px;padding:.3rem .9rem;font-size:.78rem;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:.35rem}
+
+/* ══ CARD ANALISI (centrale) ═════════════════════════════════════════════ */
+.card-analisi{
+  background:white;border-radius:var(--r-xl);box-shadow:var(--shadow-lg);
+  padding:2.25rem;max-width:560px;margin:0 auto;
+  border:1px solid var(--border);
+  animation:slideUp .6s ease both;
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.ca-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1.05rem;color:var(--ink);margin-bottom:1.4rem;text-align:center}
+
+/* Toggle luce/gas */
+.tipo-toggle{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;background:var(--bg);padding:.3rem;border-radius:var(--r-sm);margin-bottom:1.4rem}
+.tipo-btn{border:none;padding:.7rem;border-radius:8px;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.88rem;cursor:pointer;transition:all var(--t);color:var(--muted);background:transparent}
+.tipo-btn.active{background:white;color:var(--ink);box-shadow:var(--shadow-sm)}
+.tipo-btn.active.luce{color:#b45309}
+.tipo-btn.active.gas{color:#0369a1}
+
+/* Profilo */
+.profilo-grid{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:1.4rem}
+.pr-btn{border:2px solid var(--border);padding:.6rem .7rem;border-radius:var(--r-sm);cursor:pointer;background:white;text-align:left;transition:all var(--t);font-family:'DM Sans',sans-serif}
+.pr-btn:hover{border-color:var(--blue);background:var(--blue-l)}
+.pr-btn.active{border-color:var(--blue);background:var(--blue-l)}
+.pr-btn-name{font-weight:600;font-size:.82rem;color:var(--ink);display:block}
+.pr-btn-sub{font-size:.7rem;color:var(--muted);display:block;margin-top:1px}
+
+/* Upload zone */
+.drop-zone{
+  border:2.5px dashed var(--border);border-radius:var(--r);
+  padding:1.75rem 1rem;text-align:center;cursor:pointer;
+  transition:all .22s;background:var(--bg);margin-bottom:1.25rem;
+}
+.drop-zone:hover,.drop-zone.over{border-color:var(--blue);background:#eff6ff}
+.drop-zone .dz-icon{font-size:2rem;margin-bottom:.6rem;display:block}
+.drop-zone h4{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.95rem;color:var(--ink);margin-bottom:.3rem}
+.drop-zone p{font-size:.78rem;color:var(--muted)}
+.dz-privacy{display:flex;align-items:center;gap:.4rem;font-size:.72rem;color:var(--muted);justify-content:center;margin-top:.5rem}
+
+/* Form campi */
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.7rem}
+.field{display:flex;flex-direction:column;gap:.25rem}
+.field label{font-size:.75rem;font-weight:600;color:var(--muted)}
+.field input{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:9px 12px;font-size:.9rem;font-family:'DM Sans',sans-serif;color:var(--ink);transition:border-color var(--t);outline:none}
+.field input:focus{border-color:var(--blue)}
+.field input::placeholder{color:#aab4c0}
+
+/* Consenso */
+.consenso-row{display:flex;align-items:flex-start;gap:.5rem;margin-bottom:1rem;font-size:.78rem;color:var(--muted);line-height:1.5}
+.consenso-row input[type=checkbox]{margin-top:3px;accent-color:var(--blue);flex-shrink:0}
+.consenso-row a{color:var(--blue);text-decoration:none}
+
+/* CTA button */
+.btn-analizza{
+  width:100%;padding:1rem;border:none;border-radius:var(--r);
+  background:linear-gradient(135deg,var(--navy) 0%,#1e40af 100%);
+  color:white;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;
+  font-size:1.05rem;cursor:pointer;transition:all var(--t);
+  display:flex;align-items:center;justify-content:center;gap:.5rem;
+  letter-spacing:.2px;
+}
+.btn-analizza:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 24px rgba(30,64,175,.3)}
+.btn-analizza:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-consulente{
+  width:100%;margin-top:.7rem;padding:.75rem;border:1.5px solid var(--border);
+  border-radius:var(--r);background:white;color:var(--ink);
+  font-family:'DM Sans',sans-serif;font-weight:500;font-size:.9rem;cursor:pointer;
+  transition:all var(--t);
+}
+.btn-consulente:hover{border-color:var(--ink);background:var(--bg)}
+
+/* ══ LOADING ═════════════════════════════════════════════════════════════ */
+#loading-section{display:none;padding:3rem 1.5rem;text-align:center;max-width:560px;margin:0 auto}
+.spinner{width:52px;height:52px;border:4px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .85s linear infinite;margin:0 auto 1.5rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1.15rem;color:var(--ink);margin-bottom:1rem}
+.loading-steps{list-style:none;max-width:280px;margin:0 auto}
+.loading-steps li{display:flex;align-items:center;gap:.6rem;padding:.4rem 0;font-size:.86rem;color:var(--muted);transition:color .3s}
+.loading-steps li.done{color:var(--green-d)}
+.loading-steps li.act{color:var(--ink);font-weight:500}
+.step-ic{width:18px;height:18px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:.65rem;flex-shrink:0;transition:all .3s}
+.loading-steps li.done .step-ic{background:var(--green);color:white}
+.loading-steps li.act .step-ic{background:var(--blue);color:white}
+
+/* ══ RISULTATI ═══════════════════════════════════════════════════════════ */
+#risultati-section{display:none;padding:2rem 1.5rem 4rem;max-width:800px;margin:0 auto}
+.ris-header{text-align:center;margin-bottom:2rem}
+.ris-title{font-family:'Bricolage Grotesque',sans-serif;font-size:1.8rem;font-weight:800;color:var(--navy);letter-spacing:-.5px;margin-bottom:.5rem}
+.ris-subtitle{color:var(--muted);font-size:.95rem}
+
+/* KPI cards */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.75rem;margin-bottom:1.75rem}
+.kpi-card{background:white;border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.1rem;box-shadow:var(--shadow-sm)}
+.kpi-label{font-size:.68rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin-bottom:.25rem}
+.kpi-value{font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:800;letter-spacing:-.5px;line-height:1}
+.kpi-sub{font-size:.72rem;color:var(--muted);margin-top:.25rem}
+.kpi-card.highlight{background:linear-gradient(135deg,var(--green-l),#ecfdf5);border-color:var(--green)}
+.kpi-card.highlight .kpi-value{color:var(--green-d)}
+
+/* Dettaglio costi */
+.cost-card{background:white;border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem;box-shadow:var(--shadow-sm)}
+.cost-card-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.92rem;color:var(--ink);margin-bottom:.9rem;display:flex;align-items:center;gap:.5rem}
+.cost-row{display:flex;justify-content:space-between;align-items:center;padding:.45rem 0;border-bottom:1px solid var(--bg);font-size:.88rem}
+.cost-row:last-child{border:none;font-weight:700;font-size:.95rem;padding-top:.7rem}
+.cost-row-val{font-family:'Bricolage Grotesque',sans-serif;font-weight:600}
+
+/* AI insights */
+.ai-card{background:linear-gradient(135deg,#fffbeb,#fff);border:1px solid #fde68a;border-radius:var(--r);padding:1.25rem;margin-bottom:1rem}
+.ai-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.9rem;color:#92400e;margin-bottom:.65rem;display:flex;align-items:center;gap:.4rem}
+.ai-items{list-style:none}
+.ai-items li{padding:.35rem 0;font-size:.86rem;display:flex;gap:.5rem;color:var(--ink)}
+.ai-items li::before{content:'→';color:var(--orange);flex-shrink:0;font-weight:700}
+
+/* BiFuel detector */
+.bifuel-card{background:linear-gradient(135deg,#fff7ed,#fff);border:1.5px solid #fed7aa;border-radius:var(--r);padding:1.1rem 1.25rem;margin-bottom:1.2rem}
+.bifuel-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.9rem;color:#c2410c;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
+
+/* Sezione comparazione */
+.compara-intro{background:var(--bg);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:1rem;font-size:.88rem;color:var(--ink);border:1px solid var(--border)}
+.compara-intro strong{color:var(--green-d)}
+.off-card{
+  background:white;border:2px solid var(--border);border-radius:var(--r);
+  padding:1.1rem 1.3rem;display:flex;align-items:center;gap:1rem;
+  margin-bottom:.6rem;transition:all var(--t);position:relative;overflow:hidden;
+}
+.off-card:hover{border-color:var(--blue);box-shadow:var(--shadow);transform:translateX(4px)}
+.off-card.best{border-color:var(--green);background:linear-gradient(135deg,#f0fdf4,white)}
+.best-badge{position:absolute;top:0;right:0;background:var(--green);color:white;font-size:.62rem;font-weight:700;padding:4px 12px;border-radius:0 var(--r) 0 9px;letter-spacing:.3px;text-transform:uppercase}
+.bf-badge{position:absolute;bottom:0;right:0;background:#fed7aa;color:#c2410c;font-size:.6rem;font-weight:700;padding:3px 10px;border-radius:9px 0 var(--r) 0}
+.off-rank{font-family:'Bricolage Grotesque',sans-serif;font-size:1.3rem;font-weight:800;color:var(--border);min-width:2rem;text-align:center;flex-shrink:0}
+.off-card.best .off-rank{color:var(--green)}
+.off-info{flex:1;min-width:0}
+.off-nome{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.92rem;color:var(--ink)}
+.off-forn{font-size:.8rem;color:var(--muted);margin-top:1px}
+.off-note{font-size:.73rem;color:var(--muted);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:280px}
+.off-tags{display:flex;gap:3px;flex-wrap:wrap;margin-top:5px}
+.tag{display:inline-flex;align-items:center;font-size:.67rem;font-weight:600;padding:2px 8px;border-radius:100px}
+.t-fix{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}
+.t-var{background:#fdf4ff;color:#7e22ce}
+.t-lib{background:var(--green-l);color:var(--green-d)}
+.t-bf{background:#ffedd5;color:#c2410c;border:1px solid #fed7aa}
+.off-num{text-align:right;flex-shrink:0}
+.off-costo{font-family:'Bricolage Grotesque',sans-serif;font-size:1.25rem;font-weight:800;letter-spacing:-.4px;color:var(--ink)}
+.off-annuo{font-size:.72rem;color:var(--muted)}
+.risp-badge{display:inline-block;font-size:.79rem;font-weight:700;padding:2px 8px;border-radius:6px;margin-top:3px}
+.risp-pos{background:var(--green-l);color:var(--green-d)}
+.risp-neg{background:#fee2e2;color:var(--red)}
+
+/* Email results */
+.email-cta{background:linear-gradient(135deg,#f0f6ff,white);border:1px solid var(--blue-l);border-radius:var(--r);padding:1.25rem;margin-top:1.25rem;text-align:center}
+.email-cta h4{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.95rem;color:var(--navy);margin-bottom:.5rem}
+.email-cta p{font-size:.82rem;color:var(--muted);margin-bottom:.9rem}
+.email-row{display:flex;gap:.5rem}
+.email-row input{flex:1;background:white;border:1.5px solid var(--border);border-radius:var(--r-sm);padding:9px 12px;font-size:.88rem;font-family:'DM Sans',sans-serif;outline:none;transition:border-color var(--t)}
+.email-row input:focus{border-color:var(--blue)}
+.btn-email{background:var(--blue);color:white;border:none;border-radius:var(--r-sm);padding:9px 18px;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;white-space:nowrap;transition:all var(--t)}
+.btn-email:hover{background:#1d4ed8;transform:translateY(-1px)}
+
+/* ══ SEZIONI INFORMATIVE ═════════════════════════════════════════════════ */
+.section{padding:5rem 1.5rem}
+.section-inner{max-width:1000px;margin:0 auto}
+.section-badge{display:inline-block;background:var(--blue-l);color:var(--blue);font-size:.72rem;font-weight:700;padding:4px 12px;border-radius:100px;letter-spacing:.6px;text-transform:uppercase;margin-bottom:1rem}
+.section-title{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;color:var(--navy);letter-spacing:-.8px;margin-bottom:.75rem}
+.section-sub{color:var(--muted);font-size:.95rem;max-width:520px;line-height:1.65}
+.section.alt{background:var(--bg)}
+
+/* Come funziona */
+.steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;margin-top:3rem;position:relative}
+.step-card{background:white;border:1px solid var(--border);border-radius:var(--r-lg);padding:2rem 1.5rem;box-shadow:var(--shadow-sm);position:relative}
+.step-num{font-family:'Bricolage Grotesque',sans-serif;font-size:3.5rem;font-weight:800;line-height:1;margin-bottom:1rem;background:linear-gradient(135deg,var(--blue),#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.step-icon{font-size:1.8rem;margin-bottom:.75rem;display:block}
+.step-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1rem;color:var(--ink);margin-bottom:.4rem}
+.step-text{font-size:.88rem;color:var(--muted);line-height:1.6}
+
+/* Benefici */
+.benefits-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-top:2.5rem}
+.ben-card{padding:1.5rem;border-radius:var(--r);transition:all var(--t)}
+.ben-card:hover{background:white;box-shadow:var(--shadow)}
+.ben-icon{font-size:1.75rem;margin-bottom:.75rem;display:block}
+.ben-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.95rem;color:var(--ink);margin-bottom:.35rem}
+.ben-text{font-size:.84rem;color:var(--muted);line-height:1.6}
+
+/* Partner logos */
+.partner-section{padding:3.5rem 1.5rem;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.partner-label{text-align:center;font-size:.75rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:2rem}
+.partner-grid{display:flex;align-items:center;justify-content:center;gap:1.5rem;flex-wrap:wrap;max-width:800px;margin:0 auto}
+.partner-logo{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:.6rem 1.2rem;display:flex;align-items:center;justify-content:center;min-width:90px;min-height:44px;transition:all var(--t)}
+.partner-logo:hover{box-shadow:var(--shadow);background:white}
+.partner-logo img{max-height:28px;max-width:90px;object-fit:contain;filter:grayscale(30%);transition:filter var(--t)}
+.partner-logo:hover img{filter:none}
+
+/* Sicurezza */
+.security-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.25rem;margin-top:2.5rem}
+.sec-card{background:white;border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;box-shadow:var(--shadow-sm)}
+.sec-icon{width:40px;height:40px;background:var(--green-l);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:1rem}
+.sec-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.92rem;color:var(--ink);margin-bottom:.4rem}
+.sec-text{font-size:.83rem;color:var(--muted);line-height:1.6}
+
+/* Consulente CTA */
+.cta-section{background:linear-gradient(135deg,var(--navy) 0%,#1e3a5f 100%);padding:5rem 1.5rem;text-align:center}
+.cta-title{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;color:white;letter-spacing:-.8px;margin-bottom:.75rem}
+.cta-sub{color:rgba(255,255,255,.65);font-size:.95rem;max-width:480px;margin:0 auto 2rem;line-height:1.65}
+.cta-btn{display:inline-flex;align-items:center;gap:.5rem;background:white;color:var(--navy);border:none;border-radius:var(--r);padding:1rem 2.2rem;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;transition:all var(--t)}
+.cta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.25)}
+
+/* FAQ */
+.faq-list{margin-top:2rem;max-width:680px}
+.faq-item{border-bottom:1px solid var(--border);overflow:hidden}
+.faq-q{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 0;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:.95rem;color:var(--ink);transition:color var(--t)}
+.faq-q:hover{color:var(--blue)}
+.faq-arrow{font-size:.7rem;color:var(--muted);transition:transform .25s;flex-shrink:0;margin-left:1rem}
+.faq-item.open .faq-arrow{transform:rotate(180deg)}
+.faq-a{display:none;padding-bottom:1rem;font-size:.88rem;color:var(--muted);line-height:1.7}
+.faq-item.open .faq-a{display:block}
+
+/* Footer */
+.footer{background:var(--navy);padding:3rem 1.5rem;color:rgba(255,255,255,.5)}
+.footer-inner{max-width:1000px;margin:0 auto}
+.footer-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1.5rem;margin-bottom:2rem;padding-bottom:2rem;border-bottom:1px solid rgba(255,255,255,.08)}
+.footer-logo{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.1rem;color:white}
+.footer-logo span{color:var(--blue)}
+.footer-links{display:flex;gap:1.2rem;flex-wrap:wrap}
+.footer-links a{color:rgba(255,255,255,.4);text-decoration:none;font-size:.82rem;transition:color var(--t)}
+.footer-links a:hover{color:rgba(255,255,255,.8)}
+.footer-bottom{font-size:.78rem;line-height:1.7}
+
+/* ══ MODAL CONSULENTE ════════════════════════════════════════════════════ */
+.overlay{position:fixed;inset:0;background:rgba(13,27,42,.6);z-index:500;display:none;place-items:center;padding:1rem;backdrop-filter:blur(6px)}
+.overlay.open{display:grid}
+.modal{background:white;border-radius:var(--r-xl);padding:2.25rem;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:slideUp .25s ease}
+.modal-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem}
+.modal-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.2rem;color:var(--navy);line-height:1.3}
+.modal-close{background:var(--bg);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;color:var(--muted);flex-shrink:0;transition:all var(--t);display:flex;align-items:center;justify-content:center}
+.modal-close:hover{background:var(--border);color:var(--ink)}
+.modal-footer{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);display:flex;gap:.7rem;flex-direction:column}
+.btn-primary{width:100%;padding:.9rem;border:none;border-radius:var(--r);background:var(--navy);color:white;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.95rem;cursor:pointer;transition:all var(--t)}
+.btn-primary:hover{background:#1e3a5f;transform:translateY(-1px)}
+.btn-secondary{width:100%;padding:.9rem;border:1.5px solid var(--border);border-radius:var(--r);background:white;color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:500;font-size:.9rem;cursor:pointer;transition:all var(--t)}
+.btn-secondary:hover{border-color:var(--ink)}
+
+/* Success state */
+.success-state{text-align:center;padding:2rem 0}
+.success-icon{width:64px;height:64px;background:var(--green-l);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.75rem;margin:0 auto 1.25rem}
+.success-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.2rem;color:var(--navy);margin-bottom:.5rem}
+.success-text{font-size:.88rem;color:var(--muted);line-height:1.65}
+
+/* Alerts */
+.alert{padding:.8rem 1rem;border-radius:var(--r-sm);font-size:.85rem;margin-bottom:.9rem;display:flex;gap:.5rem;align-items:flex-start}
+.a-err{background:#fee2e2;color:#991b1b;border:1px solid #fecaca}
+.a-ok{background:var(--green-l);color:var(--green-d);border:1px solid #6ee7b7}
+
+@media(max-width:600px){
+  .field-row{grid-template-columns:1fr}
+  .off-card{flex-wrap:wrap}
+  .email-row{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="/" class="nav-logo">
+    <div class="nav-logo-icon">⚡</div>
+    <span class="nav-logo-text">Bolletta<span>AI</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="#come-funziona" class="hide-mob">Come funziona</a>
+    <a href="#sicurezza" class="hide-mob">Sicurezza</a>
+    <a href="#faq" class="hide-mob">FAQ</a>
+    <a href="/admin" class="nav-cta">Accedi</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-inner">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      Servizio gratuito — nessun impegno
+    </div>
+    <h1 class="hero-title">
+      Scopri se paghi<br>troppo su<br><span class="hl">luce e gas</span>
+    </h1>
+    <p class="hero-sub">Carica la bolletta, l'intelligenza artificiale la analizza in secondi e confronta le offerte migliori del mercato libero.</p>
+    <div class="hero-pills">
+      <span class="pill">✅ Gratis</span>
+      <span class="pill">🔒 Privacy garantita</span>
+      <span class="pill">⚡ Risultati in 30 secondi</span>
+      <span class="pill">🏠 Domestico e PMI</span>
+    </div>
+
+    <!-- CARD ANALISI -->
+    <div class="card-analisi" id="uploadCard">
+      <div class="ca-title">📄 Carica la tua bolletta</div>
+
+      <!-- Toggle luce/gas -->
+      <div class="tipo-toggle">
+        <button class="tipo-btn active luce" id="btn-tipo-luce" onclick="setTipo('luce')">⚡ Bolletta Luce</button>
+        <button class="tipo-btn gas" id="btn-tipo-gas" onclick="setTipo('gas')">🔥 Bolletta Gas</button>
+      </div>
+
+      <!-- Profilo utenza -->
+      <div style="font-size:.73rem;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:.5rem">Chi sei?</div>
+      <div class="profilo-grid" id="profilo-grid">
+        <button class="pr-btn active" data-v="D2" onclick="setProfilo('D2',this)"><span class="pr-btn-name">🏠 Domestico Residente</span><span class="pr-btn-sub">Tariffa D2 · IVA 10%</span></button>
+        <button class="pr-btn" data-v="D3" onclick="setProfilo('D3',this)"><span class="pr-btn-name">🏡 Non Residente</span><span class="pr-btn-sub">Tariffa D3 · IVA 10%</span></button>
+        <button class="pr-btn" data-v="BTA" onclick="setProfilo('BTA',this)"><span class="pr-btn-name">🏢 PMI / Azienda</span><span class="pr-btn-sub">Tariffa BTA · IVA 22%</span></button>
+        <button class="pr-btn" data-v="CDO" onclick="setProfilo('CDO',this)"><span class="pr-btn-name">🏗 Condominio</span><span class="pr-btn-sub">Uso comune · IVA 10%</span></button>
+      </div>
+
+      <!-- Drop zone -->
+      <div class="drop-zone" id="dropZone"
+           onclick="document.getElementById('fileInput').click()"
+           ondragover="event.preventDefault();this.classList.add('over')"
+           ondragleave="this.classList.remove('over')"
+           ondrop="onDrop(event)">
+        <span class="dz-icon" id="dzIcon">📂</span>
+        <h4 id="dzTitle">Trascina il PDF qui oppure clicca</h4>
+        <p id="dzSub">Accettiamo PDF fino a 15 MB — qualsiasi fornitore italiano</p>
+        <div class="dz-privacy">🔒 Il tuo documento non viene salvato sui nostri server</div>
+        <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="onFileSelect(event)">
+      </div>
+
+      <!-- Dati personali -->
+      <div class="field-row">
+        <div class="field"><label>Nome</label><input id="inp-nome" placeholder="Mario" type="text"></div>
+        <div class="field"><label>Cognome</label><input id="inp-cognome" placeholder="Rossi" type="text"></div>
+      </div>
+      <div class="field" style="margin-bottom:.9rem">
+        <label>Email — riceverai i risultati</label>
+        <input id="inp-email" type="email" placeholder="mario.rossi@email.it">
+      </div>
+
+      <!-- Consenso -->
+      <label class="consenso-row">
+        <input type="checkbox" id="chk-privacy">
+        <span>Ho letto e accetto l'<a href="/privacy" target="_blank">informativa sulla privacy</a>. Il trattamento dei miei dati è necessario all'erogazione del servizio.</span>
+      </label>
+
+      <div id="upload-alert"></div>
+
+      <button class="btn-analizza" id="btnAnalizza" onclick="avviaAnalisi()">
+        🔍 Analizza Bolletta Gratis
+      </button>
+      <button class="btn-consulente" onclick="openConsulente()">
+        👤 Preferisci parlare con un consulente?
+      </button>
+    </div>
+    <!-- /CARD ANALISI -->
+
+  </div>
+</section>
+
+<!-- LOADING -->
+<section id="loading-section">
+  <div class="spinner"></div>
+  <div class="loading-title">L'AI sta analizzando la tua bolletta...</div>
+  <ul class="loading-steps" id="loading-steps">
+    <li id="ls1"><span class="step-ic">1</span>Caricamento PDF</li>
+    <li id="ls2"><span class="step-ic">2</span>Riconoscimento fornitore e dati</li>
+    <li id="ls3"><span class="step-ic">3</span>Estrazione consumi e fasce</li>
+    <li id="ls4"><span class="step-ic">4</span>Analisi costi e accise</li>
+    <li id="ls5"><span class="step-ic">5</span>Confronto offerte di mercato</li>
+  </ul>
+</section>
+
+<!-- RISULTATI -->
+<section id="risultati-section">
+  <div class="ris-header">
+    <div class="ris-title" id="ris-title">Ecco la tua analisi</div>
+    <div class="ris-subtitle" id="ris-subtitle"></div>
+  </div>
+  <div id="ris-content"></div>
+</section>
+
+<!-- COME FUNZIONA -->
+<section class="section" id="come-funziona">
+  <div class="section-inner">
+    <div class="section-badge">Come funziona</div>
+    <h2 class="section-title">In tre passi, in meno di un minuto</h2>
+    <p class="section-sub">Nessuna registrazione, nessun impegno. Carica, analizza, risparmia.</p>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <span class="step-icon">📄</span>
+        <div class="step-title">Carica la bolletta</div>
+        <div class="step-text">Scegli il PDF della tua bolletta luce o gas. Funziona con qualsiasi fornitore italiano — Enel, A2A, Eni, Iren, Edison e tutti gli altri.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <span class="step-icon">🤖</span>
+        <div class="step-title">L'AI la analizza</div>
+        <div class="step-text">La nostra intelligenza artificiale estrae automaticamente consumi, fasce orarie, costi dettagliati e identifica eventuali anomalie o addebiti errati.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <span class="step-icon">💰</span>
+        <div class="step-title">Scopri il risparmio</div>
+        <div class="step-text">Visualizzi le offerte migliori ordinate per convenienza, con il risparmio annuo stimato per ciascuna. Tutto trasparente, senza sorprese.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BENEFICI -->
+<section class="section alt">
+  <div class="section-inner">
+    <div class="section-badge">Perché sceglierci</div>
+    <h2 class="section-title">Analisi professionale, gratis</h2>
+    <div class="benefits-grid">
+      <div class="ben-card"><span class="ben-icon">⚡</span><div class="ben-title">Veloce</div><div class="ben-text">Analisi completata in meno di 30 secondi grazie all'AI di Google Gemini.</div></div>
+      <div class="ben-card"><span class="ben-icon">🎯</span><div class="ben-title">Preciso</div><div class="ben-text">Estrae ogni voce della bolletta: fasce F1/F2/F3, accise, oneri di sistema e IVA corretta per il tuo profilo.</div></div>
+      <div class="ben-card"><span class="ben-icon">🏷️</span><div class="ben-title">Aggiornato</div><div class="ben-text">I prezzi delle offerte e gli indici PUN/PSV vengono aggiornati mensilmente da ARERA.</div></div>
+      <div class="ben-card"><span class="ben-icon">🔗</span><div class="ben-title">BiFuel</div><div class="ben-text">Carica sia luce che gas per scoprire i fornitori che offrono sconti sulle offerte combinate.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PARTNER -->
+<div class="partner-section">
+  <div class="partner-label">I principali fornitori nel nostro database</div>
+  <div class="partner-grid">
+    <div class="partner-logo"><img src="https://cdn3.comparasemplice.it/images/loghi_energia/logo_enel.jpg" alt="Enel" onerror="this.parentNode.innerHTML='<span style=font-size:.82rem;font-weight:700;color:var(--muted)>ENEL</span>'"></div>
+    <div class="partner-logo"><img src="https://cdn3.comparasemplice.it/images/loghi_energia/logo_plenitude.jpg" alt="Eni Plenitude" onerror="this.parentNode.innerHTML='<span style=font-size:.75rem;font-weight:700;color:var(--muted)>ENI PLENITUDE</span>'"></div>
+    <div class="partner-logo"><img src="https://cdn3.comparasemplice.it/images/loghi_energia/logo_iren.jpg" alt="Iren" onerror="this.parentNode.innerHTML='<span style=font-size:.82rem;font-weight:700;color:var(--muted)>IREN</span>'"></div>
+    <div class="partner-logo"><img src="https://cdn3.comparasemplice.it/images/loghi_energia/logo_a2a.jpg" alt="A2A" onerror="this.parentNode.innerHTML='<span style=font-size:.82rem;font-weight:700;color:var(--muted)>A2A</span>'"></div>
+    <div class="partner-logo"><img src="https://cdn3.comparasemplice.it/images/loghi_energia/logo_edison.jpg" alt="Edison" onerror="this.parentNode.innerHTML='<span style=font-size:.82rem;font-weight:700;color:var(--muted)>EDISON</span>'"></div>
+    <div class="partner-logo"><img src="https://cdn3.comparasemplice.it/images/loghi_energia/logo_octopus.jpg" alt="Octopus" onerror="this.parentNode.innerHTML='<span style=font-size:.82rem;font-weight:700;color:var(--muted)>OCTOPUS</span>'"></div>
+    <div class="partner-logo" style="min-width:70px"><span style="font-size:.75rem;font-weight:700;color:var(--muted)">SORGENIA</span></div>
+    <div class="partner-logo" style="min-width:70px"><span style="font-size:.75rem;font-weight:700;color:var(--muted)">WEKIWI</span></div>
+    <div class="partner-logo" style="min-width:70px"><span style="font-size:.75rem;font-weight:700;color:var(--muted)">ILLUMIA</span></div>
+  </div>
+</div>
+
+<!-- SICUREZZA -->
+<section class="section" id="sicurezza">
+  <div class="section-inner">
+    <div class="section-badge">Privacy & Sicurezza</div>
+    <h2 class="section-title">I tuoi dati sono al sicuro</h2>
+    <div class="security-grid">
+      <div class="sec-card"><div class="sec-icon">📄</div><div class="sec-title">Il documento non viene salvato</div><div class="sec-text">Una volta completata l'analisi, il PDF non viene conservato. I dati estratti vengono trattati nel rispetto del GDPR.</div></div>
+      <div class="sec-card"><div class="sec-icon">🔒</div><div class="sec-title">Trasmissione cifrata</div><div class="sec-text">Tutte le comunicazioni avvengono via HTTPS. Il PDF viene trasmesso solo a Google Gemini AI per l'analisi.</div></div>
+      <div class="sec-card"><div class="sec-icon">👁</div><div class="sec-title">Chi accede ai tuoi dati</div><div class="sec-text">Solo il sistema AI e, su richiesta esplicita, un consulente umano per il servizio di analisi manuale.</div></div>
+      <div class="sec-card"><div class="sec-icon">🇪🇺</div><div class="sec-title">Conforme GDPR</div><div class="sec-text">Trattiamo i tuoi dati secondo il Regolamento Europeo sulla protezione dei dati personali (GDPR 2016/679).</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONSULENTE CTA -->
+<section class="cta-section">
+  <div class="cta-title">Vuoi un'analisi personalizzata?</div>
+  <p class="cta-sub">I nostri consulenti specializzati in tariffe energetiche possono analizzare la tua bolletta e guidarti verso l'offerta più adatta.</p>
+  <button class="cta-btn" onclick="openConsulente()">👤 Parla con un consulente →</button>
+</section>
+
+<!-- FAQ -->
+<section class="section" id="faq">
+  <div class="section-inner">
+    <div class="section-badge">FAQ</div>
+    <h2 class="section-title">Domande frequenti</h2>
+    <div class="faq-list" id="faq-list"></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">Bolletta<span>AI</span></div>
+        <div style="font-size:.8rem;margin-top:.4rem">Analisi intelligente bollette luce e gas per l'Italia</div>
+      </div>
+      <div class="footer-links">
+        <a href="/privacy">Privacy</a>
+        <a href="/termini">Termini e condizioni</a>
+        <a href="/cookie">Cookie policy</a>
+        <a href="#faq">FAQ</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      © 2025 BollettaAI — Servizio di analisi bollette con intelligenza artificiale.<br>
+      I risultati sono stime indicative basate sui dati estratti dalla bolletta e sui prezzi delle offerte nel database.
+    </div>
+  </div>
+</footer>
+
+<!-- MODAL CONSULENTE -->
+<div class="overlay" id="modal-consulente" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-title">Parla con un consulente</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div id="modal-body">
+      <p style="font-size:.87rem;color:var(--muted);margin-bottom:1.4rem;line-height:1.65">I nostri consulenti analizzeranno la tua bolletta e ti contatteranno per proporti le offerte più convenienti disponibili.</p>
+      <div class="field-row">
+        <div class="field"><label>Nome *</label><input id="c-nome" placeholder="Mario"></div>
+        <div class="field"><label>Cognome *</label><input id="c-cognome" placeholder="Rossi"></div>
+      </div>
+      <div class="field" style="margin-bottom:.7rem"><label>Email *</label><input id="c-email" type="email" placeholder="mario@email.it"></div>
+      <div class="field" style="margin-bottom:.9rem"><label>Telefono *</label><input id="c-tel" type="tel" placeholder="3XX XXX XXXX"></div>
+      <div id="c-alert"></div>
+      <label class="consenso-row"><input type="checkbox" id="c-privacy"><span>Accetto l'<a href="/privacy" target="_blank">informativa privacy</a> e autorizzo il trattamento dei dati per essere contattato.</span></label>
+      <label class="consenso-row" style="margin-top:.4rem"><input type="checkbox" id="c-mkt"><span>Acconsento a ricevere comunicazioni commerciali sulle migliori offerte energetiche.</span></label>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary" onclick="inviaConsulente()">Richiedi consulenza gratuita</button>
+      <button class="btn-secondary" onclick="closeModal()">Annulla</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = window.location.origin;  // funziona sia in locale che in produzione
+const PROFILI = {D2:'Domestico Residente',D3:'Domestico Non Residente',BTA:'PMI / Non Domestico',CDO:'Condominio'};
+const FAQ_DATA = [
+  {q:'È davvero gratuito?',a:'Sì, completamente gratuito e senza impegno. Non richiede registrazione. Se trovi un\'offerta conveniente e decidi di cambiare, potresti ricevere un contatto da uno dei nostri partner (con tua esplicita autorizzazione).'},
+  {q:'Quali formati di bolletta accettate?',a:'Accettiamo PDF (preferito), JPEG e PNG. La bolletta può essere di qualsiasi fornitore italiano: Enel, A2A, Eni Plenitude, Edison, Iren, Sorgenia, Wekiwi, Illumia, Acea e tutti gli altri.'},
+  {q:'I miei dati personali sono al sicuro?',a:'Sì. Il PDF viene analizzato in tempo reale e non viene salvato sui nostri server. I dati estratti (consumi, costi) vengono conservati solo per generare il confronto e inviarti i risultati via email, nel rispetto del GDPR.'},
+  {q:'Come vengono calcolati i risparmi stimati?',a:'Utilizziamo i consumi reali estratti dalla tua bolletta, i prezzi delle offerte nel nostro database (aggiornati mensilmente da ARERA), l\'IVA corretta per il tuo profilo utenza (10% domestico, 22% PMI) e gli indici PUN/PSV per le offerte a prezzo variabile.'},
+  {q:'Cosa sono le fasce F1, F2, F3?',a:'Sono le fasce orarie in cui viene suddiviso il consumo elettrico. F1 (ore di punta, solitamente 8-19 nei giorni feriali) ha il prezzo più alto. F2 (ore intermedie) ha un prezzo medio. F3 (notti e festivi) ha il prezzo più basso. Le tariffe domestiche usano spesso il biorario F1/F23.'},
+  {q:'Cos\'è la tariffa BiFuel?',a:'Alcuni fornitori offrono uno sconto se attivi sia la fornitura luce che quella gas con loro. Caricando entrambe le bollette, il nostro sistema identifica automaticamente questi sconti e li applica nel calcolo comparativo.'},
+  {q:'Quanto sono affidabili le stime?',a:'Le stime sono indicative, basate sui consumi dell\'ultimo periodo di fatturazione proiettati su 12 mesi. Non includono eventuali variazioni stagionali, bonus ARERA o promozioni temporanee non ancora nel nostro database. Per un\'analisi più precisa, usa il servizio di consulenza.'},
+];
+
+let selectedTipo = 'luce';
+let selectedProfilo = 'D2';
+let selectedFile = null;
+let currentBollettaId = null;
+let currentLeadId = null;
+
+/* ── UI Setup ────────────────────────────────────────────────── */
+function setTipo(t){
+  selectedTipo=t;
+  document.getElementById('btn-tipo-luce').className='tipo-btn'+(t==='luce'?' active luce':'');
+  document.getElementById('btn-tipo-gas').className='tipo-btn'+(t==='gas'?' active gas':'');
+  const dz=document.getElementById('dropZone');
+  dz.style.borderColor=t==='luce'?'':'';
+}
+function setProfilo(v,btn){
+  selectedProfilo=v;
+  document.querySelectorAll('#profilo-grid .pr-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function onDrop(e){
+  e.preventDefault();document.getElementById('dropZone').classList.remove('over');
+  const f=e.dataTransfer.files[0];if(f)setFile(f);
+}
+function onFileSelect(e){const f=e.target.files[0];if(f)setFile(f);e.target.value='';}
+function setFile(f){
+  selectedFile=f;
+  document.getElementById('dzIcon').textContent='✅';
+  document.getElementById('dzTitle').textContent=f.name;
+  document.getElementById('dzSub').textContent=`${(f.size/1024).toFixed(0)} KB — pronto per l'analisi`;
+  document.getElementById('dropZone').style.borderStyle='solid';
+  document.getElementById('dropZone').style.borderColor='var(--green)';
+}
+
+/* ── Analisi principale ──────────────────────────────────────── */
+async function avviaAnalisi(){
+  clearAlert('upload-alert');
+  if(!selectedFile){showAlert('upload-alert','Seleziona prima la bolletta PDF.','err');return;}
+  const nome=document.getElementById('inp-nome').value.trim();
+  const cognome=document.getElementById('inp-cognome').value.trim();
+  const email=document.getElementById('inp-email').value.trim();
+  if(!document.getElementById('chk-privacy').checked){showAlert('upload-alert','Devi accettare l\'informativa sulla privacy per continuare.','err');return;}
+
+  document.getElementById('uploadCard').style.display='none';
+  document.getElementById('loading-section').style.display='block';
+
+  const steps=['ls1','ls2','ls3','ls4','ls5'];
+  let si=0; setSt(steps[0],'act');
+  const iv=setInterval(()=>{if(si<steps.length-1){setSt(steps[si],'done');si++;setSt(steps[si],'act');}},1800);
+
+  try {
+    // 1. Salva lead prima dell'analisi (se ha email)
+    if(email){
+      const lr=await fetch(`${API}/api/leads`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome,cognome,email,tipo:'analisi',consenso_privacy:true})});
+      if(lr.ok) currentLeadId=(await lr.json()).lead_id;
+    }
+
+    // 2. Analizza bolletta
+    const form=new FormData(); form.append('file',selectedFile);
+    const url=`${API}/api/analizza/${selectedTipo}?profilo=${selectedProfilo}${currentLeadId?'&lead_id='+currentLeadId:''}`;
+    const ar=await fetch(url,{method:'POST',body:form});
+    if(!ar.ok){const e=await ar.json().catch(()=>({}));throw new Error(e.detail||`Errore HTTP ${ar.status}`);}
+    const analisi=await ar.json();
+    currentBollettaId=analisi.bolletta_id;
+
+    // 3. Compara offerte
+    setSt(steps[4],'act');
+    const cr=await fetch(`${API}/api/compara/${currentBollettaId}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({})});
+    if(!cr.ok) throw new Error('Errore nella comparazione offerte');
+    const compara=await cr.json();
+
+    clearInterval(iv); steps.forEach(s=>setSt(s,'done'));
+    await sleep(400);
+
+    document.getElementById('loading-section').style.display='none';
+    mostraRisultati(analisi,compara);
+  } catch(e){
+    clearInterval(iv);
+    document.getElementById('loading-section').style.display='none';
+    document.getElementById('uploadCard').style.display='block';
+    showAlert('upload-alert',`❌ ${e.message}. Riprova o usa il servizio di consulenza.`,'err');
+  }
+}
+
+/* ── Render risultati ────────────────────────────────────────── */
+function mostraRisultati(analisi,compara){
+  const sec=document.getElementById('risultati-section');
+  sec.style.display='block';
+  document.getElementById('ris-title').textContent=`Analisi completata ✓`;
+  document.getElementById('ris-subtitle').textContent=`Profilo: ${compara.profilo_label} · IVA applicata: ${compara.iva_perc}% · ${selectedTipo==='luce'?'Bolletta elettrica':'Bolletta gas'}`;
+
+  const d=analisi.dati||{};
+  const dg=d.dati_generali||{};
+  const lc=d.letture_e_consumi||{};
+  const dc=d.dettaglio_costi||{};
+  const ai=d.analisi_ai||{};
+  const pf=dg.periodo_fatturazione||{};
+  const unita=analisi.unita||'kWh';
+  const isL=selectedTipo==='luce';
+
+  const consumo=isL?lc.consumo_totale_periodo:lc.consumo_totale_smc;
+  const costoU=analisi.costo_unitario;
+  const best=compara.offerte?.[0];
+  const rispMax=best?.risparmio_annuo||0;
+
+  // KPI
+  const kpiHtml=`<div class="kpi-row">
+    <div class="kpi-card"><div class="kpi-label">Totale Fattura</div><div class="kpi-value">${fmtEur(dg.totale_fattura)}</div><div class="kpi-sub">${pf.inizio||'—'} → ${pf.fine||'—'}</div></div>
+    <div class="kpi-card"><div class="kpi-label">Consumo</div><div class="kpi-value">${fmtN(consumo,0)||'—'}</div><div class="kpi-sub">${unita}</div></div>
+    <div class="kpi-card"><div class="kpi-label">${isL?'Costo/kWh':'Costo/Smc'}</div><div class="kpi-value">${costoU?(costoU*100).toFixed(2)+' c€':'—'}</div><div class="kpi-sub">solo materia</div></div>
+    ${rispMax>0?`<div class="kpi-card highlight"><div class="kpi-label">Risparmio Max</div><div class="kpi-value">${fmtEur(rispMax)}</div><div class="kpi-sub">annuo stimato</div></div>`:`<div class="kpi-card"><div class="kpi-label">Fornitore</div><div class="kpi-value" style="font-size:1rem">${dg.fornitore||'—'}</div><div class="kpi-sub">${dg.mercato||''}</div></div>`}
+  </div>`;
+
+  // Costi
+  const voci=isL?[['⚡ Materia Energia',dc.spesa_materia_energia],['🚛 Trasporto & Contatore',dc.trasporto_gestione_contatore],['🏛 Oneri di Sistema',dc.oneri_sistema],['📜 Accise',dc.accise],['📺 Canone RAI',dc.canone_rai],['📦 Altre partite',dc.altre_partite],['🧾 Imposte & IVA',dc.imposte_iva]]:[['🔥 Materia Gas',dc.spesa_materia_gas],['🚛 Trasporto & Distribuzione',dc.trasporto_distribuzione],['🏛 Oneri di Sistema',dc.oneri_sistema],['📜 Accise',dc.accise],['🏙 Add. Regionale',dc.addizionale_regionale],['📦 Altre partite',dc.altre_partite],['🧾 Imposte & IVA',dc.imposte_iva]];
+  const costiHtml=voci.filter(([,v])=>v!=null).map(([l,v])=>`<div class="cost-row"><span>${l}</span><span class="cost-row-val">${fmtEur(v)}</span></div>`).join('')+`<div class="cost-row"><span><strong>Totale fattura</strong></span><span class="cost-row-val">${fmtEur(dg.totale_fattura)}</span></div>`;
+
+  // Fasce luce
+  let fasceHtml='';
+  if(isL){
+    const f=lc.ripartizione_fasce||{};
+    const cols=f.F23?.consumo?[['F1','Picco (8-19 feriali)',f.F1],['F23','Fuori Picco',f.F23]]:[['F1','Picco',f.F1],['F2','Intermedio',f.F2],['F3','Fuori Picco',f.F3]];
+    fasceHtml=`<div class="cost-card" style="margin-bottom:1rem"><div class="cost-card-title">⏱ Consumi per Fascia</div><div style="display:grid;grid-template-columns:repeat(${cols.length},1fr);gap:.7rem">${cols.map(([n,l,fv])=>`<div style="background:var(--bg);border-radius:var(--r-sm);padding:.75rem;text-align:center"><div style="font-size:.67rem;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.5px">${n}</div><div style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.1rem;font-weight:800;margin:4px 0">${(fv||{}).consumo!=null?fmtN((fv||{}).consumo,0)+' kWh':'—'}</div><div style="font-size:.7rem;color:var(--muted)">${(fv||{}).prezzo_unitario?((fv||{}).prezzo_unitario*100).toFixed(3)+' c€/kWh':l}</div></div>`).join('')}</div></div>`;
+  }
+
+  // AI insights
+  let aiHtml='';
+  if(ai.anomalie_rilevate?.length||ai.suggerimenti?.length){
+    aiHtml=`<div class="ai-card"><div class="ai-title">🤖 Analisi AI</div>${ai.anomalie_rilevate?.length?`<p style="font-size:.78rem;font-weight:700;color:#92400e;margin-bottom:.3rem">Possibili anomalie:</p><ul class="ai-items">${ai.anomalie_rilevate.map(a=>`<li>${a}</li>`).join('')}</ul>`:''}<br>${ai.suggerimenti?.length?`<p style="font-size:.78rem;font-weight:700;color:var(--green-d);margin-bottom:.3rem">Suggerimenti:</p><ul class="ai-items" style="--orange:var(--green)">${ai.suggerimenti.map(s=>`<li style="&:before{content:'✓'}">${s}</li>`).join('')}</ul>`:''}</div>`;
+  }
+
+  // Comparazione
+  const offerte=compara.offerte||[];
+  const comparaHtml=`
+    <div class="compara-intro">
+      Confrontando con le offerte del mercato libero compatibili con il tuo profilo <strong>${compara.profilo_label}</strong>:
+      ${rispMax>0?`puoi risparmiare fino a <strong style="color:var(--green-d)">${fmtEur(rispMax)}/anno</strong> con l'offerta migliore.`:'La tua offerta attuale è già tra le più competitive.'}
+      <span style="font-size:.77rem;color:var(--muted)"> (Spesa annua attuale stimata: ${fmtEur(compara.costo_annuo_attuale)})</span>
+    </div>
+    ${offerte.map((o,i)=>`
+      <div class="off-card ${i===0?'best':''}">
+        ${i===0?'<div class="best-badge">⭐ Migliore</div>':''}
+        ${o.bifuel_applicato&&o.sconto_bifuel?`<div class="bf-badge">BiFuel -${o.sconto_bifuel}%</div>`:''}
+        <div class="off-rank">${i+1}</div>
+        <div class="off-info">
+          <div class="off-nome">${o.nome}</div>
+          <div class="off-forn">${o.fornitore}</div>
+          ${o.note?`<div class="off-note" title="${o.note}">${o.note}</div>`:''}
+          <div class="off-tags">
+            <span class="tag ${o.tipo==='FISSO'?'t-fix':'t-var'}">${o.tipo}</span>
+            ${o.spread_pun?`<span class="tag t-var">PUN+${(o.spread_pun*100).toFixed(1)}c€</span>`:''}
+            <span class="tag t-lib">${o.mercato}</span>
+            ${o.valida_fino?`<span style="font-size:.69rem;color:var(--muted)">fino ${o.valida_fino}</span>`:''}
+          </div>
+        </div>
+        <div class="off-num">
+          <div class="off-costo">${fmtEur(o.costo_periodo)}</div>
+          <div class="off-annuo">${fmtEur(o.costo_annuo)}/anno</div>
+          <div class="risp-badge ${o.risparmio_annuo>=0?'risp-pos':'risp-neg'}">${o.risparmio_annuo>=0?'↓':'↑'} ${fmtEur(Math.abs(o.risparmio_annuo))}/anno</div>
+        </div>
+        ${o.url?`<a href="${o.url}" target="_blank" style="flex-shrink:0;display:inline-flex;align-items:center;gap:.3rem;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:7px 12px;font-size:.78rem;font-weight:600;color:var(--ink);text-decoration:none;transition:all .2s;white-space:nowrap" onmouseover="this.style.borderColor='var(--ink)'" onmouseout="this.style.borderColor='var(--border)'">Vai →</a>`:''}
+      </div>
+    `).join('')}
+  `;
+
+  // Email results
+  const emailCta=`<div class="email-cta">
+    <h4>📧 Ricevi i risultati via email</h4>
+    <p>Ti inviamo l'analisi completa e il confronto offerte in PDF, da conservare o condividere.</p>
+    <div class="email-row">
+      <input id="save-email" type="email" placeholder="la-tua@email.it" value="${document.getElementById('inp-email').value||''}">
+      <button class="btn-email" onclick="salvaEmail()">Invia →</button>
+    </div>
+    <div id="email-alert" style="margin-top:.5rem"></div>
+  </div>`;
+
+  document.getElementById('ris-content').innerHTML=kpiHtml+`<div class="cost-card">${costiHtml}</div>`+fasceHtml+aiHtml+`<h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.15rem;color:var(--navy);margin:1.5rem 0 .9rem">🏆 Offerte compatibili con il tuo profilo</h3>`+comparaHtml+emailCta+`<div style="text-align:center;margin-top:1.5rem"><button onclick="nuovaAnalisi()" style="background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r);padding:.75rem 1.5rem;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;color:var(--ink)">← Analizza un'altra bolletta</button></div>`;
+
+  sec.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+async function salvaEmail(){
+  const email=document.getElementById('save-email').value.trim();
+  if(!email){document.getElementById('email-alert').innerHTML='<div class="alert a-err">Inserisci un indirizzo email valido</div>';return;}
+  try{
+    await fetch(`${API}/api/leads`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,tipo:'email_risultati',bolletta_id:currentBollettaId,consenso_privacy:true})});
+    document.getElementById('email-alert').innerHTML='<div class="alert a-ok">✅ Riceverai presto i risultati all\'indirizzo indicato.</div>';
+  }catch(e){document.getElementById('email-alert').innerHTML='<div class="alert a-err">Errore. Riprova.</div>';}
+}
+
+function nuovaAnalisi(){
+  currentBollettaId=null; selectedFile=null;
+  document.getElementById('risultati-section').style.display='none';
+  document.getElementById('uploadCard').style.display='block';
+  document.getElementById('dzIcon').textContent='📂';
+  document.getElementById('dzTitle').textContent='Trascina il PDF qui oppure clicca';
+  document.getElementById('dzSub').textContent='Accettiamo PDF fino a 15 MB — qualsiasi fornitore italiano';
+  document.getElementById('dropZone').style.borderStyle='dashed';
+  document.getElementById('dropZone').style.borderColor='var(--border)';
+  document.getElementById('uploadCard').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ── Consulente modal ────────────────────────────────────────── */
+function openConsulente(){document.getElementById('modal-consulente').classList.add('open')}
+function closeModal(){document.getElementById('modal-consulente').classList.remove('open')}
+
+async function inviaConsulente(){
+  clearAlert('c-alert');
+  const nome=document.getElementById('c-nome').value.trim();
+  const cognome=document.getElementById('c-cognome').value.trim();
+  const email=document.getElementById('c-email').value.trim();
+  const tel=document.getElementById('c-tel').value.trim();
+  if(!nome||!email||!tel){showAlert('c-alert','Compila tutti i campi obbligatori (*)','err');return;}
+  if(!document.getElementById('c-privacy').checked){showAlert('c-alert','Devi accettare l\'informativa sulla privacy','err');return;}
+  try{
+    await fetch(`${API}/api/leads`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome,cognome,email,telefono:tel,tipo:'consulente',bolletta_id:currentBollettaId,consenso_privacy:true,consenso_marketing:document.getElementById('c-mkt').checked})});
+    document.getElementById('modal-body').innerHTML=`<div class="success-state"><div class="success-icon">✅</div><div class="success-title">Richiesta inviata!</div><div class="success-text">Un nostro consulente ti contatterà entro 24 ore all'indirizzo <strong>${email}</strong> o al numero <strong>${tel}</strong>.</div></div>`;
+    document.querySelector('.modal-footer').innerHTML=`<button class="btn-secondary" onclick="closeModal()">Chiudi</button>`;
+  }catch(e){showAlert('c-alert','Errore invio. Riprova tra poco.','err');}
+}
+
+/* ── FAQ ─────────────────────────────────────────────────────── */
+function buildFaq(){
+  const el=document.getElementById('faq-list');
+  el.innerHTML=FAQ_DATA.map((item,i)=>`
+    <div class="faq-item" id="faq-${i}">
+      <div class="faq-q" onclick="toggleFaq(${i})">${item.q}<span class="faq-arrow">▼</span></div>
+      <div class="faq-a">${item.a}</div>
+    </div>`).join('');
+}
+function toggleFaq(i){document.getElementById('faq-'+i).classList.toggle('open')}
+
+/* ── Loading steps ───────────────────────────────────────────── */
+function setSt(id,st){
+  const el=document.getElementById(id); if(!el) return;
+  el.classList.remove('act','done');
+  if(st) el.classList.add(st);
+  const ic=el.querySelector('.step-ic');
+  if(ic) ic.textContent=st==='done'?'✓':ic.textContent;
+}
+
+/* ── Utilities ───────────────────────────────────────────────── */
+function fmtEur(v){if(v==null)return '—';return new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',maximumFractionDigits:2}).format(v);}
+function fmtN(v,d=0){if(v==null)return '—';return new Intl.NumberFormat('it-IT',{maximumFractionDigits:d}).format(v);}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+function showAlert(id,msg,type){const el=document.getElementById(id);if(el)el.innerHTML=`<div class="alert a-${type}">${msg}</div>`;}
+function clearAlert(id){const el=document.getElementById(id);if(el)el.innerHTML='';}
+
+window.addEventListener('DOMContentLoaded',buildFaq);
+</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+services:
+  bollettaai:
+    build: .
+    container_name: bollettaai
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      # Persistenza database e log fuori dal container
+      - ./data:/app/data
+    environment:
+      # --- OBBLIGATORIO ---
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+
+      # --- SICUREZZA ---
+      # Cambia con un token segreto per proteggere /admin
+      - ADMIN_TOKEN=${ADMIN_TOKEN:-admin123}
+
+      # --- CORS (opzionale) ---
+      # In produzione imposta il tuo dominio, es: https://tuosito.it
+      # Lascia vuoto o "*" per permettere qualsiasi origine (solo sviluppo)
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-*}
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
