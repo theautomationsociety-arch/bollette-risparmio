@@ -1,5 +1,5 @@
 """
-BollettaAI — Backend Pubblico + Admin
+Bollette Risparmio — Backend Pubblico + Admin
 Sito comparatore bollette Luce & Gas — struttura ispirata ad AIChange.it
 """
 
@@ -48,18 +48,18 @@ PROFILI = {
 }
 ADMIN_TOKEN  = os.environ.get("ADMIN_TOKEN", "admin123")
 RESEND_KEY   = os.environ.get("RESEND_API_KEY", "")
-FROM_EMAIL   = os.environ.get("FROM_EMAIL", "BollettaAI <theautomationsociety@gmail.com>")
+FROM_EMAIL   = os.environ.get("FROM_EMAIL", "Bollette Risparmio <onboarding@resend.dev>")
 ADMIN_EMAIL  = os.environ.get("ADMIN_EMAIL", "")
-SITE_URL     = os.environ.get("SITE_URL", "https://bollette-risparmio.onrender.com")
+SITE_URL     = os.environ.get("SITE_URL", "https://www.bolletterisparmio.it")
 
 # ── Lifespan ───────────────────────────────────────────────────────────────
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
-    log.info("BollettaAI avviato")
+    log.info("Bollette Risparmio avviato")
     yield
 
-app = FastAPI(title="BollettaAI", version="1.0.0", lifespan=lifespan)
+app = FastAPI(title="Bollette Risparmio", version="1.0.0", lifespan=lifespan)
 _ORIGINS = [o.strip() for o in os.environ.get("ALLOWED_ORIGINS","*").split(",")]
 app.add_middleware(CORSMiddleware,
     allow_origins=_ORIGINS,

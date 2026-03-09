@@ -1,23 +1,23 @@
 """
-BollettaAI — Guide SEO (5 pagine pillar)
+Bollette Risparmio — Guide SEO (5 pagine pillar)
 Serve HTML completo, server-side, per ogni guida.
 """
 
 from datetime import datetime
 
-SITE_URL = "https://bollette-risparmio.onrender.com"
+SITE_URL = "https://www.bolletterisparmio.it"
 
 # ── CSS condiviso ────────────────────────────────────────────────────────
 _CSS = """
 :root{
-  --navy:#0d1b2a;--ink:#1a2332;--muted:#5a6a7e;
+  --navy:#1A2E4A;--ink:#1a2332;--muted:#5a6a7e;
   --border:#e4eaf2;--bg:#f8fafd;--white:#fff;
   --green:#059669;--green-l:#d1fae5;--green-d:#065f46;
-  --blue:#2563eb;--blue-l:#dbeafe;
-  --orange:#ea580c;--yellow:#d97706;
+  --blue:#E8500A;--blue-l:#FFF0E8;
+  --orange:#E8500A;--orange-light:#FF6B2C;--yellow:#d97706;
   --r:12px;--r-sm:8px;
   --shadow-sm:0 1px 3px rgba(0,0,0,.08);
-  --shadow:0 4px 16px rgba(13,27,42,.10);
+  --shadow:0 4px 16px rgba(26,46,74,.10);
   --t:180ms ease;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -25,14 +25,14 @@ html{scroll-behavior:smooth}
 body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--ink);-webkit-font-smoothing:antialiased;font-size:17px;line-height:1.75}
 
 /* PROGRESS BAR */
-#progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--blue),#7c3aed);width:0%;z-index:200;transition:width .1s}
+#progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--orange),var(--orange-light));width:0%;z-index:200;transition:width .1s}
 
 /* NAV */
 .nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 1.5rem;height:64px;display:flex;align-items:center;justify-content:space-between}
 .nav-logo{display:flex;align-items:center;gap:.5rem;text-decoration:none}
 .nav-logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--navy),#1e40af);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem}
-.nav-logo-text{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.15rem;color:var(--navy);letter-spacing:-.5px}
-.nav-logo-text span{color:var(--blue)}
+.nav-logo-text{font-family:'Sora','Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.05rem;color:var(--navy);letter-spacing:-.5px}
+.nav-logo-text span{color:var(--orange)}
 .nav-cta{background:var(--navy);color:white;text-decoration:none;font-size:.84rem;font-weight:600;padding:7px 16px;border-radius:var(--r-sm);transition:all var(--t)}
 .nav-cta:hover{background:#1e3a5f;transform:translateY(-1px)}
 
@@ -142,8 +142,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--ink);-
 /* FOOTER */
 .footer{background:var(--navy);padding:2.5rem 1.5rem;color:rgba(255,255,255,.45)}
 .footer-inner{max-width:1060px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
-.footer-logo{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;color:white;font-size:1rem}
-.footer-logo span{color:#60a5fa}
+.footer-logo{font-family:'Sora','Bricolage Grotesque',sans-serif;font-weight:800;color:white;font-size:1rem}
+.footer-logo span{color:#FF6B2C}
 .footer-links{display:flex;gap:1rem;flex-wrap:wrap}
 .footer-links a{color:rgba(255,255,255,.35);text-decoration:none;font-size:.8rem;transition:color var(--t)}
 .footer-links a:hover{color:rgba(255,255,255,.75)}
@@ -155,26 +155,38 @@ body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--ink);-
 _NAV = """<div id="progress"></div>
 <nav class="nav">
   <a href="/" class="nav-logo">
-    <div class="nav-logo-icon">&#x26A1;</div>
-    <span class="nav-logo-text">Bolletta<span>AI</span></span>
+    <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
+      <rect width="36" height="36" rx="10" fill="#1A2E4A"/>
+      <path d="M11 22l5-8 4 6 3-4 3 6" stroke="#E8500A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="18" cy="14" r="1.5" fill="#FF6B2C"/>
+    </svg>
+    <span class="nav-logo-text">Bollette <span>Risparmio</span></span>
   </a>
-  <a href="/" class="nav-cta">Analizza gratis &#x2192;</a>
+  <div style="display:flex;align-items:center;gap:.75rem">
+    <a href="tel:0819131897" style="font-size:.82rem;color:var(--navy);text-decoration:none;font-weight:600;display:none" class="nav-phone-desktop">&#128222; 081 91 31 897</a>
+    <a href="/" class="nav-cta">Analizza Bolletta &#x2192;</a>
+  </div>
 </nav>"""
 
 # ── Footer ───────────────────────────────────────────────────────────────
 _FOOTER = """<footer class="footer">
   <div class="footer-inner">
     <div>
-      <div class="footer-logo">Bolletta<span>AI</span></div>
-      <div style="font-size:.75rem;margin-top:.25rem">Analisi bollette luce e gas con AI</div>
+      <div class="footer-logo">Bollette <span>Risparmio</span></div>
+      <div style="font-size:.75rem;margin-top:.25rem">Analisi AI gratuita bollette luce e gas</div>
+      <div style="font-size:.75rem;margin-top:.35rem;opacity:.6">Via Cesario Console 3, 80132 Napoli &middot; info@bolletterisparmio.it</div>
     </div>
     <div class="footer-links">
-      <a href="/">Analisi gratuita</a>
-      <a href="/guide">Guide</a>
-      <a href="/privacy">Privacy</a>
-      <a href="/#faq">FAQ</a>
+      <a href="/">Analisi AI Gratuita</a>
+      <a href="/#offerte">Offerte Luce &amp; Gas</a>
+      <a href="/guide">Guide Gratuite</a>
+      <a href="/#contatti">Contatti</a>
     </div>
-    <div class="footer-copy">&#169; 2025 BollettaAI<br>Stime indicative, non consulenza tariffaria</div>
+    <div class="footer-copy">
+      &#169; Bollette Risparmio, diritti riservati.<br>
+      <a href="https://www.iubenda.com/privacy-policy/30631851" target="_blank" style="color:rgba(255,255,255,.4);text-decoration:none;font-size:.72rem">Privacy Policy</a> &middot;
+      <a href="https://www.bolletterisparmio.it/trattamento-dati/" target="_blank" style="color:rgba(255,255,255,.4);text-decoration:none;font-size:.72rem">Condizioni Generali</a>
+    </div>
   </div>
 </footer>
 <script>
@@ -241,8 +253,8 @@ def _page(
       "headline": "{title}",
       "description": "{desc}",
       "inLanguage": "it-IT",
-      "author": {{"@type":"Organization","name":"BollettaAI","url":"{SITE_URL}"}},
-      "publisher": {{"@type":"Organization","name":"BollettaAI","url":"{SITE_URL}"}},
+      "author": {{"@type":"Organization","name":"Bollette Risparmio","url":"{SITE_URL}"}},
+      "publisher": {{"@type":"Organization","name":"Bollette Risparmio","url":"{SITE_URL}"}},
       "dateModified": "{datetime.now().strftime('%Y-%m-%d')}",
       "mainEntityOfPage": "{canonical}"
     }},
@@ -263,18 +275,18 @@ def _page(
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>{title} — BollettaAI</title>
+<title>{title} — Bollette Risparmio</title>
 <meta name="description" content="{desc}">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="{canonical}">
 <meta property="og:type" content="article">
-<meta property="og:title" content="{title} — BollettaAI">
+<meta property="og:title" content="{title} — Bollette Risparmio">
 <meta property="og:description" content="{desc}">
 <meta property="og:url" content="{canonical}">
 <meta property="og:locale" content="it_IT">
-<meta property="og:site_name" content="BollettaAI">
+<meta property="og:site_name" content="Bollette Risparmio">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="{title} — BollettaAI">
+<meta name="twitter:title" content="{title} — Bollette Risparmio">
 <meta name="twitter:description" content="{desc}">
 <script type="application/ld+json">{schema}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -325,7 +337,8 @@ def _page(
     <div class="sidebar-cta">
       <h4>Scopri quanto risparmi</h4>
       <p>Carica la bolletta e confronta le offerte in 30 secondi</p>
-      <a href="/">Analisi gratuita &#x2192;</a>
+      <a href="tel:0819131897" style="background:var(--orange);color:white;text-decoration:none;border-radius:var(--r-sm);padding:.6rem;font-weight:700;font-size:.84rem;display:block;margin-bottom:.6rem">&#128222; 081 91 31 897</a>
+      <a href="/">&#9889; Analizza gratis &rarr;</a>
     </div>
   </aside>
 </div>
@@ -540,7 +553,7 @@ Totale = (Materia Energia + Trasporto + Oneri di Sistema + Accise) × (1 + aliqu
 
 <div class="inline-cta">
   <h4>Lascia fare il calcolo all'AI</h4>
-  <p>Carica la bolletta: BollettaAI estrae ogni voce automaticamente e calcola il tuo costo unitario reale.</p>
+  <p>Carica la bolletta: Bollette Risparmio estrae ogni voce automaticamente e calcola il tuo costo unitario reale.</p>
   <a href="/">&#x1F4CA; Analizza la bolletta gratis</a>
 </div>
 
@@ -685,7 +698,7 @@ def guida_fasce_orarie() -> str:
 
 <div class="inline-cta">
   <h4>Qual è la tariffa migliore per il tuo profilo?</h4>
-  <p>Carica la bolletta: BollettaAI analizza la tua ripartizione F1/F2/F3 e identifica l'offerta più conveniente in base ai tuoi consumi reali.</p>
+  <p>Carica la bolletta: Bollette Risparmio analizza la tua ripartizione F1/F2/F3 e identifica l'offerta più conveniente in base ai tuoi consumi reali.</p>
   <a href="/">&#x26A1; Scopri la tariffa migliore per te</a>
 </div>
 
@@ -824,7 +837,7 @@ def guida_cambiare_fornitore() -> str:
 
 <div class="inline-cta">
   <h4>Qual è l'offerta migliore per te?</h4>
-  <p>Carica la bolletta attuale: in 30 secondi BollettaAI confronta le offerte e ti dice quanto potresti risparmiare cambiando fornitore.</p>
+  <p>Carica la bolletta attuale: in 30 secondi Bollette Risparmio confronta le offerte e ti dice quanto potresti risparmiare cambiando fornitore.</p>
   <a href="/">&#x1F4B0; Scopri quanto risparmi</a>
 </div>
 
@@ -936,7 +949,7 @@ Prezzo per Smc = PSV mensile (€/Smc) + Spread del fornitore (€/Smc)
 
 <div class="inline-cta">
   <h4>Vuoi sapere qual è il PUN attuale?</h4>
-  <p>BollettaAI aggiorna mensilmente gli indici PUN e PSV da ARERA e li usa per calcolare le offerte variabili più convenienti per il tuo profilo.</p>
+  <p>Bollette Risparmio aggiorna mensilmente gli indici PUN e PSV da ARERA e li usa per calcolare le offerte variabili più convenienti per il tuo profilo.</p>
   <a href="/">&#x1F4C8; Confronta le offerte indicizzate</a>
 </div>
 
@@ -946,7 +959,7 @@ Prezzo per Smc = PSV mensile (€/Smc) + Spread del fornitore (€/Smc)
   <li><strong>ARERA — Portale Offerte:</strong> <a href="https://www.ilportaleofferte.it/portaleOfferte/it/open-data.page" target="_blank" rel="noopener">ilportaleofferte.it</a> pubblica i prezzi storici mensili usati come riferimento per le offerte indicizzate.</li>
   <li><strong>GME (Gestore Mercati Energetici):</strong> <a href="https://www.mercatoelettrico.org" target="_blank" rel="noopener">mercatoelettrico.org</a> pubblica i prezzi zonali orari dell'elettricità in tempo reale.</li>
   <li><strong>Snam Rete Gas:</strong> pubblica i prezzi PSV giornalieri sulla piattaforma di bilanciamento.</li>
-  <li><strong>BollettaAI:</strong> il pannello admin aggiorna automaticamente gli indici mensili ARERA per il calcolo delle offerte variabili.</li>
+  <li><strong>Bollette Risparmio:</strong> il pannello admin aggiorna automaticamente gli indici mensili ARERA per il calcolo delle offerte variabili.</li>
 </ul>
 """
     return _page(
@@ -982,11 +995,11 @@ def guida_index() -> str:
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Guide al risparmio energia — BollettaAI</title>
+<title>Guide al risparmio energia — Bollette Risparmio</title>
 <meta name="description" content="Guide pratiche e aggiornate su bollette luce e gas, mercato libero, fasce orarie, come cambiare fornitore e indici PUN e PSV.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="{SITE_URL}/guide">
-<meta property="og:title" content="Guide energia — BollettaAI">
+<meta property="og:title" content="Guide energia — Bollette Risparmio">
 <meta property="og:description" content="Guide pratiche su bollette luce e gas, mercato libero, fasce orarie e risparmio energetico.">
 <meta property="og:url" content="{SITE_URL}/guide">
 <meta property="og:locale" content="it_IT">
@@ -996,7 +1009,7 @@ def guida_index() -> str:
   "name": "Guide al risparmio energia",
   "url": "{SITE_URL}/guide",
   "description": "Guide pratiche su bollette luce e gas per famiglie e PMI italiane",
-  "publisher": {{"@type":"Organization","name":"BollettaAI","url":"{SITE_URL}"}}
+  "publisher": {{"@type":"Organization","name":"Bollette Risparmio","url":"{SITE_URL}"}}
 }}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">

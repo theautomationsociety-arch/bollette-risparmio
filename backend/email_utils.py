@@ -1,5 +1,5 @@
 """
-BollettaAI — Email utilities (Resend)
+Bollette Risparmio — Email utilities (Resend)
 Tre template: risultati analisi, conferma consulente (utente), notifica admin.
 """
 
@@ -44,7 +44,7 @@ def _base(body_html: str, preview: str, site_url: str, from_email: str) -> str:
         # Footer
         '<tr><td style="background:#f8fafd;padding:20px 32px;border-top:1px solid #e4eaf2">'
         '<p style="margin:0;font-size:11px;color:#8a9ab0;line-height:1.6">'
-        "Hai ricevuto questa email perché hai usato il servizio BollettaAI.<br>"
+        "Hai ricevuto questa email perché hai usato il servizio Bollette Risparmio.<br>"
         "I risultati sono stime indicative. Per informazioni: "
         f'<a href="mailto:info@bollette-risparmio.onrender.com" style="color:#2563eb">info@bollette-risparmio.onrender.com</a><br>'
         f'<a href="{site_url}" style="color:#2563eb">{site_url}</a>'
@@ -145,7 +145,7 @@ def build_risultati(
         f"Fornitore attuale rilevato: <strong>{fornitore_attuale or 'non rilevato'}</strong></p>"
     )
 
-    subject = f"BollettaAI: la tua analisi bolletta {tipo_label}"
+    subject = f"Bollette Risparmio: la tua analisi bolletta {tipo_label}"
     if risparmio_max and risparmio_max > 50:
         subject += f" \u2014 risparmio possibile \u20ac{risparmio_max:,.0f}/anno"
 
@@ -176,7 +176,7 @@ def build_consulente_utente(nome: str, email: str, site_url: str, from_email: st
         "Analizza subito</a>"
     )
     return (
-        "BollettaAI: consulenza richiesta \u2705",
+        "Bollette Risparmio: consulenza richiesta \u2705",
         _base(body, "Consulenza confermata. Ti contatteremo entro 24 ore.", site_url, from_email),
     )
 
