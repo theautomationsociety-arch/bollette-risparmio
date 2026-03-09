@@ -24,6 +24,7 @@ except ImportError:
 from backend.email_utils import (
     build_risultati, build_consulente_utente, build_consulente_admin, send_email as _send_email
 )
+import backend.guide_pages as _gp
 
 # ── Paths ──────────────────────────────────────────────────────────────────
 BASE       = Path(__file__).parent.parent
@@ -49,10 +50,6 @@ ADMIN_TOKEN  = os.environ.get("ADMIN_TOKEN", "admin123")
 RESEND_KEY   = os.environ.get("RESEND_API_KEY", "")
 FROM_EMAIL   = os.environ.get("FROM_EMAIL", "BollettaAI <onboarding@resend.dev>")
 ADMIN_EMAIL  = os.environ.get("ADMIN_EMAIL", "")
-SITE_URL     = os.environ.get("SITE_URL", "https://bollette-risparmio.onrender.com")
-RESEND_KEY   = os.environ.get("RESEND_API_KEY", "")
-FROM_EMAIL   = os.environ.get("FROM_EMAIL", "BollettaAI <noreply@bollette-risparmio.onrender.com>")
-ADMIN_EMAIL  = os.environ.get("ADMIN_EMAIL", "")   # dove ricevere notifiche admin
 SITE_URL     = os.environ.get("SITE_URL", "https://bollette-risparmio.onrender.com")
 
 # ── Lifespan ───────────────────────────────────────────────────────────────
@@ -308,10 +305,15 @@ async def sitemap():
     from fastapi.responses import Response
     today = datetime.now().strftime("%Y-%m-%d")
     urls = [
-        (SITE_URL,                              "1.0",  "daily"),
-        (f"{SITE_URL}/#come-funziona",          "0.8",  "monthly"),
-        (f"{SITE_URL}/#sicurezza",              "0.7",  "monthly"),
-        (f"{SITE_URL}/#faq",                    "0.7",  "monthly"),
+        (SITE_URL,                                                            "1.0", "daily"),
+        (f"{SITE_URL}/#come-funziona",                                        "0.8", "monthly"),
+        (f"{SITE_URL}/#faq",                                                  "0.7", "monthly"),
+        (f"{SITE_URL}/guide",                                                 "0.8", "weekly"),
+        (f"{SITE_URL}/guida/differenza-mercato-libero-tutelato",              "0.9", "monthly"),
+        (f"{SITE_URL}/guida/come-leggere-bolletta-luce",                      "0.9", "monthly"),
+        (f"{SITE_URL}/guida/fasce-orarie-f1-f2-f3",                          "0.9", "monthly"),
+        (f"{SITE_URL}/guida/come-cambiare-fornitore-energia",                 "0.9", "monthly"),
+        (f"{SITE_URL}/guida/pun-psv-cosa-sono",                              "0.9", "monthly"),
     ]
     locs = "\n".join(
         f"  <url><loc>{u}</loc><lastmod>{today}</lastmod>"
@@ -323,6 +325,39 @@ async def sitemap():
 {locs}
 </urlset>'''
     return Response(content=xml, media_type="application/xml")
+
+# ══════════════════════════════════════════════════════════════════════════════
+# GUIDE — Pagine pillar SEO
+# ══════════════════════════════════════════════════════════════════════════════
+@app.get("/guide", include_in_schema=False)
+async def guide_index():
+    from fastapi.responses import HTMLResponse
+    return HTMLResponse(_gp.guida_index())
+
+@app.get("/guida/differenza-mercato-libero-tutelato", include_in_schema=False)
+async def guida1():
+    from fastapi.responses import HTMLResponse
+    return HTMLResponse(_gp.guida_mercato_libero())
+
+@app.get("/guida/come-leggere-bolletta-luce", include_in_schema=False)
+async def guida2():
+    from fastapi.responses import HTMLResponse
+    return HTMLResponse(_gp.guida_bolletta_luce())
+
+@app.get("/guida/fasce-orarie-f1-f2-f3", include_in_schema=False)
+async def guida3():
+    from fastapi.responses import HTMLResponse
+    return HTMLResponse(_gp.guida_fasce_orarie())
+
+@app.get("/guida/come-cambiare-fornitore-energia", include_in_schema=False)
+async def guida4():
+    from fastapi.responses import HTMLResponse
+    return HTMLResponse(_gp.guida_cambiare_fornitore())
+
+@app.get("/guida/pun-psv-cosa-sono", include_in_schema=False)
+async def guida5():
+    from fastapi.responses import HTMLResponse
+    return HTMLResponse(_gp.guida_pun_psv())
 
 # ══════════════════════════════════════════════════════════════════════════════
 # ANALISI PUBBLICA
