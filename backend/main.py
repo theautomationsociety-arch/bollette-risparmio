@@ -605,6 +605,48 @@ async def del_bolletta(bid: str):
     return {"deleted": True}
 
 # Offerte admin CRUD
+@app.post("/api/admin/offerte/estrai-pdf", dependencies=[Depends(require_admin)])
+async def estrai_offerta_pdf(file: UploadFile = File(...)):
+    """Estrae dati offerta da PDF usando Gemini AI."""
+    raw = await file.read()
+    if len(raw) > 15*1024*1024:
+        raise HTTPException(400, "File troppo grande (max 15 MB)")
+    client = gemini()
+    try:
+        resp = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=[P_OFFERTA, _types.Part.from_bytes(data=raw, mime_type="application/pdf")],
+            config=_types.GenerateContentConfig(response_mime_type="application/json")
+        )
+        dati = parse_json(resp.text)
+        return {"dati": dati, "fonte": "pdf"}
+    except HTTPException: raise
+    except Exception as e:
+        log.error(f"estrai_offerta_pdf error: {e}")
+        raise HTTPException(500, f"Errore AI: {e}")
+
+@app.post("/api/admin/offerte/estrai-url", dependencies=[Depends(require_admin)])
+async def estrai_offerta_url(url: str = Body(..., embed=True)):
+    """Estrae dati offerta da URL usando Gemini AI."""
+    try:
+        async with httpx.AsyncClient(timeout=15, follow_redirects=True, headers={"User-Agent":"Mozilla/5.0"}) as hc:
+            r = await hc.get(url)
+            html = r.text
+        text = re.sub(r'<[^>]+>', ' ', html)
+        text = re.sub(r'\s+', ' ', text).strip()[:8000]
+        client = gemini()
+        resp = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=[P_OFFERTA + f"\n\nContenuto pagina:\n{text}"],
+            config=_types.GenerateContentConfig(response_mime_type="application/json")
+        )
+        dati = parse_json(resp.text)
+        return {"dati": dati, "fonte": "url"}
+    except HTTPException: raise
+    except Exception as e:
+        log.error(f"estrai_offerta_url error: {e}")
+        raise HTTPException(500, f"Errore: {e}")
+
 @app.post("/api/admin/offerte/{tipo}", dependencies=[Depends(require_admin)])
 async def add_offerta(tipo: str, payload: dict = Body(...)):
     if not payload.get("fornitore") or not payload.get("nome"):
@@ -626,32 +668,6 @@ async def del_offerta(tipo: str, oid: str):
     t = "offerte_luce" if tipo=="luce" else "offerte_gas"
     c = get_db(); c.execute(f"UPDATE {t} SET attiva=0 WHERE id=?", (oid,)); c.commit(); c.close()
     return {"deactivated":True}
-
-@app.post("/api/admin/offerte/estrai-pdf", dependencies=[Depends(require_admin)])
-async def estrai_offerta_pdf(file: UploadFile = File(...)):
-    raw = await file.read()
-    client = gemini()
-    try:
-        resp = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=[P_OFFERTA, _types.Part.from_bytes(data=raw, mime_type="application/pdf")]
-        )
-        dati = parse_json(resp.text)
-        return {"dati":dati,"fonte":"pdf"}
-    except Exception as e: raise HTTPException(500,f"Errore AI: {e}")
-
-@app.post("/api/admin/offerte/estrai-url", dependencies=[Depends(require_admin)])
-async def estrai_offerta_url(url: str = Body(..., embed=True)):
-    try:
-        async with httpx.AsyncClient(timeout=15,follow_redirects=True,headers={"User-Agent":"Mozilla/5.0"}) as hc:
-            r = await hc.get(url); html=r.text
-        text = re.sub(r'<[^>]+>',' ',html); text=re.sub(r'\s+',' ',text).strip()[:8000]
-        client = gemini()
-        resp = client.models.generate_content(model="gemini-2.5-flash",contents=[P_OFFERTA+f"\n\nContenuto pagina:\n{text}"])
-        dati = parse_json(resp.text)
-        return {"dati":dati,"fonte":"url"}
-    except HTTPException: raise
-    except Exception as e: raise HTTPException(500,f"Errore: {e}")
 
 # Indici admin
 @app.post("/api/admin/indici/aggiorna", dependencies=[Depends(require_admin)])
