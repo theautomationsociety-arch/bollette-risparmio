@@ -48,7 +48,7 @@ PROFILI = {
 }
 ADMIN_TOKEN  = os.environ.get("ADMIN_TOKEN", "admin123")
 RESEND_KEY   = os.environ.get("RESEND_API_KEY", "")
-FROM_EMAIL   = os.environ.get("FROM_EMAIL", "BollettaAI <onboarding@resend.dev>")
+FROM_EMAIL   = os.environ.get("FROM_EMAIL", "BollettaAI <theautomationsociety@gmail.com>")
 ADMIN_EMAIL  = os.environ.get("ADMIN_EMAIL", "")
 SITE_URL     = os.environ.get("SITE_URL", "https://bollette-risparmio.onrender.com")
 
