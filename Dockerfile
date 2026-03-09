@@ -25,6 +25,6 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
 
 EXPOSE 8000
 
-CMD ["python", "-m", "uvicorn", "backend.main:app", \
-     "--host", "0.0.0.0", "--port", "8000", \
-     "--workers", "1"]  # SQLite non supporta multi-process writes
+# ✅ DOPO — riga singola, commento su riga separata
+# workers=1: SQLite non supporta scritture parallele multi-processo
+CMD ["python", "-m", "uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
