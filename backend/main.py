@@ -16,6 +16,14 @@ from fastapi.responses import FileResponse, StreamingResponse
 import sqlite3
 from google import genai as _genai
 from google.genai import types as _types
+try:
+    import resend as _resend
+    _RESEND_OK = True
+except ImportError:
+    _RESEND_OK = False
+from backend.email_utils import (
+    build_risultati, build_consulente_utente, build_consulente_admin, send_email as _send_email
+)
 
 # ── Paths ──────────────────────────────────────────────────────────────────
 BASE       = Path(__file__).parent.parent
@@ -37,7 +45,15 @@ PROFILI = {
     "BTA": "PMI / Non Domestico",
     "CDO": "Condominio",
 }
-ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN", "admin123")
+ADMIN_TOKEN  = os.environ.get("ADMIN_TOKEN", "admin123")
+RESEND_KEY   = os.environ.get("RESEND_API_KEY", "")
+FROM_EMAIL   = os.environ.get("FROM_EMAIL", "BollettaAI <onboarding@resend.dev>")
+ADMIN_EMAIL  = os.environ.get("ADMIN_EMAIL", "")
+SITE_URL     = os.environ.get("SITE_URL", "https://bollette-risparmio.onrender.com")
+RESEND_KEY   = os.environ.get("RESEND_API_KEY", "")
+FROM_EMAIL   = os.environ.get("FROM_EMAIL", "BollettaAI <noreply@bollette-risparmio.onrender.com>")
+ADMIN_EMAIL  = os.environ.get("ADMIN_EMAIL", "")   # dove ricevere notifiche admin
+SITE_URL     = os.environ.get("SITE_URL", "https://bollette-risparmio.onrender.com")
 
 # ── Lifespan ───────────────────────────────────────────────────────────────
 @asynccontextmanager
@@ -233,6 +249,10 @@ def psv_last(c): r=c.execute("SELECT valore FROM indici WHERE tipo='PSV' ORDER B
 
 from contextlib import contextmanager
 
+def se(to, subj, html):
+    """Shorthand send_email usando le variabili globali."""
+    return _send_email(to, subj, html, RESEND_KEY, FROM_EMAIL)
+
 @contextmanager
 def db():
     """Context manager: garantisce chiusura connessione anche in caso di eccezione."""
@@ -275,6 +295,34 @@ async def health():
     n = {t: c.execute(f"SELECT COUNT(*) FROM bollette WHERE tipo='{t}'").fetchone()[0] for t in ("luce","gas")}
     pun = pun_last(c); c.close()
     return {"ok": True, "bollette": n, "pun": pun, "gemini": bool(os.environ.get("GEMINI_API_KEY"))}
+
+@app.get("/robots.txt", include_in_schema=False)
+async def robots():
+    from fastapi.responses import PlainTextResponse
+    return PlainTextResponse(
+        f"User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /api/\n\nSitemap: {SITE_URL}/sitemap.xml"
+    )
+
+@app.get("/sitemap.xml", include_in_schema=False)
+async def sitemap():
+    from fastapi.responses import Response
+    today = datetime.now().strftime("%Y-%m-%d")
+    urls = [
+        (SITE_URL,                              "1.0",  "daily"),
+        (f"{SITE_URL}/#come-funziona",          "0.8",  "monthly"),
+        (f"{SITE_URL}/#sicurezza",              "0.7",  "monthly"),
+        (f"{SITE_URL}/#faq",                    "0.7",  "monthly"),
+    ]
+    locs = "\n".join(
+        f"  <url><loc>{u}</loc><lastmod>{today}</lastmod>"
+        f"<changefreq>{cf}</changefreq><priority>{p}</priority></url>"
+        for u, p, cf in urls
+    )
+    xml = f'''<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{locs}
+</urlset>'''
+    return Response(content=xml, media_type="application/xml")
 
 # ══════════════════════════════════════════════════════════════════════════════
 # ANALISI PUBBLICA
@@ -322,7 +370,7 @@ async def analizza(tipo: str, file: UploadFile = File(...), profilo: str = "D2",
 
 # ── Comparazione ────────────────────────────────────────────────────────────
 @app.post("/api/compara/{bid}")
-async def compara(bid: str, bifuel_id: Optional[str] = Body(None, embed=True)):
+async def compara(bid: str, bifuel_id: Optional[str] = Body(None, embed=True), bg: BackgroundTasks = BackgroundTasks()):
     with db() as c:
         row = c.execute("SELECT * FROM bollette WHERE id=?", (bid,)).fetchone()
         if not row:
@@ -343,7 +391,30 @@ async def compara(bid: str, bifuel_id: Optional[str] = Body(None, embed=True)):
         c.execute("INSERT INTO comparazioni (id,bolletta_id,tipo,profilo,data,risultati_json,bifuel) VALUES (?,?,?,?,?,?,?)",
             (cid,bid,tipo,profilo,datetime.now().isoformat(),json.dumps(risultati,ensure_ascii=False),int(bifuel)))
         c.commit()
-    return {"bolletta_id":bid,"tipo":tipo,"profilo":profilo,"profilo_label":PROFILI.get(profilo),"fornitore_attuale":b.get("fornitore"),"totale_attuale":b.get("totale"),"costo_annuo_attuale":round(att_annuo,2),"periodo_mesi":m,"consumo":b.get("consumo"),"unita":b.get("unita"),"iva_perc":IVA.get(profilo,0.22)*100,"bifuel":bifuel,"pun":pun,"psv":psv,"offerte":risultati,"migliore":risultati[0] if risultati else None,"risparmio_max":round(risultati[0]["risparmio_annuo"],2) if risultati else 0}
+        # Recupera email del lead associato per inviare i risultati
+        _lead_email = None; _lead_nome = None
+        if b.get("lead_id"):
+            lr = c.execute("SELECT nome, email FROM leads WHERE id=?", (b["lead_id"],)).fetchone()
+            if lr and lr["email"]:
+                _lead_email = lr["email"]; _lead_nome = lr["nome"] or ""
+
+    out = {"bolletta_id":bid,"tipo":tipo,"profilo":profilo,"profilo_label":PROFILI.get(profilo),"fornitore_attuale":b.get("fornitore"),"totale_attuale":b.get("totale"),"costo_annuo_attuale":round(att_annuo,2),"periodo_mesi":m,"consumo":b.get("consumo"),"unita":b.get("unita"),"iva_perc":IVA.get(profilo,0.22)*100,"bifuel":bifuel,"pun":pun,"psv":psv,"offerte":risultati,"migliore":risultati[0] if risultati else None,"risparmio_max":round(risultati[0]["risparmio_annuo"],2) if risultati else 0}
+
+    # Invia email con i risultati se abbiamo l'email del lead
+    if _lead_email:
+        subj, html = build_risultati(
+            nome=_lead_nome, tipo=tipo, profilo_label=PROFILI.get(profilo,""),
+            totale=b.get("totale") or 0, consumo=b.get("consumo") or 0,
+            unita=b.get("unita") or ("kWh" if tipo=="luce" else "Smc"),
+            risparmio_max=out["risparmio_max"],
+            offerta_migliore=risultati[0] if risultati else None,
+            costo_annuo_attuale=out["costo_annuo_attuale"],
+            fornitore_attuale=b.get("fornitore") or "",
+            site_url=SITE_URL, from_email=FROM_EMAIL,
+        )
+        bg.add_task(se, _lead_email, subj, html)
+
+    return out
 
 def _cmp_luce(c,b,dati,m,fa,att,profilo,pun,bifuel):
     f=dati.get("letture_e_consumi",{}).get("ripartizione_fasce",{})
@@ -385,7 +456,7 @@ def _cmp_gas(c,b,dati,m,fa,att,profilo,psv,bifuel):
 # LEADS — raccolta contatti
 # ══════════════════════════════════════════════════════════════════════════════
 @app.post("/api/leads")
-async def salva_lead(payload: dict = Body(...)):
+async def salva_lead(payload: dict = Body(...), bg: BackgroundTasks = BackgroundTasks()):
     lid = str(uuid.uuid4())
     with db() as c:
         c.execute("INSERT INTO leads (id,nome,cognome,email,telefono,tipo_richiesta,bolletta_id,consenso_privacy,consenso_marketing,data,note) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
@@ -397,6 +468,28 @@ async def salva_lead(payload: dict = Body(...)):
             c.execute("UPDATE bollette SET lead_id=? WHERE id=?", (lid, payload["bolletta_id"]))
         c.commit()
     log.info(f"Nuovo lead: {payload.get('email')}")
+
+    # ── Email in background ─────────────────────────────────────────────
+    tipo_req = payload.get("tipo", "analisi")
+    to_email = payload.get("email", "")
+    nome_u   = payload.get("nome", "") or ""
+    cognome_u= payload.get("cognome", "") or ""
+
+    if to_email and tipo_req == "consulente":
+        # 1. Conferma all'utente
+        subj, html = build_consulente_utente(nome_u, to_email, SITE_URL, FROM_EMAIL)
+        bg.add_task(se, to_email, subj, html)
+        # 2. Notifica all'admin
+        if ADMIN_EMAIL:
+            subj_a, html_a = build_consulente_admin(
+                nome_u, cognome_u, to_email,
+                payload.get("telefono","") or "",
+                bool(payload.get("consenso_marketing")),
+                payload.get("bolletta_id","") or "",
+                SITE_URL, FROM_EMAIL,
+            )
+            bg.add_task(se, ADMIN_EMAIL, subj_a, html_a)
+
     return {"lead_id": lid, "saved": True}
 
 # ══════════════════════════════════════════════════════════════════════════════

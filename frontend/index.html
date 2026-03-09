@@ -3,8 +3,101 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="description" content="Analizza la tua bolletta luce o gas gratis con l'intelligenza artificiale. Confronta le offerte e scopri quanto puoi risparmiare.">
+
+<!-- ── SEO base ──────────────────────────────────────────────────────── -->
 <title>BollettaAI — Analizza e risparmia su luce e gas</title>
+<meta name="description" content="Analizza gratis la tua bolletta luce o gas con l'intelligenza artificiale. Confronta le offerte del mercato libero e scopri quanto puoi risparmiare ogni anno.">
+<meta name="keywords" content="comparatore bollette, risparmio luce gas, offerte energia, mercato libero, analisi bolletta AI, cambiare fornitore, PUN PSV, tariffe energia Italia">
+<link rel="canonical" href="https://bollette-risparmio.onrender.com/">
+<meta name="robots" content="index, follow">
+<meta name="author" content="BollettaAI">
+
+<!-- ── Open Graph (WhatsApp, Facebook, LinkedIn) ─────────────────────── -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://bollette-risparmio.onrender.com/">
+<meta property="og:title" content="BollettaAI — Analizza e risparmia su luce e gas">
+<meta property="og:description" content="Carica la bolletta, l'AI la analizza in 30 secondi e confronta le offerte migliori. Gratis, senza registrazione.">
+<meta property="og:locale" content="it_IT">
+<meta property="og:site_name" content="BollettaAI">
+
+<!-- ── Twitter Card ──────────────────────────────────────────────────── -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="BollettaAI — Analizza e risparmia su luce e gas">
+<meta name="twitter:description" content="Carica la bolletta, l'AI la analizza in 30 secondi e confronta le offerte migliori. Gratis, senza registrazione.">
+
+<!-- ── JSON-LD Structured Data ──────────────────────────────────────── -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://bollette-risparmio.onrender.com/#website",
+      "url": "https://bollette-risparmio.onrender.com/",
+      "name": "BollettaAI",
+      "description": "Comparatore bollette luce e gas con intelligenza artificiale",
+      "inLanguage": "it-IT",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://bollette-risparmio.onrender.com/"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://bollette-risparmio.onrender.com/#service",
+      "name": "Analisi bollette con AI",
+      "serviceType": "Comparazione tariffe energia",
+      "provider": {
+        "@type": "Organization",
+        "name": "BollettaAI",
+        "url": "https://bollette-risparmio.onrender.com/"
+      },
+      "areaServed": {
+        "@type": "Country",
+        "name": "Italy"
+      },
+      "description": "Carica il PDF della tua bolletta luce o gas. L'intelligenza artificiale estrae consumi, costi e confronta automaticamente le offerte del mercato libero italiano.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR",
+        "description": "Servizio gratuito di analisi e comparazione bollette energia"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "È davvero gratuito?",
+          "acceptedAnswer": {"@type":"Answer","text":"Sì, completamente gratuito e senza impegno. Non richiede registrazione."}
+        },
+        {
+          "@type": "Question",
+          "name": "Quali formati di bolletta accettate?",
+          "acceptedAnswer": {"@type":"Answer","text":"Accettiamo PDF, JPEG e PNG di qualsiasi fornitore italiano: Enel, A2A, Eni Plenitude, Edison, Iren, Sorgenia, Wekiwi, Illumia e tutti gli altri."}
+        },
+        {
+          "@type": "Question",
+          "name": "I miei dati personali sono al sicuro?",
+          "acceptedAnswer": {"@type":"Answer","text":"Sì. Il PDF viene analizzato in tempo reale e non viene salvato sui nostri server. I dati estratti vengono conservati nel rispetto del GDPR."}
+        },
+        {
+          "@type": "Question",
+          "name": "Come vengono calcolati i risparmi stimati?",
+          "acceptedAnswer": {"@type":"Answer","text":"Utilizziamo i consumi reali estratti dalla bolletta, i prezzi delle offerte aggiornati mensilmente da ARERA, l'IVA corretta per il profilo utenza e gli indici PUN/PSV per le offerte a prezzo variabile."}
+        },
+        {
+          "@type": "Question",
+          "name": "Cosa sono le fasce F1, F2, F3?",
+          "acceptedAnswer": {"@type":"Answer","text":"Sono le fasce orarie del consumo elettrico. F1 (8-19 nei giorni feriali) ha il prezzo più alto. F2 ha un prezzo intermedio. F3 (notti e festivi) ha il prezzo più basso."}
+        }
+      ]
+    }
+  ]
+}
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,700;12..96,800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -361,7 +454,7 @@ h1.hero-title .hl{
       Servizio gratuito — nessun impegno
     </div>
     <h1 class="hero-title">
-      Scopri se paghi<br>troppo su<br><span class="hl">luce e gas</span>
+      Scopri se paghi <br>troppo su <br><span class="hl">luce e gas</span>
     </h1>
     <p class="hero-sub">Carica la bolletta, l'intelligenza artificiale la analizza in secondi e confronta le offerte migliori del mercato libero.</p>
     <div class="hero-pills">

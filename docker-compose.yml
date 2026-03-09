@@ -6,19 +6,22 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      # Persistenza database e log fuori dal container
       - ./data:/app/data
     environment:
-      # --- OBBLIGATORIO ---
+      # ── OBBLIGATORIO ──────────────────────────────────────
       - GEMINI_API_KEY=${GEMINI_API_KEY}
 
-      # --- SICUREZZA ---
-      # Cambia con un token segreto per proteggere /admin
+      # ── SICUREZZA ─────────────────────────────────────────
       - ADMIN_TOKEN=${ADMIN_TOKEN:-admin123}
 
-      # --- CORS (opzionale) ---
-      # In produzione imposta il tuo dominio, es: https://tuosito.it
-      # Lascia vuoto o "*" per permettere qualsiasi origine (solo sviluppo)
+      # ── EMAIL (Resend) ─────────────────────────────────────
+      # Lascia vuoto per disabilitare — il sito funziona anche senza
+      - RESEND_API_KEY=${RESEND_API_KEY:-}
+      - FROM_EMAIL=${FROM_EMAIL:-BollettaAI <onboarding@resend.dev>}
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-}
+      - SITE_URL=${SITE_URL:-https://bollette-risparmio.onrender.com}
+
+      # ── CORS ──────────────────────────────────────────────
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-*}
 
     healthcheck:
