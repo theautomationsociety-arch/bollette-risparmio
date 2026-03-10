@@ -10,14 +10,19 @@ SITE_URL = "https://www.bolletterisparmio.it"
 # ── CSS condiviso ────────────────────────────────────────────────────────
 _CSS = """
 :root{
-  --navy:#1A2E4A;--ink:#1a2332;--muted:#5a6a7e;
-  --border:#e4eaf2;--bg:#f8fafd;--white:#fff;
-  --green:#059669;--green-l:#d1fae5;--green-d:#065f46;
-  --blue:#E8500A;--blue-l:#FFF0E8;
-  --orange:#E8500A;--orange-light:#FF6B2C;--yellow:#d97706;
+  /* Palette ufficiale Bollette Risparmio — da logo SVG */
+  --primary:#1e3a8a;    /* navy logo .st0  */
+  --accent:#2196f3;     /* blu vivace .st1 */
+  --accent-pale:#e3f2fd;
+  --accent-light:#bbdefb;
+  --ink:#0f172a;--muted:#64748b;
+  --border:#e2e8f0;--bg:#f8faff;--white:#fff;
+  --green:#16a34a;--green-l:#dcfce7;--green-d:#15803d;
+  --blue:#2196f3;--blue-l:#e3f2fd;
+  --orange:#f59e0b;--yellow:#f59e0b;
   --r:12px;--r-sm:8px;
-  --shadow-sm:0 1px 3px rgba(0,0,0,.08);
-  --shadow:0 4px 16px rgba(26,46,74,.10);
+  --shadow-sm:0 1px 3px rgba(0,0,0,.07);
+  --shadow:0 4px 16px rgba(30,58,138,.10);
   --t:180ms ease;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -25,29 +30,29 @@ html{scroll-behavior:smooth}
 body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--ink);-webkit-font-smoothing:antialiased;font-size:17px;line-height:1.75}
 
 /* PROGRESS BAR */
-#progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--orange),var(--orange-light));width:0%;z-index:200;transition:width .1s}
+#progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--primary),var(--accent));width:0%;z-index:200;transition:width .1s}
 
 /* NAV */
 .nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 1.5rem;height:64px;display:flex;align-items:center;justify-content:space-between}
 .nav-logo{display:flex;align-items:center;gap:.5rem;text-decoration:none}
-.nav-logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--navy),#1e40af);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem}
-.nav-logo-text{font-family:'Sora','Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.05rem;color:var(--navy);letter-spacing:-.5px}
-.nav-logo-text span{color:var(--orange)}
-.nav-cta{background:var(--navy);color:white;text-decoration:none;font-size:.84rem;font-weight:600;padding:7px 16px;border-radius:var(--r-sm);transition:all var(--t)}
-.nav-cta:hover{background:#1e3a5f;transform:translateY(-1px)}
+.nav-logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--primary),#1e40af);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem}
+.nav-logo-text{font-family:'Sora','Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.05rem;color:var(--primary);letter-spacing:-.5px}
+.nav-logo-text span{color:var(--accent)}
+.nav-cta{background:var(--primary);color:white;text-decoration:none;font-size:.84rem;font-weight:600;padding:7px 16px;border-radius:var(--r-sm);transition:all var(--t)}
+.nav-cta:hover{background:var(--accent-hover, #1976d2);transform:translateY(-1px)}
 
 /* BREADCRUMB */
 .breadcrumb-bar{background:var(--bg);border-bottom:1px solid var(--border);padding:.65rem 1.5rem}
 .breadcrumb{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:.5rem;font-size:.78rem;color:var(--muted);flex-wrap:wrap}
 .breadcrumb a{color:var(--muted);text-decoration:none;transition:color var(--t)}
-.breadcrumb a:hover{color:var(--blue)}
+.breadcrumb a:hover{color:var(--accent)}
 .breadcrumb-sep{color:var(--border)}
 
 /* HERO GUIDA */
 .guide-hero{background:linear-gradient(160deg,#f0f6ff 0%,#e8f4f8 60%,#f0fff8 100%);padding:3.5rem 1.5rem 2.5rem;border-bottom:1px solid var(--border)}
 .guide-hero-inner{max-width:860px;margin:0 auto}
-.guide-category{display:inline-flex;align-items:center;gap:.4rem;background:var(--blue-l);color:var(--blue);font-size:.72rem;font-weight:700;padding:4px 12px;border-radius:100px;letter-spacing:.5px;text-transform:uppercase;margin-bottom:1rem}
-.guide-title{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.75rem,4vw,2.6rem);font-weight:800;color:var(--navy);letter-spacing:-1px;line-height:1.1;margin-bottom:.9rem}
+.guide-category{display:inline-flex;align-items:center;gap:.4rem;background:var(--accent-pale);color:var(--primary);font-size:.72rem;font-weight:700;padding:4px 12px;border-radius:100px;letter-spacing:.5px;text-transform:uppercase;margin-bottom:1rem}
+.guide-title{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.75rem,4vw,2.6rem);font-weight:800;color:var(--primary);letter-spacing:-1px;line-height:1.1;margin-bottom:.9rem}
 .guide-desc{font-size:1rem;color:var(--muted);max-width:600px;line-height:1.7;margin-bottom:1.5rem}
 .guide-meta{display:flex;gap:1.25rem;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
 .guide-meta span{display:flex;align-items:center;gap:.3rem}
@@ -57,20 +62,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--ink);-
 @media(max-width:860px){.guide-layout{grid-template-columns:1fr}}
 
 /* ARTICLE */
-.article h2{font-family:'Bricolage Grotesque',sans-serif;font-size:1.45rem;font-weight:800;color:var(--navy);letter-spacing:-.5px;margin:2.5rem 0 .9rem;padding-top:.5rem;border-top:2px solid var(--bg)}
+.article h2{font-family:'Bricolage Grotesque',sans-serif;font-size:1.45rem;font-weight:800;color:var(--primary);letter-spacing:-.5px;margin:2.5rem 0 .9rem;padding-top:.5rem;border-top:2px solid var(--bg)}
 .article h2:first-child{margin-top:0;border-top:none}
 .article h3{font-family:'Bricolage Grotesque',sans-serif;font-size:1.1rem;font-weight:700;color:var(--ink);margin:1.75rem 0 .6rem}
 .article p{margin-bottom:1.1rem;color:#2d3a4a;line-height:1.78}
 .article ul,.article ol{margin:0 0 1.1rem 1.4rem;color:#2d3a4a}
 .article li{margin-bottom:.45rem;line-height:1.7}
 .article strong{color:var(--ink)}
-.article a{color:var(--blue);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px}
+.article a{color:var(--accent);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px}
 
 /* CALLOUT BOXES */
 .box{border-radius:var(--r);padding:1.25rem 1.4rem;margin:1.75rem 0;font-size:.93rem;line-height:1.7}
 .box-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.6rem;display:flex;align-items:center;gap:.4rem}
-.box-info{background:var(--blue-l);border-left:4px solid var(--blue)}
-.box-info .box-title{color:#1e40af}
+.box-info{background:var(--accent-pale);border-left:4px solid var(--accent)}
+.box-info .box-title{color:var(--primary)}
 .box-warn{background:#fffbeb;border-left:4px solid var(--yellow)}
 .box-warn .box-title{color:#92400e}
 .box-ok{background:var(--green-l);border-left:4px solid var(--green)}
@@ -80,7 +85,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--ink);-
 
 /* TABLE */
 .data-table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:.9rem;overflow:hidden;border-radius:var(--r-sm);border:1px solid var(--border)}
-.data-table th{background:var(--navy);color:white;padding:10px 14px;text-align:left;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.4px;text-transform:uppercase}
+.data-table th{background:var(--primary);color:white;padding:10px 14px;text-align:left;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.4px;text-transform:uppercase}
 .data-table td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top}
 .data-table tr:last-child td{border:none}
 .data-table tr:nth-child(even) td{background:var(--bg)}
@@ -108,10 +113,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--ink);-
 .step-content{font-size:.9rem;color:#2d3a4a;line-height:1.7}
 
 /* INLINE CTA */
-.inline-cta{background:linear-gradient(135deg,var(--navy) 0%,#1e3a5f 100%);border-radius:var(--r);padding:1.75rem;text-align:center;margin:2.25rem 0;color:white}
+.inline-cta{background:linear-gradient(135deg,var(--primary) 0%,#1d4ed8 100%);border-radius:var(--r);padding:1.75rem;text-align:center;margin:2.25rem 0;color:white}
 .inline-cta h4{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:.5rem}
 .inline-cta p{font-size:.88rem;opacity:.75;margin-bottom:1.1rem;line-height:1.6}
-.inline-cta a{display:inline-flex;align-items:center;gap:.4rem;background:white;color:var(--navy);text-decoration:none;border-radius:var(--r-sm);padding:.75rem 1.6rem;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.9rem;transition:all var(--t)}
+.inline-cta a{display:inline-flex;align-items:center;gap:.4rem;background:white;color:var(--primary);text-decoration:none;border-radius:var(--r-sm);padding:.75rem 1.6rem;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.9rem;transition:all var(--t)}
 .inline-cta a:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.2)}
 
 /* SIDEBAR */
@@ -123,15 +128,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--ink);-
 .toc-list li:last-child{border:none}
 .toc-list a{color:var(--muted);text-decoration:none;font-size:.84rem;transition:color var(--t);display:block}
 .toc-list a:hover{color:var(--blue)}
-.sidebar-cta{background:linear-gradient(135deg,var(--navy),#1e3a5f);border-radius:var(--r);padding:1.25rem;text-align:center;color:white}
+.sidebar-cta{background:linear-gradient(135deg,var(--primary),#1d4ed8);border-radius:var(--r);padding:1.25rem;text-align:center;color:white}
 .sidebar-cta h4{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:.95rem;margin-bottom:.4rem}
 .sidebar-cta p{font-size:.8rem;opacity:.65;margin-bottom:.9rem;line-height:1.55}
-.sidebar-cta a{display:block;background:white;color:var(--navy);text-decoration:none;border-radius:var(--r-sm);padding:.7rem;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.84rem;transition:all var(--t)}
+.sidebar-cta a{display:block;background:white;color:var(--primary);text-decoration:none;border-radius:var(--r-sm);padding:.7rem;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.84rem;transition:all var(--t)}
 .sidebar-cta a:hover{transform:translateY(-1px)}
 
 /* CORRELATE */
 .correlate-section{max-width:860px;margin:0 auto 4rem;padding:0 1.5rem}
-.correlate-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.1rem;color:var(--navy);margin-bottom:1.1rem}
+.correlate-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.1rem;color:var(--primary);margin-bottom:1.1rem}
 .correlate-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.75rem}
 .correlate-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem 1.25rem;text-decoration:none;display:block;transition:all var(--t)}
 .correlate-card:hover{background:white;box-shadow:var(--shadow);transform:translateY(-2px)}
@@ -140,10 +145,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--ink);-
 .correlate-card-desc{font-size:.78rem;color:var(--muted);line-height:1.55}
 
 /* FOOTER */
-.footer{background:var(--navy);padding:2.5rem 1.5rem;color:rgba(255,255,255,.45)}
+.footer{background:var(--primary);padding:2.5rem 1.5rem;color:rgba(255,255,255,.45)}
 .footer-inner{max-width:1060px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
 .footer-logo{font-family:'Sora','Bricolage Grotesque',sans-serif;font-weight:800;color:white;font-size:1rem}
-.footer-logo span{color:#FF6B2C}
+.footer-logo span{color:var(--accent)}
 .footer-links{display:flex;gap:1rem;flex-wrap:wrap}
 .footer-links a{color:rgba(255,255,255,.35);text-decoration:none;font-size:.8rem;transition:color var(--t)}
 .footer-links a:hover{color:rgba(255,255,255,.75)}
@@ -155,15 +160,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--ink);-
 _NAV = """<div id="progress"></div>
 <nav class="nav">
   <a href="/" class="nav-logo">
-    <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
-      <rect width="36" height="36" rx="10" fill="#1A2E4A"/>
-      <path d="M11 22l5-8 4 6 3-4 3 6" stroke="#E8500A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="18" cy="14" r="1.5" fill="#FF6B2C"/>
+    <svg width="26" height="33" viewBox="1 7 37 40" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#1e3a8a" d="M28.5,19.9h-2.1l-15.3,17.4h17.4c4.8,0,8.7-3.9,8.7-8.7c0-4.8-3.9-8.7-8.7-8.7Z"/>
+      <path fill="#2196f3" d="M28,8h-9.8l-5.3,10.5-0.7,1.3-1.8,3.6c-0.2,0.3,0,0.7,0.3,0.7h3.9L1.5,45.8l22.7-25.9h-5.4l0.7-1.4h8.4c2.9,0,5.3-2.4,5.3-5.3S30.9,8,28,8Z"/>
     </svg>
     <span class="nav-logo-text">Bollette <span>Risparmio</span></span>
   </a>
   <div style="display:flex;align-items:center;gap:.75rem">
-    <a href="tel:0819131897" style="font-size:.82rem;color:var(--navy);text-decoration:none;font-weight:600;display:none" class="nav-phone-desktop">&#128222; 081 91 31 897</a>
+    <a href="tel:0819131897" style="font-size:.82rem;color:var(--primary);text-decoration:none;font-weight:600;display:none" class="nav-phone-desktop">&#128222; 081 91 31 897</a>
     <a href="/" class="nav-cta">Analizza Bolletta &#x2192;</a>
   </div>
 </nav>"""
@@ -337,7 +341,7 @@ def _page(
     <div class="sidebar-cta">
       <h4>Scopri quanto risparmi</h4>
       <p>Carica la bolletta e confronta le offerte in 30 secondi</p>
-      <a href="tel:0819131897" style="background:var(--orange);color:white;text-decoration:none;border-radius:var(--r-sm);padding:.6rem;font-weight:700;font-size:.84rem;display:block;margin-bottom:.6rem">&#128222; 081 91 31 897</a>
+      <a href="tel:0819131897" style="background:var(--accent);color:white;text-decoration:none;border-radius:var(--r-sm);padding:.6rem;font-weight:700;font-size:.84rem;display:block;margin-bottom:.6rem">&#128222; 081 91 31 897</a>
       <a href="/">&#9889; Analizza gratis &rarr;</a>
     </div>
   </aside>
@@ -985,7 +989,7 @@ def guida_index() -> str:
         cards_html += f"""
 <a href="{path}" style="background:white;border:1.5px solid var(--border);border-radius:var(--r);padding:1.5rem;text-decoration:none;display:block;transition:all var(--t)" onmouseover="this.style.boxShadow='0 8px 24px rgba(13,27,42,.12)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='none'">
   <div style="font-size:1.6rem;margin-bottom:.75rem">{icons[i]}</div>
-  <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1rem;color:var(--navy);margin-bottom:.4rem">{title}</div>
+  <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1rem;color:var(--primary);margin-bottom:.4rem">{title}</div>
   <div style="font-size:.84rem;color:var(--muted);line-height:1.6;margin-bottom:.75rem">{desc}</div>
   <div style="font-size:.75rem;color:var(--blue);font-weight:600">Leggi la guida ({mins[i]} min) &#x2192;</div>
 </a>"""
@@ -1021,7 +1025,7 @@ def guida_index() -> str:
 <div style="background:linear-gradient(160deg,#f0f6ff,#e8f4f8);padding:4rem 1.5rem 3rem;border-bottom:1px solid var(--border)">
   <div style="max-width:860px;margin:0 auto;text-align:center">
     <div style="display:inline-block;background:var(--blue-l);color:var(--blue);font-size:.72rem;font-weight:700;padding:4px 14px;border-radius:100px;letter-spacing:.5px;text-transform:uppercase;margin-bottom:1rem">Guide Gratuite</div>
-    <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;color:var(--navy);letter-spacing:-1px;margin-bottom:.75rem">Tutto quello che devi sapere su luce e gas</h1>
+    <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;color:var(--primary);letter-spacing:-1px;margin-bottom:.75rem">Tutto quello che devi sapere su luce e gas</h1>
     <p style="font-size:1rem;color:var(--muted);max-width:520px;margin:0 auto;line-height:1.7">Guide pratiche, aggiornate e scritte in italiano chiaro. Niente tecnicismi inutili.</p>
   </div>
 </div>
@@ -1031,10 +1035,10 @@ def guida_index() -> str:
     {cards_html}
   </div>
 
-  <div style="background:linear-gradient(135deg,var(--navy),#1e3a5f);border-radius:var(--r);padding:2.5rem;text-align:center;margin-top:3rem;color:white">
+  <div style="background:linear-gradient(135deg,var(--primary),#1d4ed8);border-radius:var(--r);padding:2.5rem;text-align:center;margin-top:3rem;color:white">
     <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.3rem;margin-bottom:.5rem">Pronto ad analizzare la tua bolletta?</h2>
     <p style="font-size:.9rem;opacity:.7;margin-bottom:1.25rem">Carica il PDF: in 30 secondi scopri quanto stai pagando e quanto potresti risparmiare.</p>
-    <a href="/" style="display:inline-flex;align-items:center;gap:.4rem;background:white;color:var(--navy);text-decoration:none;border-radius:var(--r-sm);padding:.85rem 2rem;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:.95rem;transition:all var(--t)">&#x1F50D; Analizza gratis &#x2192;</a>
+    <a href="/" style="display:inline-flex;align-items:center;gap:.4rem;background:white;color:var(--primary);text-decoration:none;border-radius:var(--r-sm);padding:.85rem 2rem;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:.95rem;transition:all var(--t)">&#x1F50D; Analizza gratis &#x2192;</a>
   </div>
 </div>
 

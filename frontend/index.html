@@ -25,34 +25,35 @@
 </script>
 <style>
 :root {
-  --orange: #E8500A;
-  --orange-light: #FF6B2C;
-  --orange-pale: #FFF0E8;
-  --navy: #1A2E4A;
-  --navy-mid: #2C4B7A;
-  --navy-light: #EEF3FA;
-  --green: #1DB954;
-  --green-pale: #E8F8EE;
-  --white: #FFFFFF;
-  --warm-white: #FAFAF8;
-  --gray-100: #F4F4F2;
-  --gray-200: #E8E8E4;
-  --gray-400: #9B9B8E;
-  --gray-700: #4A4A42;
-  --text: #1A1A16;
-  --radius: 12px;
-  --radius-lg: 20px;
-  --shadow: 0 4px 24px rgba(26,46,74,.10);
-  --shadow-lg: 0 12px 48px rgba(26,46,74,.16);
-  --font-display: 'Sora', sans-serif;
-  --font-body: 'DM Sans', sans-serif;
+  /* Palette ufficiale Bollette Risparmio — estratta dal logo SVG */
+  --primary:       #1e3a8a;   /* navy logo — blu profondo  (.st0) */
+  --primary-mid:   #1d4ed8;   /* blu medio                        */
+  --primary-light: #eff6ff;   /* sfondo blu pallido               */
+  --accent:        #2196f3;   /* blu vivace logo          (.st1)  */
+  --accent-hover:  #1976d2;   /* accent scuro per hover           */
+  --accent-pale:   #e3f2fd;   /* sfondo accent chiarissimo        */
+  --green:         #16a34a;
+  --green-pale:    #dcfce7;
+  --white:         #FFFFFF;
+  --warm-white:    #f8faff;
+  --gray-100:      #f1f5f9;
+  --gray-200:      #e2e8f0;
+  --gray-400:      #94a3b8;
+  --gray-700:      #475569;
+  --text:          #0f172a;
+  --radius:        12px;
+  --radius-lg:     20px;
+  --shadow:        0 4px 24px rgba(30,58,138,.10);
+  --shadow-lg:     0 12px 48px rgba(30,58,138,.18);
+  --font-display:  'Sora', sans-serif;
+  --font-body:     'DM Sans', sans-serif;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{font-family:var(--font-body);color:var(--text);background:var(--white);line-height:1.6;overflow-x:hidden}
 
 /* ── TOPBAR ── */
-.topbar{background:var(--navy);color:rgba(255,255,255,.85);font-size:.82rem;padding:.45rem 0}
+.topbar{background:var(--primary);color:rgba(255,255,255,.85);font-size:.82rem;padding:.45rem 0}
 .topbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
 .topbar a{color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:.35rem;transition:color .2s}
 .topbar a:hover{color:#fff}
@@ -64,37 +65,37 @@ nav .wrap{display:flex;align-items:center;gap:1.5rem;padding:.9rem 0}
 .nav-logo{display:flex;align-items:center;gap:.6rem;text-decoration:none;flex-shrink:0}
 .nav-logo svg{width:36px;height:36px}
 .nav-logo-text{display:flex;flex-direction:column;line-height:1.1}
-.nav-logo-text .brand{font-family:var(--font-display);font-weight:800;font-size:1.05rem;color:var(--navy)}
-.nav-logo-text .sub{font-size:.65rem;font-weight:600;color:var(--orange);letter-spacing:.08em;text-transform:uppercase}
+.nav-logo-text .brand{font-family:var(--font-display);font-weight:800;font-size:1.05rem;color:var(--primary)}
+.nav-logo-text .sub{font-size:.65rem;font-weight:600;color:var(--accent);letter-spacing:.06em;text-transform:uppercase;opacity:.85}
 .nav-links{display:flex;align-items:center;gap:.2rem;margin-left:auto}
 .nav-links a{font-size:.88rem;font-weight:500;color:var(--gray-700);text-decoration:none;padding:.45rem .8rem;border-radius:8px;transition:all .2s}
-.nav-links a:hover,.nav-links a.active{color:var(--orange);background:var(--orange-pale)}
-.nav-cta{background:var(--orange);color:#fff!important;border-radius:8px;padding:.45rem 1rem!important;font-weight:600!important}
-.nav-cta:hover{background:var(--orange-light)!important;color:#fff!important}
-.nav-phone{font-family:var(--font-display);font-weight:700;font-size:.92rem;color:var(--navy);text-decoration:none;display:flex;align-items:center;gap:.4rem;padding:.45rem .8rem;border:1.5px solid var(--navy-light);border-radius:8px}
-.nav-phone:hover{border-color:var(--navy);background:var(--navy-light)}
-.hamburger{display:none;background:none;border:none;cursor:pointer;padding:.4rem;color:var(--navy)}
-.mobile-menu{display:none;flex-direction:column;gap:.3rem;padding:1rem 0;border-top:1px solid var(--gray-200)}
+.nav-links a:hover,.nav-links a.active{color:var(--accent);background:var(--accent-pale)}
+.nav-cta{background:var(--accent);color:#fff!important;border-radius:8px;padding:.45rem 1rem!important;font-weight:600!important}
+.nav-cta:hover{background:var(--accent-hover)!important;color:#fff!important}
+.nav-phone{font-family:var(--font-display);font-weight:700;font-size:.92rem;color:var(--primary);text-decoration:none;display:flex;align-items:center;gap:.4rem;padding:.45rem .8rem;border:1.5px solid var(--primary-light);border-radius:8px}
+.nav-phone:hover{border-color:var(--primary);background:var(--primary-light)}
+.hamburger{display:none;background:none;border:none;cursor:pointer;padding:.4rem;color:var(--primary)}
+.mobile-menu{display:none;flex-direction:column;gap:.3rem;padding:.75rem 1.5rem 1rem;border-top:1px solid var(--gray-200);max-width:1200px;margin:0 auto}
 .mobile-menu.open{display:flex}
 .mobile-menu a{font-size:.92rem;font-weight:500;color:var(--gray-700);text-decoration:none;padding:.6rem .5rem;border-radius:8px}
-.mobile-menu a:hover{color:var(--orange);background:var(--orange-pale)}
+.mobile-menu a:hover{color:var(--accent);background:var(--accent-pale)}
 
 /* ── WRAPPER ── */
 .wrap{max-width:1160px;margin:0 auto;padding:0 1.5rem}
 
 /* ── HERO ── */
-.hero{background:linear-gradient(135deg,var(--navy) 0%,#243D6B 55%,#1A2E4A 100%);padding:5rem 0 4rem;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 80% 50%,rgba(232,80,10,.18) 0%,transparent 70%)}
+.hero{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-mid) 55%,#163272 100%);padding:5rem 0 4rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 80% 50%,rgba(33,150,243,.15) 0%,transparent 70%)}
 .hero::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:60px;background:var(--white);clip-path:ellipse(55% 100% at 50% 100%)}
 .hero .wrap{display:grid;grid-template-columns:1fr 480px;gap:3rem;align-items:center;position:relative;z-index:1}
 .hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.9);padding:.35rem .85rem;border-radius:50px;font-size:.78rem;font-weight:600;letter-spacing:.05em;margin-bottom:1.2rem}
-.hero-badge svg{width:14px;height:14px;color:var(--orange-light)}
+.hero-badge svg{width:14px;height:14px;color:var(--accent-hover)}
 h1.hero-title{font-family:var(--font-display);font-size:clamp(2rem,4vw,3rem);font-weight:800;color:#fff;line-height:1.15;margin-bottom:1rem}
-h1.hero-title .accent{color:var(--orange-light)}
+h1.hero-title .accent{color:var(--accent-hover)}
 .hero-sub{font-size:1.05rem;color:rgba(255,255,255,.78);max-width:480px;margin-bottom:2rem}
 .hero-actions{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:2rem}
-.btn-primary{background:var(--orange);color:#fff;border:none;border-radius:10px;padding:.85rem 1.8rem;font-family:var(--font-display);font-size:.95rem;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;transition:all .2s;box-shadow:0 4px 16px rgba(232,80,10,.4)}
-.btn-primary:hover{background:var(--orange-light);transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,80,10,.5)}
+.btn-primary{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:.85rem 1.8rem;font-family:var(--font-display);font-size:.95rem;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;transition:all .2s;box-shadow:0 4px 16px rgba(30,58,138,.3)}
+.btn-primary:hover{background:var(--accent-hover);transform:translateY(-2px);box-shadow:0 8px 24px rgba(30,58,138,.35)}
 .btn-secondary{background:rgba(255,255,255,.1);color:#fff;border:1.5px solid rgba(255,255,255,.3);border-radius:10px;padding:.85rem 1.8rem;font-family:var(--font-display);font-size:.95rem;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;transition:all .2s}
 .btn-secondary:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.5)}
 .hero-trust{display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap}
@@ -103,34 +104,34 @@ h1.hero-title .accent{color:var(--orange-light)}
 
 /* ── ANALYZER CARD ── */
 .analyzer-card{background:#fff;border-radius:var(--radius-lg);padding:2rem;box-shadow:var(--shadow-lg);border:1px solid rgba(255,255,255,.8)}
-.analyzer-title{font-family:var(--font-display);font-weight:700;font-size:1.1rem;color:var(--navy);margin-bottom:.35rem}
+.analyzer-title{font-family:var(--font-display);font-weight:700;font-size:1.1rem;color:var(--primary);margin-bottom:.35rem}
 .analyzer-sub{font-size:.83rem;color:var(--gray-400);margin-bottom:1.5rem}
 .tipo-tabs{display:flex;gap:.5rem;margin-bottom:1.2rem}
 .tipo-tab{flex:1;padding:.65rem;border:2px solid var(--gray-200);border-radius:10px;background:#fff;font-family:var(--font-display);font-weight:600;font-size:.88rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.4rem;color:var(--gray-700);transition:all .2s}
-.tipo-tab:hover{border-color:var(--orange);color:var(--orange)}
-.tipo-tab.active{border-color:var(--orange);background:var(--orange-pale);color:var(--orange)}
+.tipo-tab:hover{border-color:var(--accent);color:var(--accent)}
+.tipo-tab.active{border-color:var(--accent);background:var(--accent-pale);color:var(--accent)}
 .tipo-tab svg{width:18px;height:18px}
 .profilo-select-wrap{margin-bottom:1.2rem}
 .profilo-select-wrap label{display:block;font-size:.82rem;font-weight:600;color:var(--gray-700);margin-bottom:.4rem}
 .profilo-select-wrap select{width:100%;border:1.5px solid var(--gray-200);border-radius:8px;padding:.6rem .9rem;font-family:var(--font-body);font-size:.88rem;color:var(--text);background:#fff;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 24 24'%3E%3Cpath stroke='%239B9B8E' stroke-width='2' d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .7rem center;cursor:pointer}
-.profilo-select-wrap select:focus{outline:none;border-color:var(--orange)}
+.profilo-select-wrap select:focus{outline:none;border-color:var(--accent)}
 .dropzone{border:2px dashed var(--gray-200);border-radius:12px;padding:2rem 1rem;text-align:center;cursor:pointer;transition:all .25s;background:var(--warm-white);position:relative}
-.dropzone:hover,.dropzone.drag{border-color:var(--orange);background:var(--orange-pale)}
+.dropzone:hover,.dropzone.drag{border-color:var(--accent);background:var(--accent-pale)}
 .dropzone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.dropzone-icon{width:44px;height:44px;background:var(--orange-pale);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;transition:all .25s}
-.dropzone:hover .dropzone-icon,.dropzone.drag .dropzone-icon{background:var(--orange);color:#fff}
-.dropzone-icon svg{width:22px;height:22px;color:var(--orange)}
+.dropzone-icon{width:44px;height:44px;background:var(--accent-pale);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;transition:all .25s}
+.dropzone:hover .dropzone-icon,.dropzone.drag .dropzone-icon{background:var(--accent);color:#fff}
+.dropzone-icon svg{width:22px;height:22px;color:var(--accent)}
 .dropzone:hover .dropzone-icon svg,.dropzone.drag .dropzone-icon svg{color:#fff}
 .dropzone p{font-size:.85rem;color:var(--gray-700);font-weight:500}
-.dropzone p span{color:var(--orange)}
+.dropzone p span{color:var(--accent)}
 .dropzone small{color:var(--gray-400);font-size:.75rem}
 .file-preview{display:flex;align-items:center;gap:.75rem;background:var(--green-pale);border:1.5px solid #b7e8c5;border-radius:10px;padding:.7rem 1rem;margin-top:.75rem}
 .file-preview svg{width:20px;height:20px;color:var(--green);flex-shrink:0}
-.file-preview span{font-size:.85rem;font-weight:500;color:var(--navy);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file-preview span{font-size:.85rem;font-weight:500;color:var(--primary);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .file-preview button{background:none;border:none;cursor:pointer;color:var(--gray-400);padding:0}
 .file-preview button:hover{color:var(--text)}
-.btn-analyze{width:100%;background:var(--orange);color:#fff;border:none;border-radius:10px;padding:.9rem;font-family:var(--font-display);font-size:.95rem;font-weight:700;cursor:pointer;margin-top:1rem;display:flex;align-items:center;justify-content:center;gap:.5rem;transition:all .2s;box-shadow:0 4px 16px rgba(232,80,10,.35)}
-.btn-analyze:hover:not(:disabled){background:var(--orange-light);transform:translateY(-1px)}
+.btn-analyze{width:100%;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:.9rem;font-family:var(--font-display);font-size:.95rem;font-weight:700;cursor:pointer;margin-top:1rem;display:flex;align-items:center;justify-content:center;gap:.5rem;transition:all .2s;box-shadow:0 4px 16px rgba(30,58,138,.25)}
+.btn-analyze:hover:not(:disabled){background:var(--accent-hover);transform:translateY(-1px)}
 .btn-analyze:disabled{opacity:.6;cursor:not-allowed;transform:none}
 .spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -139,123 +140,123 @@ h1.hero-title .accent{color:var(--orange-light)}
 #result-panel{display:none}
 #result-panel.visible{display:block}
 .result-header{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
-.result-header h2{font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:var(--navy)}
+.result-header h2{font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:var(--primary)}
 .result-back{background:none;border:1.5px solid var(--gray-200);border-radius:8px;padding:.45rem 1rem;font-size:.85rem;font-weight:600;color:var(--gray-700);cursor:pointer;display:flex;align-items:center;gap:.4rem;transition:all .2s}
-.result-back:hover{border-color:var(--navy);color:var(--navy)}
+.result-back:hover{border-color:var(--primary);color:var(--primary)}
 .result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.75rem;margin-bottom:1.5rem}
-.stat-box{background:var(--navy-light);border-radius:12px;padding:1rem;text-align:center}
-.stat-box .val{font-family:var(--font-display);font-size:1.4rem;font-weight:800;color:var(--navy)}
+.stat-box{background:var(--primary-light);border-radius:12px;padding:1rem;text-align:center}
+.stat-box .val{font-family:var(--font-display);font-size:1.4rem;font-weight:800;color:var(--primary)}
 .stat-box .lbl{font-size:.75rem;color:var(--gray-400);margin-top:.2rem}
-.stat-box.highlight{background:var(--orange-pale)}
-.stat-box.highlight .val{color:var(--orange)}
+.stat-box.highlight{background:var(--accent-pale)}
+.stat-box.highlight .val{color:var(--accent)}
 .stat-box.good{background:var(--green-pale)}
 .stat-box.good .val{color:var(--green)}
-.ai-box{background:var(--navy-light);border-radius:12px;padding:1.25rem;margin-bottom:1.25rem}
-.ai-box h3{font-family:var(--font-display);font-size:.9rem;font-weight:700;color:var(--navy);margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}
-.ai-box h3 svg{width:18px;height:18px;color:var(--orange)}
-.anomaly-tag{display:inline-block;background:#FEE4D8;color:var(--orange);border-radius:6px;padding:.2rem .6rem;font-size:.78rem;font-weight:600;margin:.2rem}
+.ai-box{background:var(--primary-light);border-radius:12px;padding:1.25rem;margin-bottom:1.25rem}
+.ai-box h3{font-family:var(--font-display);font-size:.9rem;font-weight:700;color:var(--primary);margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}
+.ai-box h3 svg{width:18px;height:18px;color:var(--accent)}
+.anomaly-tag{display:inline-block;background:#FEE4D8;color:var(--accent);border-radius:6px;padding:.2rem .6rem;font-size:.78rem;font-weight:600;margin:.2rem}
 .suggestion-item{display:flex;gap:.6rem;align-items:flex-start;margin:.4rem 0;font-size:.88rem;color:var(--gray-700)}
-.suggestion-item::before{content:'→';color:var(--orange);font-weight:700;flex-shrink:0}
+.suggestion-item::before{content:'→';color:var(--accent);font-weight:700;flex-shrink:0}
 
 /* ── CONFRONTA / OFFERTE ── */
 .compare-section{background:var(--warm-white);border-radius:16px;padding:1.5rem;margin-top:1.5rem}
-.compare-section h3{font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:.5rem}
+.compare-section h3{font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--primary);margin-bottom:.5rem}
 .compare-section p{font-size:.85rem;color:var(--gray-700);margin-bottom:1.25rem}
 .lead-form{display:flex;flex-direction:column;gap:.65rem}
 .lead-row{display:grid;grid-template-columns:1fr 1fr;gap:.65rem}
 .lead-form input,.lead-form select{border:1.5px solid var(--gray-200);border-radius:8px;padding:.65rem .9rem;font-family:var(--font-body);font-size:.88rem;color:var(--text);background:#fff;width:100%;transition:border-color .2s}
-.lead-form input:focus,.lead-form select:focus{outline:none;border-color:var(--orange)}
+.lead-form input:focus,.lead-form select:focus{outline:none;border-color:var(--accent)}
 .lead-form input::placeholder{color:var(--gray-400)}
-.btn-compare{width:100%;background:var(--navy);color:#fff;border:none;border-radius:10px;padding:.85rem;font-family:var(--font-display);font-size:.92rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.5rem;transition:all .2s}
-.btn-compare:hover:not(:disabled){background:var(--navy-mid);transform:translateY(-1px)}
+.btn-compare{width:100%;background:var(--primary);color:#fff;border:none;border-radius:10px;padding:.85rem;font-family:var(--font-display);font-size:.92rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.5rem;transition:all .2s}
+.btn-compare:hover:not(:disabled){background:var(--primary-mid);transform:translateY(-1px)}
 .btn-compare:disabled{opacity:.6;cursor:not-allowed}
 .privacy-note{font-size:.73rem;color:var(--gray-400);text-align:center;margin-top:.4rem}
-.privacy-note a{color:var(--orange);text-decoration:none}
+.privacy-note a{color:var(--accent);text-decoration:none}
 .offerte-list{display:flex;flex-direction:column;gap:.75rem;margin-top:1rem}
 .offerta-card{background:#fff;border-radius:12px;border:1.5px solid var(--gray-200);padding:1rem;display:flex;align-items:center;gap:1rem;transition:all .2s}
-.offerta-card:hover{border-color:var(--orange);box-shadow:0 4px 16px rgba(232,80,10,.1)}
+.offerta-card:hover{border-color:var(--accent);box-shadow:0 4px 16px rgba(30,58,138,.08)}
 .offerta-card.best{border-color:var(--green);background:var(--green-pale)}
 .offerta-badge{background:var(--green);color:#fff;border-radius:6px;font-size:.7rem;font-weight:700;padding:.2rem .5rem;white-space:nowrap}
-.offerta-name{font-family:var(--font-display);font-size:.88rem;font-weight:700;color:var(--navy)}
+.offerta-name{font-family:var(--font-display);font-size:.88rem;font-weight:700;color:var(--primary)}
 .offerta-fornitore{font-size:.78rem;color:var(--gray-400)}
-.offerta-price{font-family:var(--font-display);font-size:1.1rem;font-weight:800;color:var(--navy);text-align:right;white-space:nowrap}
+.offerta-price{font-family:var(--font-display);font-size:1.1rem;font-weight:800;color:var(--primary);text-align:right;white-space:nowrap}
 .offerta-saving{font-size:.78rem;font-weight:600;color:var(--green);text-align:right}
 
 /* ── SECTION COMMONS ── */
 section{padding:5rem 0}
-.section-label{font-size:.78rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);margin-bottom:.6rem}
-.section-title{font-family:var(--font-display);font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;color:var(--navy);line-height:1.2;margin-bottom:1rem}
+.section-label{font-size:.78rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:.6rem}
+.section-title{font-family:var(--font-display);font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;color:var(--primary);line-height:1.2;margin-bottom:1rem}
 .section-sub{font-size:1rem;color:var(--gray-700);max-width:560px;margin-bottom:2.5rem}
 
 /* ── HOW IT WORKS ── */
 .how-section{background:var(--warm-white)}
 .steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem}
 .step-item{position:relative}
-.step-connector{position:absolute;top:30px;right:-1rem;width:2rem;height:2px;background:linear-gradient(to right,var(--orange),transparent);display:block}
+.step-connector{position:absolute;top:30px;right:-1rem;width:2rem;height:2px;background:linear-gradient(to right,var(--accent),transparent);display:block}
 .step-item:last-child .step-connector{display:none}
-.step-num{font-family:var(--font-display);font-size:.78rem;font-weight:800;color:var(--orange);letter-spacing:.1em;margin-bottom:.75rem}
-.step-icon{width:60px;height:60px;background:var(--orange-pale);border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:1rem}
-.step-icon svg{width:28px;height:28px;color:var(--orange)}
-.step-title{font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:.4rem}
+.step-num{font-family:var(--font-display);font-size:.78rem;font-weight:800;color:var(--accent);letter-spacing:.1em;margin-bottom:.75rem}
+.step-icon{width:60px;height:60px;background:var(--primary-light);border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:1rem}
+.step-icon svg{width:28px;height:28px;color:var(--accent)}
+.step-title{font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--primary);margin-bottom:.4rem}
 .step-desc{font-size:.88rem;color:var(--gray-700);line-height:1.6}
 
 /* ── OFFERTE SECTION ── */
 .offerte-section{background:var(--white)}
 .offerte-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem}
 .offerta-promo-card{background:var(--white);border:1.5px solid var(--gray-200);border-radius:var(--radius-lg);padding:1.5rem;transition:all .25s;position:relative;overflow:hidden}
-.offerta-promo-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--orange);transform:scaleX(0);transform-origin:left;transition:transform .3s}
-.offerta-promo-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-4px);border-color:var(--orange-light)}
+.offerta-promo-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.offerta-promo-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-4px);border-color:var(--accent-hover)}
 .offerta-promo-card:hover::before{transform:scaleX(1)}
-.offerta-promo-card.featured{border-color:var(--orange);background:linear-gradient(135deg,#fff 0%,var(--orange-pale) 100%)}
+.offerta-promo-card.featured{border-color:var(--accent);background:linear-gradient(135deg,#fff 0%,var(--accent-pale) 100%)}
 .offerta-promo-card.featured::before{transform:scaleX(1)}
 .provider-logo{width:80px;height:40px;object-fit:contain;margin-bottom:1rem}
-.provider-name{font-family:var(--font-display);font-size:.78rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--orange);margin-bottom:.2rem}
-.offerta-promo-name{font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:.4rem}
+.provider-name{font-family:var(--font-display);font-size:.78rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:.2rem}
+.offerta-promo-name{font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--primary);margin-bottom:.4rem}
 .offerta-promo-desc{font-size:.83rem;color:var(--gray-700);margin-bottom:1.1rem;line-height:1.5}
 .price-tags{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem}
-.price-tag{background:var(--navy-light);border-radius:8px;padding:.4rem .7rem;text-align:center}
+.price-tag{background:var(--primary-light);border-radius:8px;padding:.4rem .7rem;text-align:center}
 .price-tag .tipo{font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-400)}
-.price-tag .valore{font-family:var(--font-display);font-size:.95rem;font-weight:800;color:var(--navy)}
+.price-tag .valore{font-family:var(--font-display);font-size:.95rem;font-weight:800;color:var(--primary)}
 .offerta-features{list-style:none;display:flex;flex-direction:column;gap:.35rem;margin-bottom:1.25rem}
 .offerta-features li{font-size:.82rem;color:var(--gray-700);display:flex;align-items:center;gap:.5rem}
 .offerta-features li svg{width:14px;height:14px;color:var(--green);flex-shrink:0}
-.btn-richiedi{width:100%;background:var(--navy);color:#fff;border:none;border-radius:8px;padding:.7rem;font-family:var(--font-display);font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s;text-align:center}
-.btn-richiedi:hover{background:var(--orange)}
+.btn-richiedi{width:100%;background:var(--primary);color:#fff;border:none;border-radius:8px;padding:.7rem;font-family:var(--font-display);font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s;text-align:center}
+.btn-richiedi:hover{background:var(--accent)}
 
 /* ── PERCHÉ NOI ── */
-.perche-section{background:var(--navy);color:#fff;position:relative;overflow:hidden}
-.perche-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 100% 50%,rgba(232,80,10,.15) 0%,transparent 70%)}
+.perche-section{background:var(--primary);color:#fff;position:relative;overflow:hidden}
+.perche-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 100% 50%,rgba(33,150,243,.12) 0%,transparent 70%)}
 .perche-section .section-title{color:#fff}
 .perche-section .section-label{color:rgba(255,255,255,.5)}
 .perche-section .section-sub{color:rgba(255,255,255,.7)}
 .pillars-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;position:relative;z-index:1}
 .pillar-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:1.75rem 1.5rem;transition:all .25s}
 .pillar-card:hover{background:rgba(255,255,255,.1);transform:translateY(-4px)}
-.pillar-num{font-family:var(--font-display);font-size:2.5rem;font-weight:800;color:var(--orange-light);opacity:.6;margin-bottom:.5rem;line-height:1}
+.pillar-num{font-family:var(--font-display);font-size:2.5rem;font-weight:800;color:var(--accent-hover);opacity:.6;margin-bottom:.5rem;line-height:1}
 .pillar-title{font-family:var(--font-display);font-size:1rem;font-weight:700;color:#fff;margin-bottom:.5rem}
 .pillar-desc{font-size:.88rem;color:rgba(255,255,255,.65);line-height:1.6}
-.pillar-icon{width:48px;height:48px;background:rgba(232,80,10,.2);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:1rem}
-.pillar-icon svg{width:24px;height:24px;color:var(--orange-light)}
+.pillar-icon{width:48px;height:48px;background:rgba(33,150,243,.12);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:1rem}
+.pillar-icon svg{width:24px;height:24px;color:var(--accent-hover)}
 
 /* ── ABOUT ── */
 .about-section{background:var(--warm-white)}
 .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
 .about-stats{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:2rem}
 .about-stat{background:#fff;border-radius:12px;padding:1.25rem;border:1.5px solid var(--gray-200)}
-.about-stat .num{font-family:var(--font-display);font-size:2rem;font-weight:800;color:var(--orange)}
+.about-stat .num{font-family:var(--font-display);font-size:2rem;font-weight:800;color:var(--accent)}
 .about-stat .lbl{font-size:.82rem;color:var(--gray-700);margin-top:.2rem}
 .about-feature{display:flex;gap:.75rem;align-items:flex-start;margin:.75rem 0}
 .about-feature-icon{width:36px;height:36px;background:var(--green-pale);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .about-feature-icon svg{width:18px;height:18px;color:var(--green)}
-.about-feature-text h4{font-family:var(--font-display);font-size:.92rem;font-weight:700;color:var(--navy)}
+.about-feature-text h4{font-family:var(--font-display);font-size:.92rem;font-weight:700;color:var(--primary)}
 .about-feature-text p{font-size:.83rem;color:var(--gray-700);margin-top:.15rem}
 .partners-bar{margin-top:2.5rem;padding-top:2rem;border-top:1px solid var(--gray-200)}
 .partners-bar p{font-size:.78rem;font-weight:600;color:var(--gray-400);letter-spacing:.08em;text-transform:uppercase;margin-bottom:1rem}
 .partners-logos{display:flex;flex-wrap:wrap;gap:.75rem;align-items:center}
 .partner-chip{background:#fff;border:1.5px solid var(--gray-200);border-radius:8px;padding:.4rem .9rem;font-family:var(--font-display);font-size:.75rem;font-weight:700;color:var(--gray-700)}
 .about-img-stack{position:relative;height:420px}
-.about-img-main{position:absolute;top:0;right:0;width:80%;aspect-ratio:4/3;background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%);border-radius:20px;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.about-img-accent{position:absolute;bottom:0;left:0;width:55%;aspect-ratio:1;background:var(--orange-pale);border-radius:16px;border:4px solid #fff;display:flex;align-items:center;justify-content:center}
+.about-img-main{position:absolute;top:0;right:0;width:80%;aspect-ratio:4/3;background:linear-gradient(135deg,var(--primary) 0%,var(--primary-mid) 100%);border-radius:20px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.about-img-accent{position:absolute;bottom:0;left:0;width:55%;aspect-ratio:1;background:var(--primary-light);border-radius:16px;border:4px solid #fff;display:flex;align-items:center;justify-content:center}
 .big-icon{font-size:4rem}
 
 /* ── FAQ ── */
@@ -263,29 +264,29 @@ section{padding:5rem 0}
 .faq-grid{display:grid;grid-template-columns:1fr 480px;gap:4rem;align-items:start}
 .faq-list{display:flex;flex-direction:column;gap:.6rem}
 .faq-item{border:1.5px solid var(--gray-200);border-radius:12px;overflow:hidden;transition:border-color .2s}
-.faq-item.open{border-color:var(--orange)}
-.faq-q{padding:1.1rem 1.25rem;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:1rem;font-family:var(--font-display);font-size:.92rem;font-weight:600;color:var(--navy);user-select:none;transition:background .2s}
-.faq-item.open .faq-q{background:var(--orange-pale);color:var(--orange)}
+.faq-item.open{border-color:var(--accent)}
+.faq-q{padding:1.1rem 1.25rem;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:1rem;font-family:var(--font-display);font-size:.92rem;font-weight:600;color:var(--primary);user-select:none;transition:background .2s}
+.faq-item.open .faq-q{background:var(--accent-pale);color:var(--accent)}
 .faq-q svg{width:20px;height:20px;flex-shrink:0;transition:transform .2s;color:var(--gray-400)}
-.faq-item.open .faq-q svg{transform:rotate(180deg);color:var(--orange)}
+.faq-item.open .faq-q svg{transform:rotate(180deg);color:var(--accent)}
 .faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease}
 .faq-item.open .faq-a{max-height:200px}
 .faq-a-inner{padding:.8rem 1.25rem 1.1rem;font-size:.88rem;color:var(--gray-700);line-height:1.7}
-.faq-cta-box{background:var(--navy);border-radius:20px;padding:2.5rem;color:#fff;position:sticky;top:100px}
+.faq-cta-box{background:var(--primary);border-radius:20px;padding:2.5rem;color:#fff;position:sticky;top:100px}
 .faq-cta-box h3{font-family:var(--font-display);font-size:1.25rem;font-weight:800;margin-bottom:.6rem}
 .faq-cta-box p{font-size:.88rem;color:rgba(255,255,255,.7);margin-bottom:1.5rem}
 .faq-cta-phone{display:flex;align-items:center;gap:.75rem;background:rgba(255,255,255,.1);border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem;text-decoration:none;transition:background .2s}
 .faq-cta-phone:hover{background:rgba(255,255,255,.18)}
-.faq-cta-phone-icon{width:40px;height:40px;background:var(--orange);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.faq-cta-phone-icon{width:40px;height:40px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .faq-cta-phone-icon svg{width:20px;height:20px;color:#fff}
 .faq-cta-phone-text{display:flex;flex-direction:column}
 .faq-cta-phone-text small{font-size:.72rem;color:rgba(255,255,255,.6)}
 .faq-cta-phone-text strong{font-family:var(--font-display);font-size:1.05rem;font-weight:700;color:#fff}
-.btn-white{background:#fff;color:var(--navy);border:none;border-radius:10px;padding:.85rem 1.5rem;font-family:var(--font-display);font-size:.9rem;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:.5rem;width:100%;transition:all .2s}
-.btn-white:hover{background:var(--orange);color:#fff}
+.btn-white{background:#fff;color:var(--primary);border:none;border-radius:10px;padding:.85rem 1.5rem;font-family:var(--font-display);font-size:.9rem;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:.5rem;width:100%;transition:all .2s}
+.btn-white:hover{background:var(--accent);color:#fff}
 
 /* ── CONTACT SECTION ── */
-.contact-section{background:var(--orange);color:#fff;padding:4rem 0}
+.contact-section{background:var(--accent);color:#fff;padding:4rem 0}
 .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center}
 .contact-left h2{font-family:var(--font-display);font-size:clamp(1.5rem,3vw,2rem);font-weight:800;margin-bottom:.75rem}
 .contact-left p{font-size:.95rem;color:rgba(255,255,255,.85);max-width:420px;margin-bottom:1.5rem}
@@ -295,26 +296,26 @@ section{padding:5rem 0}
 .contact-item-icon{width:36px;height:36px;background:rgba(255,255,255,.2);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .contact-item-icon svg{width:18px;height:18px}
 .contact-form-box{background:#fff;border-radius:20px;padding:2rem}
-.contact-form-box h3{font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:1.25rem}
+.contact-form-box h3{font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--primary);margin-bottom:1.25rem}
 .cform{display:flex;flex-direction:column;gap:.65rem}
 .cform input,.cform select{border:1.5px solid var(--gray-200);border-radius:8px;padding:.7rem .95rem;font-family:var(--font-body);font-size:.88rem;color:var(--text);width:100%}
-.cform input:focus,.cform select:focus{outline:none;border-color:var(--orange)}
+.cform input:focus,.cform select:focus{outline:none;border-color:var(--accent)}
 .cform-row{display:grid;grid-template-columns:1fr 1fr;gap:.65rem}
 .cform .privacy-note{font-size:.72rem;color:var(--gray-400);margin-top:.25rem}
-.cform .privacy-note a{color:var(--orange)}
-.btn-orange{background:var(--orange);color:#fff;border:none;border-radius:10px;padding:.85rem;font-family:var(--font-display);font-size:.92rem;font-weight:700;cursor:pointer;width:100%;transition:all .2s}
-.btn-orange:hover{background:var(--orange-light)}
+.cform .privacy-note a{color:var(--accent)}
+.btn-orange{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:.85rem;font-family:var(--font-display);font-size:.92rem;font-weight:700;cursor:pointer;width:100%;transition:all .2s}
+.btn-orange:hover{background:var(--accent-hover)}
 .success-msg{display:none;background:var(--green-pale);border:1.5px solid #b7e8c5;border-radius:10px;padding:1rem;text-align:center;font-size:.88rem;color:#1a7a3f;font-weight:500}
 .success-msg.show{display:block}
 
 /* ── FOOTER ── */
-footer{background:var(--navy);color:rgba(255,255,255,.7);padding:3.5rem 0 1.5rem}
+footer{background:var(--primary);color:rgba(255,255,255,.7);padding:3.5rem 0 1.5rem}
 .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:3rem;margin-bottom:2.5rem}
 .footer-brand{display:flex;flex-direction:column;gap:.85rem}
 .footer-logo-area{display:flex;align-items:center;gap:.6rem}
 .footer-logo-area svg{width:36px;height:36px}
 .footer-logo-text .brand{font-family:var(--font-display);font-weight:800;font-size:1.05rem;color:#fff}
-.footer-logo-text .sub{font-size:.65rem;font-weight:600;color:var(--orange-light);letter-spacing:.08em;text-transform:uppercase}
+.footer-logo-text .sub{font-size:.65rem;font-weight:600;color:var(--accent-hover);letter-spacing:.08em;text-transform:uppercase}
 .footer-desc{font-size:.83rem;line-height:1.7;max-width:280px}
 .footer-contacts{display:flex;flex-direction:column;gap:.5rem;margin-top:.25rem}
 .footer-contacts a{color:rgba(255,255,255,.7);text-decoration:none;font-size:.83rem;display:flex;align-items:center;gap:.5rem;transition:color .2s}
@@ -323,19 +324,69 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:3.5rem 0 1.5rem
 .footer-col h4{font-family:var(--font-display);font-weight:700;font-size:.88rem;color:#fff;margin-bottom:1rem}
 .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:.5rem}
 .footer-col ul a{color:rgba(255,255,255,.6);text-decoration:none;font-size:.83rem;transition:color .2s}
-.footer-col ul a:hover{color:var(--orange-light)}
+.footer-col ul a:hover{color:var(--accent-hover)}
 .footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding-top:1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;font-size:.78rem}
 .footer-legal{display:flex;gap:1.5rem;flex-wrap:wrap}
 .footer-legal a{color:rgba(255,255,255,.5);text-decoration:none;transition:color .2s}
 .footer-legal a:hover{color:#fff}
 .guide-link{color:rgba(255,255,255,.7)!important}
-.guide-link:hover{color:var(--orange-light)!important}
+.guide-link:hover{color:var(--accent-hover)!important}
 
 /* ── TOAST ── */
-.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--navy);color:#fff;padding:.85rem 1.25rem;border-radius:12px;font-size:.85rem;font-weight:500;z-index:9999;display:none;align-items:center;gap:.6rem;box-shadow:var(--shadow-lg);max-width:340px}
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--primary);color:#fff;padding:.85rem 1.25rem;border-radius:12px;font-size:.85rem;font-weight:500;z-index:9999;display:none;align-items:center;gap:.6rem;box-shadow:var(--shadow-lg);max-width:340px}
 .toast.show{display:flex}
 .toast.error{background:#c0392b}
 .toast.success{background:#1a7a3f}
+
+/* ── PRIVACY BADGES (sotto bottone analizza) ── */
+.privacy-badges{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-top:.75rem}
+.privacy-badge{display:inline-flex;align-items:center;gap:.3rem;font-size:.72rem;font-weight:600;color:var(--gray-700);background:var(--gray-100);border:1px solid var(--gray-200);border-radius:20px;padding:.3rem .7rem;letter-spacing:.01em}
+.privacy-badge svg{color:var(--primary);flex-shrink:0}
+.consulente-fallback{font-size:.78rem;color:var(--gray-400);text-align:center;margin-top:.6rem}
+.consulente-fallback a{color:var(--accent);font-weight:600;text-decoration:none}
+.consulente-fallback a:hover{text-decoration:underline}
+
+/* ── SEZIONE SICUREZZA DATI ── */
+.sicurezza-section{background:var(--warm-white);padding:4.5rem 0;border-top:1px solid var(--gray-200);border-bottom:1px solid var(--gray-200)}
+.sicurezza-grid{display:grid;grid-template-columns:280px 1fr;gap:3.5rem;align-items:start}
+.sicurezza-left{display:flex;flex-direction:column;gap:1.25rem}
+.sicurezza-shield{width:72px;height:72px;background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:20px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(30,58,138,.25)}
+.sicurezza-shield svg{width:36px;height:36px;stroke:#fff;stroke-width:1.5}
+.sicurezza-faq{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.sic-item{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:1.25rem;display:flex;gap:1rem;align-items:flex-start;transition:box-shadow .2s,border-color .2s}
+.sic-item:hover{border-color:var(--accent);box-shadow:var(--shadow)}
+.sic-icon{width:36px;height:36px;background:var(--primary-light);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sic-icon svg{width:18px;height:18px;stroke:var(--primary)}
+.sic-item h4{font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:.3rem}
+.sic-item p{font-size:.8rem;color:var(--gray-700);line-height:1.6;margin:0}
+
+/* ── PARTNER LOGOS REALI ── */
+.partner-logo-wrap{display:flex;align-items:center;justify-content:center;background:var(--white);border:1px solid var(--gray-200);border-radius:8px;padding:.4rem .8rem;height:44px;min-width:80px;transition:box-shadow .2s,border-color .2s}
+.partner-logo-wrap:hover{border-color:var(--accent);box-shadow:var(--shadow)}
+.partner-logo-wrap img{max-height:28px;max-width:90px;object-fit:contain;filter:grayscale(20%);transition:filter .2s}
+.partner-logo-wrap:hover img{filter:none}
+.partner-chip-fb{font-size:.78rem!important;font-weight:700!important}
+/* Override partners-logos flex gap for logo wraps */
+.partners-logos{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
+
+/* ── RECENSIONI ── */
+.reviews-section{background:var(--gray-100);padding:5rem 0}
+.reviews-stars-total{display:flex;align-items:center;gap:1rem;justify-content:center;margin:1.5rem 0 2.5rem;flex-wrap:wrap}
+.stars-big{font-size:1.8rem;color:#f59e0b;letter-spacing:2px}
+.stars-score{font-family:var(--font-display);font-size:2rem;font-weight:800;color:var(--text)}
+.stars-score span{font-size:1rem;font-weight:500;color:var(--gray-400)}
+.stars-count{font-size:.82rem;color:var(--gray-400);font-weight:500}
+.reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.review-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:1.75rem;display:flex;flex-direction:column;gap:1rem;transition:box-shadow .2s,transform .2s}
+.review-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-3px)}
+.review-featured{border-color:var(--accent);box-shadow:0 4px 20px rgba(33,150,243,.15);position:relative}
+.review-featured::before{content:'⭐ In evidenza';position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:.7rem;font-weight:700;padding:.25rem .8rem;border-radius:20px;white-space:nowrap}
+.review-stars{color:#f59e0b;font-size:1rem;letter-spacing:2px}
+.review-text{font-size:.88rem;color:var(--gray-700);line-height:1.7;font-style:italic;flex:1}
+.review-author{display:flex;align-items:center;gap:.75rem}
+.review-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;font-size:.8rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.review-author strong{display:block;font-size:.85rem;color:var(--text)}
+.review-author span{font-size:.75rem;color:var(--gray-400)}
 
 /* ── RESPONSIVE ── */
 @media(max-width:900px){
@@ -349,6 +400,11 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:3.5rem 0 1.5rem
   .faq-cta-box{display:none}
   .contact-grid{grid-template-columns:1fr}
   .footer-grid{grid-template-columns:1fr 1fr}
+  .sicurezza-grid{grid-template-columns:1fr}
+  .sicurezza-left{flex-direction:row;align-items:center}
+  .sicurezza-faq{grid-template-columns:1fr}
+  .reviews-grid{grid-template-columns:1fr}
+  .review-featured::before{display:none}
 }
 @media(max-width:640px){
   .topbar .wrap{justify-content:center;gap:.5rem}
@@ -359,6 +415,8 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:3.5rem 0 1.5rem
   .result-grid{grid-template-columns:repeat(2,1fr)}
   .footer-grid{grid-template-columns:1fr}
   section{padding:3rem 0}
+  .privacy-badges{gap:.4rem}
+  .reviews-stars-total{gap:.75rem}
 }
 </style>
 </head>
@@ -383,12 +441,10 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:3.5rem 0 1.5rem
 <nav>
   <div class="wrap">
     <a href="/" class="nav-logo">
-      <!-- Logo SVG inline Bollette Risparmio -->
-      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-        <rect width="36" height="36" rx="10" fill="#1A2E4A"/>
-        <path d="M11 22l5-8 4 6 3-4 3 6" stroke="#E8500A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="18" cy="14" r="3" fill="#E8500A" opacity=".3"/>
-        <circle cx="18" cy="14" r="1.5" fill="#FF6B2C"/>
+            <!-- Logo icon fedele al brand SVG ufficiale Bollette Risparmio -->
+      <svg width="32" height="41" viewBox="1 7 37 40" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#1e3a8a" d="M28.5,19.9h-2.1l-15.3,17.4h17.4c4.8,0,8.7-3.9,8.7-8.7c0-4.8-3.9-8.7-8.7-8.7Z"/>
+        <path fill="#2196f3" d="M28,8h-9.8l-5.3,10.5-0.7,1.3-1.8,3.6c-0.2,0.3,0,0.7,0.3,0.7h3.9L1.5,45.8l22.7-25.9h-5.4l0.7-1.4h8.4c2.9,0,5.3-2.4,5.3-5.3S30.9,8,28,8Z"/>
       </svg>
       <div class="nav-logo-text">
         <span class="brand">Bollette Risparmio</span>
@@ -410,13 +466,13 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:3.5rem 0 1.5rem
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
   </div>
-  <div class="wrap mobile-menu">
+  <div class="mobile-menu">
     <a href="/#offerte">Offerte Luce &amp; Gas</a>
     <a href="/#come-funziona">Come Funziona</a>
     <a href="/guide">Guide</a>
     <a href="/#chi-siamo">Chi Siamo</a>
     <a href="tel:0819131897">📞 081 91 31 897</a>
-    <a href="/#contatti" style="color:var(--orange);font-weight:700">Consulenza Gratuita →</a>
+    <a href="/#contatti" style="color:var(--accent);font-weight:700">Consulenza Gratuita →</a>
   </div>
 </nav>
 
@@ -486,12 +542,12 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:3.5rem 0 1.5rem
           </select>
         </div>
         <div class="dropzone" id="dropzone" ondragover="onDrag(event,true)" ondragleave="onDrag(event,false)" ondrop="onDrop(event)">
-          <input type="file" id="file-input" accept=".pdf" onchange="onFile(this)"/>
+          <input type="file" id="file-input" accept=".pdf,.jpg,.jpeg,.png" onchange="onFile(this)"/>
           <div class="dropzone-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="12" y2="12"/><line x1="15" y1="15" x2="12" y2="12"/></svg>
           </div>
-          <p><span>Carica il PDF</span> o trascina qui</p>
-          <small>Solo file PDF · Max 10 MB</small>
+          <p><span>Carica PDF o foto</span> della bolletta</p>
+          <small>PDF, JPG, PNG · Max 10 MB</small>
         </div>
         <div class="file-preview" id="file-preview" style="display:none">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
@@ -504,6 +560,12 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:3.5rem 0 1.5rem
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
           Analizza con AI
         </button>
+        <div class="privacy-badges">
+          <span class="privacy-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>Non salviamo la bolletta</span>
+          <span class="privacy-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Dati protetti e sicuri</span>
+          <span class="privacy-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>100% Gratuito</span>
+        </div>
+        <p class="consulente-fallback">Preferisci parlare con un esperto? <a href="#contatti" onclick="scrollToContact()">Richiedi analisi con consulente →</a></p>
       </div>
 
       <!-- Result view -->
@@ -585,6 +647,54 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:3.5rem 0 1.5rem
         </div>
         <h3 class="step-title">Confronto & Risparmio</h3>
         <p class="step-desc">Confrontiamo la tua tariffa con le migliori offerte e ti indichiamo quanto risparmi cambiando fornitore.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SICUREZZA DATI -->
+<section class="sicurezza-section">
+  <div class="wrap">
+    <div class="sicurezza-grid">
+      <div class="sicurezza-left">
+        <div class="sicurezza-shield">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div>
+          <p class="section-label">Privacy & Sicurezza</p>
+          <h2 class="section-title" style="font-size:1.8rem">I tuoi dati<br/>sono al sicuro</h2>
+          <p style="color:var(--gray-700);margin-top:.75rem;line-height:1.7">Caricare una bolletta richiede fiducia. Ecco come trattiamo i tuoi dati.</p>
+        </div>
+      </div>
+      <div class="sicurezza-faq">
+        <div class="sic-item">
+          <div class="sic-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div>
+            <h4>Come vengono usati i miei dati?</h4>
+            <p>Esclusivamente per analizzare la bolletta e trovare offerte più convenienti per te. Nessun altro uso, nessuna profilazione pubblicitaria.</p>
+          </div>
+        </div>
+        <div class="sic-item">
+          <div class="sic-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
+          <div>
+            <h4>La bolletta viene salvata?</h4>
+            <p>No. Il file viene elaborato in tempo reale e non archiviato. Solo i dati tecnici estratti (consumi, tariffe) vengono conservati per il confronto offerte.</p>
+          </div>
+        </div>
+        <div class="sic-item">
+          <div class="sic-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+          <div>
+            <h4>Chi può vedere le mie informazioni?</h4>
+            <p>Solo il sistema AI (e il consulente in caso di analisi manuale) per il tempo strettamente necessario. Accesso protetto da protocolli di sicurezza.</p>
+          </div>
+        </div>
+        <div class="sic-item">
+          <div class="sic-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+          <div>
+            <h4>Serve registrarsi?</h4>
+            <p>No. L'analisi AI è completamente anonima. Lasci l'email solo se vuoi ricevere i risultati del confronto offerte per email.</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -750,13 +860,34 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:3.5rem 0 1.5rem
         <div class="partners-bar">
           <p>I nostri partner</p>
           <div class="partners-logos">
-            <span class="partner-chip">Acea</span>
-            <span class="partner-chip">Duferco</span>
-            <span class="partner-chip">Energiasi</span>
-            <span class="partner-chip">Union</span>
-            <span class="partner-chip">TIM</span>
-            <span class="partner-chip">Wind Tre</span>
-            <span class="partner-chip">Vodafone</span>
+            <div class="partner-logo-wrap" title="Acea">
+              <img src="https://cdn3.comparasemplice.it/images/loghi_energia/logo_acea.jpg" alt="Acea" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+              <span class="partner-chip partner-chip-fb" style="display:none">Acea</span>
+            </div>
+            <div class="partner-logo-wrap" title="Duferco">
+              <img src="https://cdn3.comparasemplice.it/images/loghi_energia/logo_duferco.jpg" alt="Duferco" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+              <span class="partner-chip partner-chip-fb" style="display:none">Duferco</span>
+            </div>
+            <div class="partner-logo-wrap" title="Enel">
+              <img src="https://cdn3.comparasemplice.it/images/loghi_energia/logo_enel.jpg" alt="Enel" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+              <span class="partner-chip partner-chip-fb" style="display:none">Enel</span>
+            </div>
+            <div class="partner-logo-wrap" title="Eni Plenitude">
+              <img src="https://cdn3.comparasemplice.it/images/loghi_energia/logo_plenitude.jpg" alt="Eni Plenitude" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+              <span class="partner-chip partner-chip-fb" style="display:none">Plenitude</span>
+            </div>
+            <div class="partner-logo-wrap" title="Iren">
+              <img src="https://cdn3.comparasemplice.it/images/loghi_energia/logo_iren.jpg" alt="Iren" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+              <span class="partner-chip partner-chip-fb" style="display:none">Iren</span>
+            </div>
+            <div class="partner-logo-wrap" title="Edison">
+              <img src="https://cdn3.comparasemplice.it/images/loghi_energia/logo_edison.jpg" alt="Edison" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+              <span class="partner-chip partner-chip-fb" style="display:none">Edison</span>
+            </div>
+            <div class="partner-logo-wrap" title="TIM">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/TIM_logo_2016.svg/200px-TIM_logo_2016.svg.png" alt="TIM" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+              <span class="partner-chip partner-chip-fb" style="display:none">TIM</span>
+            </div>
           </div>
         </div>
       </div>
@@ -769,8 +900,56 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:3.5rem 0 1.5rem
         </div>
         <div class="about-img-accent">
           <div style="text-align:center">
-            <div style="font-family:var(--font-display);font-size:2.5rem;font-weight:800;color:var(--orange)">25+</div>
+            <div style="font-family:var(--font-display);font-size:2.5rem;font-weight:800;color:var(--accent)">25+</div>
             <div style="font-size:.78rem;color:var(--gray-700);font-weight:600">Anni di<br/>esperienza</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RECENSIONI -->
+<section class="reviews-section">
+  <div class="wrap">
+    <p class="section-label" style="text-align:center">Cosa dicono i clienti</p>
+    <h2 class="section-title" style="text-align:center">Migliaia di famiglie<br/>hanno già risparmiato</h2>
+    <div class="reviews-stars-total">
+      <div class="stars-big">★★★★★</div>
+      <div class="stars-score">4.8 <span>/ 5</span></div>
+      <div class="stars-count">Basato su oltre 200 recensioni verificate</div>
+    </div>
+    <div class="reviews-grid">
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"Ho risparmiato quasi 300€ in un anno solo cambiando fornitore. Il processo è stato semplicissimo, mi hanno guidato in tutto."</p>
+        <div class="review-author">
+          <div class="review-avatar">MR</div>
+          <div>
+            <strong>Marco R.</strong>
+            <span>Napoli · Cliente da 2 anni</span>
+          </div>
+        </div>
+      </div>
+      <div class="review-card review-featured">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"L'analisi AI è stata sorprendente: ha trovato un errore nella mia bolletta che nemmeno il fornitore mi aveva segnalato. Rimborso ottenuto in pochi giorni!"</p>
+        <div class="review-author">
+          <div class="review-avatar">GF</div>
+          <div>
+            <strong>Giulia F.</strong>
+            <span>Salerno · Analisi AI</span>
+          </div>
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"Consulenza professionale e veloce. Ho cambiato luce e gas insieme e la nuova bolletta è già più bassa del 25%. Consiglio a tutti."</p>
+        <div class="review-author">
+          <div class="review-avatar">AL</div>
+          <div>
+            <strong>Antonio L.</strong>
+            <span>Caserta · Offerta Bifuel</span>
           </div>
         </div>
       </div>
@@ -827,7 +1006,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:3.5rem 0 1.5rem
               Cos'è il mercato libero e conviene passarci?
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
-            <div class="faq-a"><div class="faq-a-inner">Il mercato libero ti permette di scegliere il fornitore con le condizioni più vantaggiose. Nella maggior parte dei casi offre tariffe inferiori rispetto al mercato tutelato. <a href="/guida/differenza-mercato-libero-tutelato" style="color:var(--orange)">Leggi la guida completa →</a></div></div>
+            <div class="faq-a"><div class="faq-a-inner">Il mercato libero ti permette di scegliere il fornitore con le condizioni più vantaggiose. Nella maggior parte dei casi offre tariffe inferiori rispetto al mercato tutelato. <a href="/guida/differenza-mercato-libero-tutelato" style="color:var(--accent)">Leggi la guida completa →</a></div></div>
           </div>
         </div>
       </div>
@@ -844,7 +1023,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:3.5rem 0 1.5rem
           </div>
         </a>
         <a href="mailto:info@bolletterisparmio.it" class="faq-cta-phone">
-          <div class="faq-cta-phone-icon" style="background:var(--navy-mid)">
+          <div class="faq-cta-phone-icon" style="background:var(--primary-mid)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
           </div>
           <div class="faq-cta-phone-text">
@@ -924,10 +1103,9 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);padding:3.5rem 0 1.5rem
     <div class="footer-grid">
       <div class="footer-brand">
         <div class="footer-logo-area">
-          <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-            <rect width="36" height="36" rx="10" fill="#E8500A" opacity=".2"/>
-            <path d="M11 22l5-8 4 6 3-4 3 6" stroke="#FF6B2C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <circle cx="18" cy="14" r="1.5" fill="#FF6B2C"/>
+          <svg width="32" height="41" viewBox="1 7 37 40" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#1e3a8a" opacity=".6" d="M28.5,19.9h-2.1l-15.3,17.4h17.4c4.8,0,8.7-3.9,8.7-8.7c0-4.8-3.9-8.7-8.7-8.7Z"/>
+            <path fill="#2196f3" d="M28,8h-9.8l-5.3,10.5-0.7,1.3-1.8,3.6c-0.2,0.3,0,0.7,0.3,0.7h3.9L1.5,45.8l22.7-25.9h-5.4l0.7-1.4h8.4c2.9,0,5.3-2.4,5.3-5.3S30.9,8,28,8Z"/>
           </svg>
           <div class="footer-logo-text">
             <span class="brand">Bollette Risparmio</span>
@@ -1030,9 +1208,10 @@ async function analizza() {
   fd.append('file', selectedFile);
   try {
     const r = await fetch(`${API}/api/analizza/${currentTipo}?profilo=${profilo}`, {method:'POST', body:fd});
-    if (!r.ok) throw new Error((await r.json()).detail || 'Errore analisi');
+    if (!r.ok) { const err = await r.json().catch(()=>({})); throw new Error(err.detail || `Errore ${r.status}`); }
     const d = await r.json();
-    currentBollettaId = d.id;
+    // FIX: la risposta usa bolletta_id, non id
+    currentBollettaId = d.bolletta_id;
     showResult(d);
   } catch(e) {
     showToast(e.message, 'error');
@@ -1045,25 +1224,39 @@ function showResult(d) {
   document.getElementById('upload-view').style.display = 'none';
   const panel = document.getElementById('result-panel');
   panel.classList.add('visible');
-  const a = d.analisi || {};
+
+  // FIX: il backend restituisce struttura annidata in d.dati (non d.analisi flat)
+  const dg  = d.dati?.dati_generali          || {};
+  const lc  = d.dati?.letture_e_consumi      || {};
+  const ai  = d.dati?.analisi_ai             || {};
+  const tipo   = d.tipo    || currentTipo;
+  const unita  = d.unita   || (tipo === 'gas' ? 'Smc' : 'kWh');
+  const totale = dg.totale_fattura;
+  const consumo = lc.consumo_totale_periodo ?? lc.consumo_totale_smc;
+  const fornitore = dg.fornitore || '—';
+  const costoU = d.costo_unitario;
+
+  const fmt = (v, u) => v != null && v !== '' ? `${typeof v === 'number' ? v.toFixed(2) : v}${u}` : '—';
   const stats = document.getElementById('result-stats');
-  const fmt = (v,u) => v != null ? `${v}${u}` : '—';
   stats.innerHTML = `
-    <div class="stat-box highlight"><div class="val">${fmt(a.totale,'€')}</div><div class="lbl">Totale bolletta</div></div>
-    <div class="stat-box"><div class="val">${fmt(a.consumo, a.tipo==='gas'?' Smc':' kWh')}</div><div class="lbl">Consumo</div></div>
-    <div class="stat-box"><div class="val">${a.costo_unitario ? a.costo_unitario.toFixed(4)+'€' : '—'}</div><div class="lbl">Costo unitario</div></div>
-    <div class="stat-box"><div class="val">${a.fornitore||'—'}</div><div class="lbl">Fornitore</div></div>
+    <div class="stat-box highlight"><div class="val">${totale != null ? totale.toFixed(2)+'€' : '—'}</div><div class="lbl">Totale bolletta</div></div>
+    <div class="stat-box"><div class="val">${consumo != null ? consumo+' '+unita : '—'}</div><div class="lbl">Consumo</div></div>
+    <div class="stat-box"><div class="val">${costoU != null ? costoU.toFixed(4)+'€' : '—'}</div><div class="lbl">Costo unitario</div></div>
+    <div class="stat-box"><div class="val" style="font-size:.95rem">${fornitore}</div><div class="lbl">Fornitore</div></div>
   `;
-  const anom = a.analisi_ai?.anomalie_rilevate || [];
-  const sugg = a.analisi_ai?.suggerimenti || [];
+
+  const anom = ai.anomalie_rilevate || [];
+  const sugg = ai.suggerimenti || [];
+  const anomEl = document.getElementById('ai-anomalie');
+  anomEl.style.display = anom.length ? 'block' : 'none';
   if (anom.length) {
-    document.getElementById('ai-anomalie').style.display = 'block';
     document.getElementById('anomalie-list').innerHTML = anom.map(x => `<span class="anomaly-tag">⚠ ${x}</span>`).join('');
   }
   document.getElementById('suggerimenti-list').innerHTML = sugg.length
     ? sugg.map(s => `<div class="suggestion-item">${s}</div>`).join('')
     : '<div class="suggestion-item">Nessuna anomalia critica rilevata. Buona gestione dei consumi!</div>';
-  document.getElementById('result-panel').scrollIntoView({behavior:'smooth',block:'nearest'});
+
+  panel.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
 function resetAnalyzer() {
@@ -1080,19 +1273,30 @@ async function confronta() {
   const nome = document.getElementById('lead-nome').value.trim();
   const cognome = document.getElementById('lead-cognome').value.trim();
   if (!nome || !cognome) { showToast('Nome e cognome obbligatori', 'error'); return; }
+  if (!currentBollettaId) { showToast('Analizza prima la bolletta', 'error'); return; }
   const btn = document.getElementById('btn-compare');
   btn.disabled = true;
   btn.innerHTML = '<div class="spinner"></div> Confronto in corso…';
   try {
-    // Save lead
-    const lead = {nome, cognome, email: document.getElementById('lead-email').value, telefono: document.getElementById('lead-telefono').value, bolletta_id: currentBollettaId, tipo_richiesta: 'comparazione', consenso_privacy: true, consenso_marketing: false};
+    // FIX: controlla risposta lead save, gestisce errori separatamente
+    const lead = {nome, cognome,
+      email: document.getElementById('lead-email').value.trim(),
+      telefono: document.getElementById('lead-telefono').value.trim(),
+      bolletta_id: currentBollettaId,
+      tipo_richiesta: 'comparazione',
+      consenso_privacy: true,
+      consenso_marketing: false
+    };
     const lr = await fetch(`${API}/api/leads`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(lead)});
-    // Compare
-    const profilo = document.getElementById('profilo-sel').value;
-    const cr = await fetch(`${API}/api/compara/${currentBollettaId}?profilo=${profilo}`, {method:'POST'});
-    if (!cr.ok) throw new Error((await cr.json()).detail || 'Errore confronto');
+    if (!lr.ok) { const e = await lr.json().catch(()=>({})); throw new Error(e.detail || 'Errore salvataggio contatti'); }
+
+    // FIX: niente parametro profilo in query (il backend lo legge già dal record bolletta)
+    const cr = await fetch(`${API}/api/compara/${currentBollettaId}`, {method:'POST',
+      headers:{'Content-Type':'application/json'}, body: JSON.stringify({})});
+    if (!cr.ok) { const e = await cr.json().catch(()=>({})); throw new Error(e.detail || 'Errore confronto'); }
     const cd = await cr.json();
-    showOfferte(cd.risultati || []);
+    // FIX: il backend restituisce "offerte", non "risultati"
+    showOfferte(cd.offerte || []);
   } catch(e) {
     showToast(e.message, 'error');
     btn.disabled = false;
@@ -1130,12 +1334,24 @@ async function submitContact() {
   const tel = document.getElementById('c-tel').value.trim();
   if (!nome || !email || !tel) { showToast('Compila tutti i campi obbligatori', 'error'); return; }
   try {
-    const lead = {nome, cognome: document.getElementById('c-cognome').value.trim(), email, telefono: tel, tipo_richiesta: 'consulente', consenso_privacy: true, consenso_marketing: false, note: document.getElementById('c-offerta').value};
-    await fetch(`${API}/api/leads`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(lead)});
+    const lead = {
+      nome,
+      cognome: document.getElementById('c-cognome').value.trim(),
+      email, telefono: tel,
+      tipo_richiesta: 'consulente',
+      consenso_privacy: true,
+      consenso_marketing: false,
+      note: document.getElementById('c-offerta').value
+    };
+    const r = await fetch(`${API}/api/leads`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(lead)});
+    if (!r.ok) throw new Error('Errore invio');
+    // FIX: resetta i campi dopo invio riuscito
+    ['c-nome','c-cognome','c-email','c-tel'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('c-offerta').value = '';
     document.getElementById('contact-success').classList.add('show');
     showToast('Richiesta inviata! Ti contatteremo presto.', 'success');
   } catch(e) {
-    showToast('Errore nell\'invio. Riprova o chiamaci.', 'error');
+    showToast('Errore nell\'invio. Riprova o chiamaci al 081 91 31 897.', 'error');
   }
 }
 

@@ -7,7 +7,7 @@ import os, json, uuid, logging, io, re, httpx
 from datetime import datetime, date
 from pathlib import Path
 from typing import Optional
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, contextmanager
 
 from fastapi import FastAPI, UploadFile, File, HTTPException, Body, Request, Depends, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
@@ -24,6 +24,7 @@ except ImportError:
 from backend.email_utils import (
     build_risultati, build_consulente_utente, build_consulente_admin, send_email as _send_email
 )
+from backend.scraper import esegui_scraping, avvia_scheduler, stato_scraper as _stato_scraper
 import backend.guide_pages as _gp
 
 # ── Paths ──────────────────────────────────────────────────────────────────
@@ -51,6 +52,7 @@ RESEND_KEY   = os.environ.get("RESEND_API_KEY", "")
 FROM_EMAIL   = os.environ.get("FROM_EMAIL", "Bollette Risparmio <onboarding@resend.dev>")
 ADMIN_EMAIL  = os.environ.get("ADMIN_EMAIL", "")
 SITE_URL     = os.environ.get("SITE_URL", "https://www.bolletterisparmio.it")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 
 # ── Lifespan ───────────────────────────────────────────────────────────────
 @asynccontextmanager
@@ -244,8 +246,6 @@ def mesi(d1,d2):
 def pun_last(c): r=c.execute("SELECT valore FROM indici WHERE tipo='PUN' ORDER BY periodo DESC LIMIT 1").fetchone(); return r["valore"] if r else 0.113
 def psv_last(c): r=c.execute("SELECT valore FROM indici WHERE tipo='PSV' ORDER BY periodo DESC LIMIT 1").fetchone(); return r["valore"] if r else 0.382
 
-from contextlib import contextmanager
-
 def se(to, subj, html):
     """Shorthand send_email usando le variabili globali."""
     return _send_email(to, subj, html, RESEND_KEY, FROM_EMAIL)
@@ -405,7 +405,7 @@ async def analizza(tipo: str, file: UploadFile = File(...), profilo: str = "D2",
 
 # ── Comparazione ────────────────────────────────────────────────────────────
 @app.post("/api/compara/{bid}")
-async def compara(bid: str, bifuel_id: Optional[str] = Body(None, embed=True), bg: BackgroundTasks = BackgroundTasks()):
+async def compara(bid: str, bifuel_id: Optional[str] = Body(None, embed=True), bg: BackgroundTasks = None):
     with db() as c:
         row = c.execute("SELECT * FROM bollette WHERE id=?", (bid,)).fetchone()
         if not row:
@@ -436,7 +436,7 @@ async def compara(bid: str, bifuel_id: Optional[str] = Body(None, embed=True), b
     out = {"bolletta_id":bid,"tipo":tipo,"profilo":profilo,"profilo_label":PROFILI.get(profilo),"fornitore_attuale":b.get("fornitore"),"totale_attuale":b.get("totale"),"costo_annuo_attuale":round(att_annuo,2),"periodo_mesi":m,"consumo":b.get("consumo"),"unita":b.get("unita"),"iva_perc":IVA.get(profilo,0.22)*100,"bifuel":bifuel,"pun":pun,"psv":psv,"offerte":risultati,"migliore":risultati[0] if risultati else None,"risparmio_max":round(risultati[0]["risparmio_annuo"],2) if risultati else 0}
 
     # Invia email con i risultati se abbiamo l'email del lead
-    if _lead_email:
+    if _lead_email and bg:
         subj, html = build_risultati(
             nome=_lead_nome, tipo=tipo, profilo_label=PROFILI.get(profilo,""),
             totale=b.get("totale") or 0, consumo=b.get("consumo") or 0,
@@ -491,7 +491,7 @@ def _cmp_gas(c,b,dati,m,fa,att,profilo,psv,bifuel):
 # LEADS — raccolta contatti
 # ══════════════════════════════════════════════════════════════════════════════
 @app.post("/api/leads")
-async def salva_lead(payload: dict = Body(...), bg: BackgroundTasks = BackgroundTasks()):
+async def salva_lead(payload: dict = Body(...), bg: BackgroundTasks = None):
     lid = str(uuid.uuid4())
     with db() as c:
         c.execute("INSERT INTO leads (id,nome,cognome,email,telefono,tipo_richiesta,bolletta_id,consenso_privacy,consenso_marketing,data,note) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
@@ -510,7 +510,7 @@ async def salva_lead(payload: dict = Body(...), bg: BackgroundTasks = Background
     nome_u   = payload.get("nome", "") or ""
     cognome_u= payload.get("cognome", "") or ""
 
-    if to_email and tipo_req == "consulente":
+    if to_email and tipo_req == "consulente" and bg:
         # 1. Conferma all'utente
         subj, html = build_consulente_utente(nome_u, to_email, SITE_URL, FROM_EMAIL)
         bg.add_task(se, to_email, subj, html)
@@ -532,20 +532,20 @@ async def salva_lead(payload: dict = Body(...), bg: BackgroundTasks = Background
 # ══════════════════════════════════════════════════════════════════════════════
 @app.get("/api/offerte/{tipo}")
 async def offerte_pubbliche(tipo: str, profilo: Optional[str]=None):
-    c = get_db()
     t = "offerte_luce" if tipo=="luce" else "offerte_gas"
     q = f"SELECT * FROM {t} WHERE attiva=1"
     p = []
     if profilo:
         q += " AND (profili LIKE ? OR profili LIKE ? OR profili LIKE ? OR profili=?)"
         p.extend([f"%{profilo}%",f"{profilo},%",f"%,{profilo}",profilo])
-    rows = c.execute(q+" ORDER BY fornitore", p).fetchall(); c.close()
+    with db() as c:
+        rows = c.execute(q+" ORDER BY fornitore", p).fetchall()
     return [dict(r) for r in rows]
 
 @app.get("/api/indici")
 async def indici_pubblici():
-    c = get_db()
-    rows = c.execute("SELECT * FROM indici ORDER BY tipo, periodo DESC").fetchall(); c.close()
+    with db() as c:
+        rows = c.execute("SELECT * FROM indici ORDER BY tipo, periodo DESC").fetchall()
     out = {}
     for r in rows: out.setdefault(r["tipo"],[]).append(dict(r))
     return out
@@ -703,6 +703,39 @@ async def _fetch_indici():
             count+=1
         c.commit(); c.close(); log.info(f"Indici aggiornati: {count}")
     except Exception as e: log.error(f"Errore indici: {e}")
+
+# ── SCRAPER ENDPOINTS ────────────────────────────────────────────────────────
+
+@app.post("/api/admin/scraper/run", dependencies=[Depends(require_admin)])
+async def scraper_run(bg: BackgroundTasks):
+    """Avvia lo scraping in background. Ritorna subito."""
+    if not GEMINI_API_KEY:
+        raise HTTPException(400, "GEMINI_API_KEY non configurata nel .env")
+    if _stato_scraper()["in_corso"]:
+        raise HTTPException(409, "Scraping già in corso. Controlla /status.")
+    bg.add_task(esegui_scraping, db, GEMINI_API_KEY)
+    return {"avviato": True, "messaggio": "Scraping avviato in background. Controlla /api/admin/scraper/status."}
+
+@app.get("/api/admin/scraper/status", dependencies=[Depends(require_admin)])
+async def scraper_status():
+    """Stato e log dell'ultimo run."""
+    return _stato_scraper()
+
+@app.post("/api/admin/scraper/schedule", dependencies=[Depends(require_admin)])
+async def scraper_schedule(payload: dict = Body(...)):
+    """
+    Abilita/disabilita run automatico.
+    Body: {"ore": 24}   → run ogni 24h
+    Body: {"ore": 0}    → disabilita
+    """
+    if not GEMINI_API_KEY:
+        raise HTTPException(400, "GEMINI_API_KEY non configurata nel .env")
+    ore = int(payload.get("ore", 0))
+    if ore < 0 or ore > 168:
+        raise HTTPException(400, "ore deve essere tra 0 e 168")
+    avvia_scheduler(db, GEMINI_API_KEY, ore)
+    msg = "Scheduler disabilitato" if ore == 0 else f"Scheduler attivo: run ogni {ore}h"
+    return {"ore": ore, "messaggio": msg}
 
 # Export CSV admin
 @app.get("/api/admin/export/bollette", dependencies=[Depends(require_admin)])
