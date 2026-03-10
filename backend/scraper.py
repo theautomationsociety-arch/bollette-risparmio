@@ -213,7 +213,7 @@ async def _estrai_con_gemini(tipo: str, html: str, api_key: str) -> list[dict]:
         prompt = _build_prompt(tipo, html)
         resp = await asyncio.to_thread(
             client.models.generate_content,
-            model="gemini-2.5-flash",
+            model="gemini-2.0-flash",
             contents=prompt,
             config=gtypes.GenerateContentConfig(
                 response_mime_type="application/json",

@@ -189,7 +189,7 @@ _FOOTER = """<footer class="footer">
     <div class="footer-copy">
       &#169; Bollette Risparmio, diritti riservati.<br>
       <a href="https://www.iubenda.com/privacy-policy/30631851" target="_blank" style="color:rgba(255,255,255,.4);text-decoration:none;font-size:.72rem">Privacy Policy</a> &middot;
-      <a href="https://www.bolletterisparmio.it/trattamento-dati/" target="_blank" style="color:rgba(255,255,255,.4);text-decoration:none;font-size:.72rem">Condizioni Generali</a>
+      <a href="/condizioni-generali" style="color:rgba(255,255,255,.4);text-decoration:none;font-size:.72rem">Condizioni Generali</a>
     </div>
   </div>
 </footer>
@@ -1045,3 +1045,317 @@ def guida_index() -> str:
 {_FOOTER}
 </body>
 </html>"""
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PAGINE STATICHE LEGALI
+# ══════════════════════════════════════════════════════════════════════════════
+
+def _static_page(title: str, path: str, desc: str, body: str) -> str:
+    """Template semplice per pagine legali/statiche (no TOC, no sidebar)."""
+    canonical = SITE_URL + path
+    return f"""<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>{title} — Bollette Risparmio</title>
+<meta name="description" content="{desc}">
+<meta name="robots" content="noindex, follow">
+<link rel="canonical" href="{canonical}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+{_CSS}
+.static-wrap{{max-width:780px;margin:0 auto;padding:3rem 1.5rem 5rem}}
+.static-wrap h1{{font-family:'Sora',sans-serif;font-size:2rem;font-weight:800;color:var(--primary);margin-bottom:.5rem;letter-spacing:-.5px}}
+.static-wrap .lead{{color:var(--muted);font-size:1rem;margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}}
+.static-wrap h2{{font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--primary);margin:2.25rem 0 .75rem}}
+.static-wrap p{{margin-bottom:1rem;color:#2d3a4a;line-height:1.8}}
+.static-wrap ul{{margin:0 0 1rem 1.5rem;color:#2d3a4a}}
+.static-wrap li{{margin-bottom:.4rem;line-height:1.7}}
+.static-wrap a{{color:var(--accent);text-decoration:underline}}
+.static-wrap .updated{{font-size:.78rem;color:var(--muted);margin-bottom:2rem}}
+</style>
+</head>
+<body>
+{_NAV}
+<main>
+  <div class="static-wrap">
+    {body}
+  </div>
+</main>
+{_FOOTER}
+</body>
+</html>"""
+
+
+def pagina_privacy() -> str:
+    body = """
+<h1>Privacy Policy</h1>
+<p class="lead">Informativa sul trattamento dei dati personali ai sensi del Reg. UE 2016/679 (GDPR) e del D.Lgs. 196/2003.</p>
+<p class="updated">Ultimo aggiornamento: gennaio 2025</p>
+
+<h2>1. Titolare del trattamento</h2>
+<p>Il titolare del trattamento dei dati personali è <strong>Bollette Risparmio</strong>, con sede in Via Cesario Console 3, 80132 Napoli. Contatto email: <a href="mailto:info@bolletterisparmio.it">info@bolletterisparmio.it</a>.</p>
+
+<h2>2. Tipologie di dati raccolti</h2>
+<p>Il sito raccoglie le seguenti categorie di dati:</p>
+<ul>
+  <li><strong>Dati di contatto:</strong> nome, cognome, indirizzo email, numero di telefono (forniti volontariamente tramite i form).</li>
+  <li><strong>Dati della bolletta:</strong> dati tecnici estratti dalla bolletta caricata (fornitore, consumi, tariffe, POD/PDR). Il file originale <strong>non viene archiviato</strong>; viene elaborato in tempo reale e i soli dati tecnici vengono conservati per il confronto offerte.</li>
+  <li><strong>Dati di navigazione:</strong> indirizzo IP, tipo di browser, pagine visitate, raccolti automaticamente dal server per finalità di sicurezza e statistiche aggregate.</li>
+</ul>
+
+<h2>3. Finalità e base giuridica del trattamento</h2>
+<ul>
+  <li><strong>Erogazione del servizio di analisi e confronto bollette</strong> — base: esecuzione del contratto (art. 6.1.b GDPR).</li>
+  <li><strong>Risposta a richieste di contatto e consulenza</strong> — base: consenso dell'interessato (art. 6.1.a GDPR).</li>
+  <li><strong>Adempimenti di legge</strong> — base: obbligo legale (art. 6.1.c GDPR).</li>
+  <li><strong>Comunicazioni commerciali</strong> (solo previo consenso esplicito) — base: consenso (art. 6.1.a GDPR).</li>
+</ul>
+
+<h2>4. Conservazione dei dati</h2>
+<p>I dati di contatto e i dati tecnici della bolletta sono conservati per un massimo di <strong>24 mesi</strong> dalla raccolta, salvo diversi obblighi di legge o revoca del consenso. I dati di navigazione sono conservati per un massimo di 12 mesi.</p>
+
+<h2>5. Destinatari dei dati</h2>
+<p>I dati non vengono venduti a terzi. Possono essere comunicati a:</p>
+<ul>
+  <li>Fornitori di servizi tecnici (hosting, email) che agiscono come responsabili del trattamento ai sensi dell'art. 28 GDPR.</li>
+  <li>Fornitori di energia e telecomunicazioni, ma <strong>solo previo consenso esplicito</strong> e limitatamente alle finalità di attivazione dell'offerta scelta.</li>
+  <li>Autorità competenti, nei casi previsti dalla legge.</li>
+</ul>
+
+<h2>6. Trasferimento fuori dall'UE</h2>
+<p>I dati sono trattati all'interno dell'Unione Europea. L'eventuale trasferimento verso paesi terzi avviene nel rispetto delle garanzie previste dagli artt. 44-49 GDPR (clausole contrattuali tipo o decisioni di adeguatezza).</p>
+
+<h2>7. Diritti dell'interessato</h2>
+<p>Ai sensi degli artt. 15-22 GDPR, l'interessato ha il diritto di:</p>
+<ul>
+  <li>Accedere ai propri dati (art. 15)</li>
+  <li>Rettificarli (art. 16)</li>
+  <li>Ottenerne la cancellazione ("diritto all'oblio", art. 17)</li>
+  <li>Richiedere la limitazione del trattamento (art. 18)</li>
+  <li>Ricevere i dati in formato portabile (art. 20)</li>
+  <li>Opporsi al trattamento (art. 21)</li>
+  <li>Revocare il consenso in qualsiasi momento, senza pregiudicare la liceità del trattamento precedente</li>
+</ul>
+<p>Per esercitare i propri diritti scrivere a <a href="mailto:info@bolletterisparmio.it">info@bolletterisparmio.it</a>. In caso di ritenuto inadempimento è possibile proporre reclamo al Garante per la protezione dei dati personali (<a href="https://www.garanteprivacy.it" target="_blank" rel="noopener">www.garanteprivacy.it</a>).</p>
+
+<h2>8. Cookie</h2>
+<p>Il sito utilizza cookie tecnici strettamente necessari al funzionamento. Non vengono utilizzati cookie di profilazione o tracciamento di terze parti senza previo consenso. Per maggiori informazioni consulta la nostra <a href="https://www.iubenda.com/privacy-policy/30631851/cookie-policy" target="_blank" rel="noopener">Cookie Policy</a>.</p>
+
+<h2>9. Uso dell'intelligenza artificiale</h2>
+<p>L'analisi della bolletta è eseguita tramite il modello Google Gemini. I dati inviati al modello AI sono limitati al testo estratto dalla bolletta, anonimizzato ove possibile. Google tratta tali dati in qualità di responsabile del trattamento, nel rispetto della propria <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Privacy Policy</a> e degli accordi DPA stipulati ai sensi del GDPR.</p>
+"""
+    return _static_page(
+        "Privacy Policy",
+        "/privacy",
+        "Informativa sul trattamento dei dati personali ai sensi del GDPR — Bollette Risparmio.",
+        body
+    )
+
+
+def pagina_termini() -> str:
+    body = """
+<h1>Termini e Condizioni</h1>
+<p class="lead">Condizioni generali di utilizzo del servizio Bollette Risparmio.</p>
+<p class="updated">Ultimo aggiornamento: gennaio 2025</p>
+
+<h2>1. Oggetto del servizio</h2>
+<p><strong>Bollette Risparmio</strong> (di seguito "il Servizio") è una piattaforma di comparazione e consulenza per offerte di energia elettrica, gas naturale e servizi internet. Il Servizio è erogato da Bollette Risparmio, Via Cesario Console 3, 80132 Napoli.</p>
+<p>L'utilizzo del Servizio è <strong>gratuito per l'utente finale</strong>. Bollette Risparmio è remunerata dai fornitori partner in caso di attivazione di un'offerta tramite il Servizio.</p>
+
+<h2>2. Accettazione dei termini</h2>
+<p>L'utilizzo del sito e dei servizi offerti implica l'accettazione integrale dei presenti Termini e Condizioni. Chi non accetta tali termini è invitato a non utilizzare il Servizio.</p>
+
+<h2>3. Natura del servizio di comparazione</h2>
+<p>Le informazioni sulle offerte presenti nel sito sono fornite a titolo informativo e potrebbero non essere esaustive. Bollette Risparmio si impegna ad aggiornare i dati con regolarità, ma non garantisce la loro completezza o aggiornamento in tempo reale. Prima di sottoscrivere qualsiasi contratto si raccomanda di verificare le condizioni direttamente con il fornitore.</p>
+<p>Il confronto non include necessariamente tutte le offerte disponibili sul mercato.</p>
+
+<h2>4. Analisi AI della bolletta</h2>
+<p>Lo strumento di analisi AI elabora il documento caricato per estrarne i dati tecnici (consumi, tariffe, fornitore). I risultati hanno natura <strong>indicativa</strong> e non costituiscono consulenza finanziaria o contrattuale. La responsabilità per le decisioni di cambio fornitore rimane esclusivamente in capo all'utente.</p>
+<p>Il file della bolletta non viene archiviato. I dati tecnici estratti sono conservati in forma pseudonimizzata per consentire il confronto offerte (v. Privacy Policy).</p>
+
+<h2>5. Responsabilità</h2>
+<p>Bollette Risparmio non è responsabile per:</p>
+<ul>
+  <li>Eventuali imprecisioni nell'analisi AI derivanti da documenti illeggibili, parziali o in formati non standard.</li>
+  <li>Variazioni di prezzo delle offerte successive alla pubblicazione.</li>
+  <li>Decisioni contrattualmente assunte dall'utente sulla base delle informazioni fornite.</li>
+  <li>Interruzioni del servizio causate da manutenzione, guasti tecnici o cause di forza maggiore.</li>
+</ul>
+
+<h2>6. Proprietà intellettuale</h2>
+<p>Tutti i contenuti del sito (testi, grafica, logo, codice) sono di proprietà di Bollette Risparmio o dei rispettivi titolari e sono protetti dalla normativa sul diritto d'autore. È vietata la riproduzione o distribuzione senza esplicita autorizzazione scritta.</p>
+
+<h2>7. Modifiche ai termini</h2>
+<p>Bollette Risparmio si riserva il diritto di modificare i presenti Termini in qualsiasi momento. Le modifiche entrano in vigore dalla pubblicazione sul sito. L'utilizzo continuato del Servizio dopo la modifica costituisce accettazione dei nuovi Termini.</p>
+
+<h2>8. Legge applicabile e foro competente</h2>
+<p>I presenti Termini sono regolati dalla legge italiana. Per qualsiasi controversia è competente il Foro di Napoli, salvo diversa disposizione inderogabile di legge a tutela del consumatore.</p>
+
+<h2>9. Contatti</h2>
+<p>Per qualsiasi informazione o reclamo: <a href="mailto:info@bolletterisparmio.it">info@bolletterisparmio.it</a> — Tel. <a href="tel:0819131897">081 91 31 897</a>.</p>
+"""
+    return _static_page(
+        "Termini e Condizioni",
+        "/termini",
+        "Condizioni generali di utilizzo del servizio di comparazione bollette Bollette Risparmio.",
+        body
+    )
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PAGINE LEGALI
+# ══════════════════════════════════════════════════════════════════════════════
+
+def _legal_page(title: str, body_html: str) -> str:
+    """Template per pagine legali semplici."""
+    return f"""<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{title} — Bollette Risparmio</title>
+<meta name="robots" content="index,follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+{_CSS}
+/* LEGAL PAGE OVERRIDES */
+.legal-wrap{{max-width:780px;margin:0 auto;padding:3rem 1.5rem 5rem}}
+.legal-wrap h1{{font-family:'Sora',sans-serif;font-size:clamp(1.6rem,3.5vw,2.2rem);font-weight:800;color:var(--primary);margin-bottom:.5rem;letter-spacing:-.5px}}
+.legal-subtitle{{color:var(--muted);font-size:.9rem;margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}}
+.legal-wrap h2{{font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--primary);margin:2rem 0 .6rem}}
+.legal-wrap p{{color:#2d3a4a;line-height:1.8;margin-bottom:.9rem;font-size:.93rem}}
+.legal-wrap ul{{margin:.5rem 0 .9rem 1.4rem;color:#2d3a4a;font-size:.93rem}}
+.legal-wrap li{{margin-bottom:.4rem;line-height:1.7}}
+.legal-wrap a{{color:var(--accent)}}
+.legal-breadcrumb{{display:flex;align-items:center;gap:.4rem;font-size:.78rem;color:var(--muted);margin-bottom:1.75rem}}
+.legal-breadcrumb a{{color:var(--muted);text-decoration:none}}
+.legal-breadcrumb a:hover{{color:var(--accent)}}
+</style>
+</head>
+<body>
+{_NAV}
+<div class="legal-wrap">
+  <div class="legal-breadcrumb">
+    <a href="/">Home</a> <span>›</span> <span>{title}</span>
+  </div>
+  {body_html}
+</div>
+{_FOOTER}
+</body>
+</html>"""
+
+
+def pagina_condizioni_generali() -> str:
+    body = """
+<h1>Condizioni Generali</h1>
+<p class="legal-subtitle">Informativa sul trattamento dei dati personali ai sensi degli artt. 13 e 14 del Regolamento (UE) 2016/679 ("GDPR")</p>
+
+<h2>1. Oggetto</h2>
+<p>La presente informativa è resa ai sensi degli artt. 13 e 14 del Regolamento (UE) 2016/679 ("GDPR") e ha lo scopo di informarti sul trattamento dei tuoi dati personali forniti tramite il form di richiesta contatto telefonico presente sul sito bolletterisparmio.it, finalizzato esclusivamente all'erogazione del servizio richiesto.</p>
+
+<h2>2. Titolare del trattamento</h2>
+<p>Il Titolare del trattamento è:<br>
+<strong>walktotalk.srl</strong> – P. IVA IT 07986081219<br>
+Sede legale: Via Cesario Console 3, 80132, Napoli<br>
+PEC: walktotalk2@pec.it<br>
+Email: <a href="mailto:privacy@bolletterisparmio.it">privacy@bolletterisparmio.it</a></p>
+
+<h2>3. Tipologia di dati raccolti</h2>
+<p>I dati raccolti tramite il form comprendono:</p>
+<ul>
+  <li>Nome e cognome</li>
+  <li>Numero di telefono</li>
+  <li>Indirizzo email</li>
+  <li>Eventuali dati aggiuntivi forniti per il servizio richiesto</li>
+</ul>
+
+<h2>4. Finalità e base giuridica del trattamento</h2>
+<p>I dati raccolti sono trattati per le seguenti finalità:</p>
+<ul>
+  <li>Erogazione del servizio richiesto tramite contatto telefonico (Obbligatorio) – art. 6(1), lett. b) GDPR</li>
+  <li>Adempimento di obblighi di legge relativi alla gestione amministrativa del servizio – art. 6(1), lett. c) GDPR</li>
+  <li>Tutela di legittimi interessi del Titolare, quali la sicurezza e la corretta gestione del servizio – art. 6(1), lett. f) GDPR</li>
+  <li>Invio di comunicazioni commerciali e/o promozionali – facoltativo</li>
+  <li>Attività di profilazione e arricchimento dei dati per finalità statistiche o marketing – facoltativo</li>
+  <li>Trasferimento dei dati ai partner/gestori indicati per l'erogazione del servizio richiesto – facoltativo, previo consenso separato</li>
+</ul>
+
+<h2>5. Natura del conferimento e conseguenze del rifiuto</h2>
+<p>Il conferimento dei dati è obbligatorio solo per il contatto telefonico finalizzato al servizio richiesto. Il mancato conferimento impedisce la ricezione del servizio. Altre finalità, come marketing, profilazione o trasferimento dati ai partner, richiedono un consenso separato e sono facoltative.</p>
+
+<h2>6. Modalità del trattamento</h2>
+<p>I dati sono trattati mediante strumenti informatici e manuali, con logiche strettamente correlate alle finalità indicate. Sono adottate misure di sicurezza tecniche e organizzative per garantire la protezione dei dati, conformemente agli artt. 25 e 32 GDPR.</p>
+
+<h2>7. Conservazione dei dati</h2>
+<p>I dati saranno conservati solo per il tempo strettamente necessario all'erogazione del servizio richiesto e all'adempimento degli obblighi di legge.</p>
+
+<h2>8. Destinatari principali</h2>
+<p>I dati personali raccolti potranno essere comunicati ai seguenti soggetti esclusivamente per finalità legate all'erogazione del servizio richiesto:</p>
+<ul>
+  <li>Società che forniscono gas e luce: Enel, Iren, Acea, Edison, Illumia</li>
+  <li>Società che operano nel settore delle Pay TV: Dazn, TIM, Prime Video, Now TV Sport</li>
+  <li>Società che operano nel settore della telefonia: TIM, Vodafone, Fastweb, Wind Tre</li>
+</ul>
+<p>Il trasferimento dei dati avverrà in conformità alle norme di legge e, se previsto, verso Paesi che garantiscono un livello di protezione adeguato secondo la Commissione Europea.</p>
+
+<h2>9. Diritti dell'interessato</h2>
+<p>Hai diritto di:</p>
+<ul>
+  <li>Accedere ai tuoi dati e ottenere informazioni sul trattamento</li>
+  <li>Richiedere la rettifica o cancellazione dei dati</li>
+  <li>Limitare il trattamento o opporti a finalità non necessarie per il servizio</li>
+  <li>Revocare in qualsiasi momento il consenso relativo a finalità facoltative</li>
+</ul>
+<p>Per esercitare i tuoi diritti, contatta il Titolare all'indirizzo <a href="mailto:privacy@bolletterisparmio.it">privacy@bolletterisparmio.it</a>.</p>
+"""
+    return _legal_page("Condizioni Generali", body)
+
+
+def pagina_privacy() -> str:
+    body = """
+<h1>Privacy Policy</h1>
+<p class="legal-subtitle">La presente privacy policy è gestita tramite <strong>iubenda</strong>, il servizio certificato GDPR che utilizziamo per la gestione completa dei consensi e delle informative.</p>
+
+<div style="background:var(--primary-light,#eff6ff);border:1px solid var(--accent-pale,#e3f2fd);border-radius:12px;padding:1.5rem;margin:1.5rem 0">
+  <p style="margin-bottom:1rem;font-weight:600;color:var(--primary)">📋 Informativa Privacy completa e aggiornata</p>
+  <p style="margin-bottom:1.25rem;font-size:.9rem">La nostra Privacy Policy completa, conforme al GDPR, è disponibile sul portale iubenda. Contiene tutte le informazioni sul trattamento dei dati, i diritti degli interessati e i cookie utilizzati.</p>
+  <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+    <a href="https://www.iubenda.com/privacy-policy/30631851" target="_blank" rel="noopener"
+       style="background:var(--primary);color:white;padding:.6rem 1.2rem;border-radius:8px;text-decoration:none;font-weight:600;font-size:.88rem;display:inline-flex;align-items:center;gap:.4rem">
+      📄 Leggi la Privacy Policy
+    </a>
+    <a href="https://www.iubenda.com/privacy-policy/30631851/cookie-policy" target="_blank" rel="noopener"
+       style="background:white;color:var(--primary);border:1.5px solid var(--primary);padding:.6rem 1.2rem;border-radius:8px;text-decoration:none;font-weight:600;font-size:.88rem;display:inline-flex;align-items:center;gap:.4rem">
+      🍪 Cookie Policy
+    </a>
+  </div>
+</div>
+
+<h2>Titolare del trattamento</h2>
+<p><strong>walktotalk.srl</strong> – P. IVA IT 07986081219<br>
+Via Cesario Console 3, 80132 Napoli<br>
+Email: <a href="mailto:privacy@bolletterisparmio.it">privacy@bolletterisparmio.it</a></p>
+
+<h2>Dati raccolti</h2>
+<p>Raccogliamo solo i dati strettamente necessari all'erogazione del servizio: nome, cognome, email, telefono e i dati tecnici estratti dalla bolletta (consumi, fornitore, tariffe). <strong>Non salviamo il file PDF della bolletta.</strong></p>
+
+<h2>Come usiamo i tuoi dati</h2>
+<ul>
+  <li>Analisi AI della bolletta e confronto offerte</li>
+  <li>Invio dei risultati dell'analisi per email (se fornita)</li>
+  <li>Ricontatto da parte di un consulente (se richiesto)</li>
+</ul>
+
+<h2>I tuoi diritti GDPR</h2>
+<p>Puoi richiedere accesso, rettifica, cancellazione, portabilità o limitazione del trattamento scrivendo a <a href="mailto:privacy@bolletterisparmio.it">privacy@bolletterisparmio.it</a>. Hai anche il diritto di proporre reclamo al Garante per la Protezione dei Dati Personali.</p>
+
+<h2>Cookie</h2>
+<p>Il sito utilizza cookie tecnici necessari al funzionamento. Non utilizziamo cookie di profilazione di terze parti. Per i dettagli consulta la <a href="https://www.iubenda.com/privacy-policy/30631851/cookie-policy" target="_blank">Cookie Policy completa</a>.</p>
+"""
+    return _legal_page("Privacy Policy", body)

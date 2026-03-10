@@ -342,6 +342,13 @@ footer{background:var(--primary);color:rgba(255,255,255,.7);padding:3.5rem 0 1.5
 .privacy-badges{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-top:.75rem}
 .privacy-badge{display:inline-flex;align-items:center;gap:.3rem;font-size:.72rem;font-weight:600;color:var(--gray-700);background:var(--gray-100);border:1px solid var(--gray-200);border-radius:20px;padding:.3rem .7rem;letter-spacing:.01em}
 .privacy-badge svg{color:var(--primary);flex-shrink:0}
+/* ── SHARE BANNER ── */
+.share-banner{display:flex;align-items:center;justify-content:space-between;gap:.75rem;background:var(--primary-light);border:1px solid var(--accent-pale);border-radius:10px;padding:.7rem 1rem;margin-bottom:1rem;flex-wrap:wrap}
+.share-banner-text{display:flex;align-items:center;gap:.5rem;font-size:.8rem;font-weight:600;color:var(--primary)}
+.share-btn{display:inline-flex;align-items:center;gap:.35rem;background:var(--accent);color:#fff;border:none;border-radius:7px;padding:.4rem .85rem;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .15s}
+.share-btn:hover{background:var(--accent-hover)}
+/* ── RESTORE BANNER ── */
+.restore-banner{display:none;background:linear-gradient(90deg,var(--primary),var(--primary-mid));color:#fff;border-radius:10px;padding:.65rem 1rem;margin-bottom:.75rem;font-size:.8rem;font-weight:600;text-align:center}
 .consulente-fallback{font-size:.78rem;color:var(--gray-400);text-align:center;margin-top:.6rem}
 .consulente-fallback a{color:var(--accent);font-weight:600;text-decoration:none}
 .consulente-fallback a:hover{text-decoration:underline}
@@ -1085,7 +1092,7 @@ footer{background:var(--primary);color:rgba(255,255,255,.7);padding:3.5rem 0 1.5
           </select>
           <p class="privacy-note">
             Inviando accetti la <a href="https://www.iubenda.com/privacy-policy/30631851" target="_blank">Privacy Policy</a> e le
-            <a href="https://www.bolletterisparmio.it/trattamento-dati/" target="_blank">Condizioni Generali</a>
+            <a href="/condizioni-generali">Condizioni Generali</a>
           </p>
           <button class="btn-orange" onclick="submitContact()">Invia Richiesta</button>
           <div class="success-msg" id="contact-success">
@@ -1142,9 +1149,9 @@ footer{background:var(--primary);color:rgba(255,255,255,.7);padding:3.5rem 0 1.5
     <div class="footer-bottom">
       <span>© Bollette Risparmio, tutti i diritti riservati.</span>
       <div class="footer-legal">
-        <a href="https://www.iubenda.com/privacy-policy/30631851" target="_blank">Privacy Policy</a>
+        <a href="/privacy">Privacy Policy</a>
         <a href="https://www.iubenda.com/privacy-policy/30631851/cookie-policy" target="_blank">Cookie Policy</a>
-        <a href="https://www.bolletterisparmio.it/trattamento-dati/" target="_blank">Condizioni Generali</a>
+        <a href="/termini">Termini e Condizioni</a>
       </div>
     </div>
   </div>
@@ -1158,6 +1165,42 @@ const API = window.location.origin;
 let currentTipo = 'luce';
 let currentBollettaId = null;
 let selectedFile = null;
+
+// ══════════════════════════════════════════════════════════════════════════════
+// PERSISTENZA — salva/ripristina lo stato dell'analisi in sessionStorage
+// Sopravvive alla navigazione tra pagine della stessa sessione browser
+// ══════════════════════════════════════════════════════════════════════════════
+const STORAGE_KEY = 'br_analisi_v1';
+
+function salvaPersistenza(datiAnalisi, tipo, bollettaId, offerte) {
+  try {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+      dati: datiAnalisi,
+      tipo,
+      bollettaId,
+      offerte: offerte || null,
+      ts: Date.now()
+    }));
+  } catch(e) { /* sessionStorage piena o disabilitata */ }
+}
+
+function caricaPersistenza() {
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const s = JSON.parse(raw);
+    // Scade dopo 2 ore
+    if (Date.now() - s.ts > 2 * 60 * 60 * 1000) {
+      sessionStorage.removeItem(STORAGE_KEY);
+      return null;
+    }
+    return s;
+  } catch(e) { return null; }
+}
+
+function cancellaPersistenza() {
+  sessionStorage.removeItem(STORAGE_KEY);
+}
 
 // ── Tipo tabs
 function setTipo(t, el) {
@@ -1179,8 +1222,9 @@ function onDrop(e) {
   e.preventDefault();
   document.getElementById('dropzone').classList.remove('drag');
   const f = e.dataTransfer.files[0];
-  if (f && f.type === 'application/pdf') setFile(f);
-  else showToast('Solo file PDF', 'error');
+  const ok = f && (f.type === 'application/pdf' || f.type.startsWith('image/'));
+  if (ok) setFile(f);
+  else showToast('Carica PDF, JPG o PNG', 'error');
 }
 function onFile(input) { if (input.files[0]) setFile(input.files[0]); }
 function setFile(f) {
@@ -1210,9 +1254,11 @@ async function analizza() {
     const r = await fetch(`${API}/api/analizza/${currentTipo}?profilo=${profilo}`, {method:'POST', body:fd});
     if (!r.ok) { const err = await r.json().catch(()=>({})); throw new Error(err.detail || `Errore ${r.status}`); }
     const d = await r.json();
-    // FIX: la risposta usa bolletta_id, non id
     currentBollettaId = d.bolletta_id;
+    salvaPersistenza(d, currentTipo, currentBollettaId, null);
     showResult(d);
+    // Aggiorna URL per condivisione senza reload
+    history.replaceState(null, '', `/risultati/${currentBollettaId}`);
   } catch(e) {
     showToast(e.message, 'error');
     btn.disabled = false;
@@ -1220,12 +1266,11 @@ async function analizza() {
   }
 }
 
-function showResult(d) {
+function showResult(d, offerteSalvate) {
   document.getElementById('upload-view').style.display = 'none';
   const panel = document.getElementById('result-panel');
   panel.classList.add('visible');
 
-  // FIX: il backend restituisce struttura annidata in d.dati (non d.analisi flat)
   const dg  = d.dati?.dati_generali          || {};
   const lc  = d.dati?.letture_e_consumi      || {};
   const ai  = d.dati?.analisi_ai             || {};
@@ -1236,9 +1281,7 @@ function showResult(d) {
   const fornitore = dg.fornitore || '—';
   const costoU = d.costo_unitario;
 
-  const fmt = (v, u) => v != null && v !== '' ? `${typeof v === 'number' ? v.toFixed(2) : v}${u}` : '—';
-  const stats = document.getElementById('result-stats');
-  stats.innerHTML = `
+  document.getElementById('result-stats').innerHTML = `
     <div class="stat-box highlight"><div class="val">${totale != null ? totale.toFixed(2)+'€' : '—'}</div><div class="lbl">Totale bolletta</div></div>
     <div class="stat-box"><div class="val">${consumo != null ? consumo+' '+unita : '—'}</div><div class="lbl">Consumo</div></div>
     <div class="stat-box"><div class="val">${costoU != null ? costoU.toFixed(4)+'€' : '—'}</div><div class="lbl">Costo unitario</div></div>
@@ -1249,14 +1292,51 @@ function showResult(d) {
   const sugg = ai.suggerimenti || [];
   const anomEl = document.getElementById('ai-anomalie');
   anomEl.style.display = anom.length ? 'block' : 'none';
-  if (anom.length) {
-    document.getElementById('anomalie-list').innerHTML = anom.map(x => `<span class="anomaly-tag">⚠ ${x}</span>`).join('');
-  }
+  if (anom.length) document.getElementById('anomalie-list').innerHTML = anom.map(x => `<span class="anomaly-tag">⚠ ${x}</span>`).join('');
   document.getElementById('suggerimenti-list').innerHTML = sugg.length
     ? sugg.map(s => `<div class="suggestion-item">${s}</div>`).join('')
     : '<div class="suggestion-item">Nessuna anomalia critica rilevata. Buona gestione dei consumi!</div>';
 
+  // Mostra il link condivisibile
+  if (currentBollettaId) mostraLinkCondivisibile(currentBollettaId);
+
+  // Se c'erano offerte già salvate (ripristino sessione), mostrare direttamente
+  if (offerteSalvate && offerteSalvate.length) {
+    document.getElementById('lead-form').style.display = 'none';
+    showOfferte(offerteSalvate);
+  }
+
   panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+// ── Link condivisibile
+function mostraLinkCondivisibile(bollettaId) {
+  const existing = document.getElementById('share-banner');
+  if (existing) existing.remove();
+  const url = `${window.location.origin}/risultati/${bollettaId}`;
+  const banner = document.createElement('div');
+  banner.id = 'share-banner';
+  banner.className = 'share-banner';
+  banner.innerHTML = `
+    <div class="share-banner-text">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      Questa analisi è salvata — condividila o riaprila in seguito
+    </div>
+    <button class="share-btn" onclick="copiaLink('${url}')">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      Copia link
+    </button>
+  `;
+  const panel = document.getElementById('result-panel');
+  panel.insertBefore(banner, panel.firstChild);
+}
+
+function copiaLink(url) {
+  navigator.clipboard.writeText(url).then(() => {
+    showToast('Link copiato! Incollalo dove vuoi.', 'success');
+  }).catch(() => {
+    prompt('Copia questo link:', url);
+  });
 }
 
 function resetAnalyzer() {
@@ -1264,8 +1344,12 @@ function resetAnalyzer() {
   document.getElementById('result-panel').classList.remove('visible');
   document.getElementById('offerte-list').style.display = 'none';
   document.getElementById('lead-form').style.display = 'flex';
+  const sb = document.getElementById('share-banner');
+  if (sb) sb.remove();
   clearFile();
   currentBollettaId = null;
+  cancellaPersistenza();
+  history.replaceState(null, '', '/');
 }
 
 // ── Confronta
@@ -1278,7 +1362,6 @@ async function confronta() {
   btn.disabled = true;
   btn.innerHTML = '<div class="spinner"></div> Confronto in corso…';
   try {
-    // FIX: controlla risposta lead save, gestisce errori separatamente
     const lead = {nome, cognome,
       email: document.getElementById('lead-email').value.trim(),
       telefono: document.getElementById('lead-telefono').value.trim(),
@@ -1289,14 +1372,15 @@ async function confronta() {
     };
     const lr = await fetch(`${API}/api/leads`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(lead)});
     if (!lr.ok) { const e = await lr.json().catch(()=>({})); throw new Error(e.detail || 'Errore salvataggio contatti'); }
-
-    // FIX: niente parametro profilo in query (il backend lo legge già dal record bolletta)
     const cr = await fetch(`${API}/api/compara/${currentBollettaId}`, {method:'POST',
       headers:{'Content-Type':'application/json'}, body: JSON.stringify({})});
     if (!cr.ok) { const e = await cr.json().catch(()=>({})); throw new Error(e.detail || 'Errore confronto'); }
     const cd = await cr.json();
-    // FIX: il backend restituisce "offerte", non "risultati"
-    showOfferte(cd.offerte || []);
+    const offerte = cd.offerte || [];
+    // Salva offerte nella persistenza
+    const stato = caricaPersistenza();
+    if (stato) salvaPersistenza(stato.dati, stato.tipo, stato.bollettaId, offerte);
+    showOfferte(offerte);
   } catch(e) {
     showToast(e.message, 'error');
     btn.disabled = false;
@@ -1345,7 +1429,6 @@ async function submitContact() {
     };
     const r = await fetch(`${API}/api/leads`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(lead)});
     if (!r.ok) throw new Error('Errore invio');
-    // FIX: resetta i campi dopo invio riuscito
     ['c-nome','c-cognome','c-email','c-tel'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('c-offerta').value = '';
     document.getElementById('contact-success').classList.add('show');
@@ -1372,6 +1455,71 @@ function showToast(msg, type='') {
   t.className = 'toast show' + (type ? ' '+type : '');
   setTimeout(() => t.classList.remove('show'), 4000);
 }
+
+// ══════════════════════════════════════════════════════════════════════════════
+// AUTO-RESTORE — ripristina analisi al ritorno sulla pagina
+// Fonti in ordine di priorità:
+//   1. Meta tag iniettato da /risultati/{id} (link condivisibile)
+//   2. sessionStorage (navigazione interna: guida → home)
+// ══════════════════════════════════════════════════════════════════════════════
+async function autoRestore() {
+  // Fonte 1: link condivisibile (/risultati/{id})
+  const metaId = document.querySelector('meta[name="br-risultati-id"]')?.content;
+  const metaTipo = document.querySelector('meta[name="br-risultati-tipo"]')?.content;
+  if (metaId) {
+    currentBollettaId = metaId;
+    if (metaTipo) currentTipo = metaTipo;
+    // Mostra banner "ripristino in corso"
+    showBannerRipristino('Carico la tua analisi salvata…');
+    try {
+      // Richiede i dati dal backend (già elaborati, non rianalizza il file)
+      const r = await fetch(`${API}/api/analisi/${metaId}`);
+      if (r.ok) {
+        const d = await r.json();
+        nascondiBannerRipristino();
+        salvaPersistenza(d, currentTipo, currentBollettaId, null);
+        showResult(d);
+        // Scroll fluido all'analisi
+        setTimeout(() => document.getElementById('analyzer').scrollIntoView({behavior:'smooth', block:'start'}), 300);
+        return;
+      }
+    } catch(e) {}
+    nascondiBannerRipristino();
+    showToast('Analisi non trovata o scaduta', 'error');
+    history.replaceState(null, '', '/');
+    return;
+  }
+
+  // Fonte 2: sessionStorage (navigazione interna)
+  const stato = caricaPersistenza();
+  if (stato) {
+    currentBollettaId = stato.bollettaId;
+    currentTipo = stato.tipo || 'luce';
+    showBannerRipristino('Analisi precedente ripristinata — puoi continuare da dove eri rimasto');
+    showResult(stato.dati, stato.offerte);
+    setTimeout(nascondiBannerRipristino, 4000);
+    history.replaceState(null, '', `/risultati/${currentBollettaId}`);
+  }
+}
+
+function showBannerRipristino(msg) {
+  let b = document.getElementById('restore-banner');
+  if (!b) {
+    b = document.createElement('div');
+    b.id = 'restore-banner';
+    b.className = 'restore-banner';
+    document.getElementById('analyzer').prepend(b);
+  }
+  b.textContent = msg;
+  b.style.display = 'block';
+}
+function nascondiBannerRipristino() {
+  const b = document.getElementById('restore-banner');
+  if (b) b.style.display = 'none';
+}
+
+// Avvio all'apertura della pagina
+window.addEventListener('DOMContentLoaded', autoRestore);
 </script>
 </body>
 </html>

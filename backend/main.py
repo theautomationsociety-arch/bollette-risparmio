@@ -403,6 +403,34 @@ async def analizza(tipo: str, file: UploadFile = File(...), profilo: str = "D2",
         c.commit()
     return {"bolletta_id":bid,"tipo":tipo,"profilo":profilo_f,"profilo_label":PROFILI.get(profilo_f),"dati":dati,"costo_unitario":costo_u,"unita":unita}
 
+# ── Recupera analisi salvata (per persistenza/link condivisibile) ────────────
+@app.get("/api/analisi/{bid}")
+async def get_analisi(bid: str):
+    with db() as c:
+        row = c.execute("SELECT * FROM bollette WHERE id=?", (bid,)).fetchone()
+        if not row:
+            raise HTTPException(404, "Analisi non trovata")
+        b = dict(row)
+        dati = json.loads(b["dati_json"]) if b["dati_json"] else {}
+        # Recupera anche l'ultima comparazione se esiste
+        comp = c.execute(
+            "SELECT risultati_json FROM comparazioni WHERE bolletta_id=? ORDER BY data DESC LIMIT 1",
+            (bid,)
+        ).fetchone()
+        offerte = json.loads(comp["risultati_json"]) if comp else None
+    return {
+        "bolletta_id": bid,
+        "tipo": b["tipo"],
+        "profilo": b["profilo"],
+        "profilo_label": PROFILI.get(b["profilo"]),
+        "dati": dati,
+        "costo_unitario": b.get("costo_unit"),
+        "unita": b.get("unita") or ("kWh" if b["tipo"]=="luce" else "Smc"),
+        "offerte": offerte,
+        "fornitore": b.get("fornitore"),
+        "data_upload": b.get("data_upload"),
+    }
+
 # ── Comparazione ────────────────────────────────────────────────────────────
 @app.post("/api/compara/{bid}")
 async def compara(bid: str, bifuel_id: Optional[str] = Body(None, embed=True), bg: BackgroundTasks = None):
@@ -753,3 +781,41 @@ async def export_leads():
     for r in rows:
         d=dict(r); lines.append(",".join([f'"{str(d.get(k,"") or "")}"' for k in ("id","nome","cognome","email","telefono","tipo_richiesta","bolletta_id","data","stato","note")]))
     return StreamingResponse(io.BytesIO("\n".join(lines).encode("utf-8-sig")),media_type="text/csv",headers={"Content-Disposition":f"attachment; filename=leads_{datetime.now().strftime('%Y%m%d')}.csv"})
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PAGINE LEGALI
+# ══════════════════════════════════════════════════════════════════════════════
+@app.get("/trattamento-dati", include_in_schema=False)
+@app.get("/condizioni-generali", include_in_schema=False)
+@app.get("/termini", include_in_schema=False)
+async def pagina_termini_route():
+    from fastapi.responses import HTMLResponse
+    return HTMLResponse(_gp.pagina_termini())
+
+@app.get("/privacy", include_in_schema=False)
+async def pagina_privacy_route():
+    from fastapi.responses import HTMLResponse
+    return HTMLResponse(_gp.pagina_privacy())
+
+# ══════════════════════════════════════════════════════════════════════════════
+# LINK CONDIVISIBILE ANALISI
+# GET /risultati/{bolletta_id}  → ricarica la pagina con l'analisi già fatta
+# ══════════════════════════════════════════════════════════════════════════════
+@app.get("/risultati/{bolletta_id}", include_in_schema=False)
+async def risultati_condivisibili(bolletta_id: str):
+    """
+    Pagina pubblica condivisibile per un'analisi già eseguita.
+    Carica index.html con un meta tag che fa partire auto-load dell'analisi via JS.
+    """
+    from fastapi.responses import HTMLResponse
+    # Verifica che la bolletta esista
+    with db() as c:
+        row = c.execute("SELECT id, tipo, profilo FROM bollette WHERE id=?", (bolletta_id,)).fetchone()
+    if not row:
+        raise HTTPException(404, "Analisi non trovata o scaduta.")
+    # Serve la stessa index.html con un meta tag per il JS
+    html = (FRONTEND / "index.html").read_text()
+    # Inietta il bolletta_id nella pagina in modo che JS lo legga
+    inject = f'<meta name="br-risultati-id" content="{bolletta_id}">\n  <meta name="br-risultati-tipo" content="{dict(row)["tipo"]}">\n  <meta name="br-risultati-profilo" content="{dict(row)["profilo"]}">'
+    html = html.replace('<meta name="viewport"', f'{inject}\n  <meta name="viewport"', 1)
+    return HTMLResponse(html)
