@@ -42,7 +42,11 @@ _stato: dict[str, Any] = {
     "log": [],
     "auto_ogni_ore": 0,       # 0 = disabilitato
     "_scheduler_task": None,
+    "fonti_consecutive_fallite": 0,  # contatore fallimenti consecutivi
 }
+
+# Numero di fonti consecutive fallite prima di emettere un alert
+ALERT_FONTI_CONSECUTIVE = int(__import__("os").environ.get("SCRAPER_ALERT_THRESHOLD", "3"))
 
 # ── URL sorgenti ───────────────────────────────────────────────────────────
 FONTI_LUCE = [
@@ -207,7 +211,9 @@ def _build_prompt(tipo: str, html: str) -> str:
 
 
 async def _estrai_con_gemini(tipo: str, html: str, api_key: str) -> list[dict]:
-    """Usa Gemini per estrarre offerte strutturate dall'HTML."""
+    """Usa Gemini per estrarre offerte strutturate dall'HTML.
+    Gestisce gracefully: quota esaurita, risposta vuota, JSON malformato.
+    """
     try:
         client = genai.Client(api_key=api_key)
         prompt = _build_prompt(tipo, html)
@@ -221,13 +227,24 @@ async def _estrai_con_gemini(tipo: str, html: str, api_key: str) -> list[dict]:
                 max_output_tokens=4000,
             ),
         )
-        raw = resp.text.strip()
+        raw = (resp.text or "").strip()
+        if not raw:
+            log.warning("Gemini ha restituito risposta vuota")
+            return []
         # Rimuovi eventuale markdown
         raw = re.sub(r"^```(?:json)?\s*", "", raw)
         raw = re.sub(r"\s*```$", "", raw)
         data = json.loads(raw)
         return data.get("offerte", [])
+    except json.JSONDecodeError as e:
+        log.warning(f"Gemini risposta non è JSON valido: {e}")
+        return []
     except Exception as e:
+        err_str = str(e).lower()
+        if "quota" in err_str or "resource_exhausted" in err_str or "429" in err_str:
+            log.error(f"Gemini quota API esaurita — scraping interrotto temporaneamente: {e}")
+            # Rilancia per bloccare il ciclo corrente e non sprecare altre chiamate
+            raise
         log.warning(f"Gemini estrazione fallita: {e}")
         return []
 
@@ -392,6 +409,7 @@ async def esegui_scraping(get_db, gemini_api_key: str) -> dict:
     _stato["in_corso"] = True
     _stato["errori"] = []
     _stato["log"] = []
+    _stato["fonti_consecutive_fallite"] = 0
     inserite_tot = aggiornate_tot = 0
 
     def logga(msg: str):
@@ -399,6 +417,22 @@ async def esegui_scraping(get_db, gemini_api_key: str) -> dict:
         riga = f"[{ts}] {msg}"
         _stato["log"].append(riga)
         log.info(msg)
+
+    def registra_errore_fonte(nome: str, motivo: str):
+        """Traccia fallimento fonte e lancia alert se supera la soglia."""
+        _stato["fonti_consecutive_fallite"] += 1
+        msg = f"  ✗ {nome}: {motivo}"
+        logga(msg)
+        _stato["errori"].append(msg)
+        n = _stato["fonti_consecutive_fallite"]
+        if n >= ALERT_FONTI_CONSECUTIVE:
+            log.error(
+                f"🚨 ALERT SCRAPER: {n} fonti consecutive fallite "
+                f"(soglia={ALERT_FONTI_CONSECUTIVE}). Verifica connettività o API Gemini."
+            )
+
+    def registra_successo_fonte():
+        _stato["fonti_consecutive_fallite"] = 0
 
     try:
         logga("▶ Inizio scraping offerte")
@@ -410,13 +444,17 @@ async def esegui_scraping(get_db, gemini_api_key: str) -> dict:
                 logga(f"  Fetch: {fonte['nome']} → {fonte['url']}")
                 html = await _fetch_html(fonte["url"])
                 if not html:
-                    msg = f"  ✗ Fetch fallito: {fonte['nome']}"
-                    logga(msg)
-                    _stato["errori"].append(msg)
+                    registra_errore_fonte(fonte["nome"], "Fetch HTTP fallito")
                     continue
 
                 logga(f"  HTML ok ({len(html)} chars), invio a Gemini…")
-                offerte = await _estrai_con_gemini(tipo, html, gemini_api_key)
+                try:
+                    offerte = await _estrai_con_gemini(tipo, html, gemini_api_key)
+                except Exception as e:
+                    # Quota Gemini esaurita: interrompi scraping immediatamente
+                    registra_errore_fonte(fonte["nome"], f"Gemini quota/errore critico: {e}")
+                    logga("  ⛔ Interrompo scraping per errore critico Gemini")
+                    raise
                 logga(f"  Gemini: {len(offerte)} offerte estratte")
 
                 if offerte:
@@ -424,6 +462,9 @@ async def esegui_scraping(get_db, gemini_api_key: str) -> dict:
                     inserite_tot += ins
                     aggiornate_tot += agg
                     logga(f"  ✓ Salvate: {ins} nuove, {agg} aggiornate")
+                    registra_successo_fonte()
+                else:
+                    registra_errore_fonte(fonte["nome"], "Nessuna offerta estratta")
 
                 # Pausa cortesia tra richieste
                 await asyncio.sleep(2)
@@ -434,9 +475,14 @@ async def esegui_scraping(get_db, gemini_api_key: str) -> dict:
             logga(f"  Fetch: {f['nome']} {f['tipo']} → {f['url']}")
             html = await _fetch_html(f["url"])
             if not html:
-                logga(f"  ✗ Fetch fallito: {f['nome']}")
+                registra_errore_fonte(f["nome"], "Fetch HTTP fallito")
                 continue
-            offerte = await _estrai_con_gemini(f["tipo"], html, gemini_api_key)
+            try:
+                offerte = await _estrai_con_gemini(f["tipo"], html, gemini_api_key)
+            except Exception as e:
+                registra_errore_fonte(f["nome"], f"Gemini errore: {e}")
+                logga("  ⛔ Interrompo scraping per errore critico Gemini")
+                raise
             if offerte:
                 # Forza il fornitore corretto (sito ufficiale = fonte certa)
                 for o in offerte:
@@ -446,6 +492,9 @@ async def esegui_scraping(get_db, gemini_api_key: str) -> dict:
                 inserite_tot += ins
                 aggiornate_tot += agg
                 logga(f"  ✓ {f['nome']}: {ins} nuove, {agg} aggiornate")
+                registra_successo_fonte()
+            else:
+                registra_errore_fonte(f["nome"], "Nessuna offerta estratta")
             await asyncio.sleep(2)
 
         _stato["offerte_trovate"] = inserite_tot + aggiornate_tot

@@ -3,7 +3,7 @@ Bollette Risparmio — Backend Pubblico + Admin
 Sito comparatore bollette Luce & Gas — struttura ispirata ad AIChange.it
 """
 
-import os, json, uuid, logging, io, re, httpx
+import os, json, uuid, logging, io, re, httpx, time, collections
 from datetime import datetime, date
 from pathlib import Path
 from typing import Optional
@@ -54,10 +54,43 @@ ADMIN_EMAIL  = os.environ.get("ADMIN_EMAIL", "")
 SITE_URL     = os.environ.get("SITE_URL", "https://www.bolletterisparmio.it")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 
+# ── Rate limiting (in-memory, per IP) ────────────────────────────────────
+# Finestra scorrevole: max RATE_LIMIT_MAX richieste per IP in RATE_LIMIT_WINDOW secondi
+RATE_LIMIT_WINDOW = int(os.environ.get("RATE_LIMIT_WINDOW", "3600"))  # 1 ora
+RATE_LIMIT_MAX    = int(os.environ.get("RATE_LIMIT_MAX", "10"))        # 10 analisi/ora
+_rate_store: dict[str, collections.deque] = {}
+
+def _check_rate_limit(ip: str) -> None:
+    """Solleva 429 se l'IP ha superato il limite di richieste."""
+    now = time.time()
+    if ip not in _rate_store:
+        _rate_store[ip] = collections.deque()
+    q = _rate_store[ip]
+    # Rimuovi timestamp scaduti
+    while q and now - q[0] > RATE_LIMIT_WINDOW:
+        q.popleft()
+    if len(q) >= RATE_LIMIT_MAX:
+        retry_after = int(RATE_LIMIT_WINDOW - (now - q[0])) + 1
+        raise HTTPException(
+            status_code=429,
+            detail=f"Troppe richieste. Riprova tra {retry_after} secondi.",
+            headers={"Retry-After": str(retry_after)},
+        )
+    q.append(now)
+
 # ── Lifespan ───────────────────────────────────────────────────────────────
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
+    # Avvisa se ADMIN_TOKEN è il valore di default non sicuro
+    _weak_tokens = {"admin123", "admin", "password", "secret", "test", ""}
+    if ADMIN_TOKEN in _weak_tokens or len(ADMIN_TOKEN) < 16:
+        log.warning(
+            "⚠️  ADMIN_TOKEN debole o di default! Imposta una variabile d'ambiente "
+            "ADMIN_TOKEN con almeno 16 caratteri casuali prima del deploy."
+        )
+    if not GEMINI_API_KEY:
+        log.warning("⚠️  GEMINI_API_KEY non configurata: le analisi AI non funzioneranno.")
     log.info("Bollette Risparmio avviato")
     yield
 
@@ -363,7 +396,11 @@ async def guida5():
 # ANALISI PUBBLICA
 # ══════════════════════════════════════════════════════════════════════════════
 @app.post("/api/analizza/{tipo}")
-async def analizza(tipo: str, file: UploadFile = File(...), profilo: str = "D2", lead_id: Optional[str] = None):
+async def analizza(request: Request, tipo: str, file: UploadFile = File(...), profilo: str = "D2", lead_id: Optional[str] = None):
+    # Rate limiting per IP
+    client_ip = request.headers.get("X-Forwarded-For", request.client.host if request.client else "unknown").split(",")[0].strip()
+    _check_rate_limit(client_ip)
+
     if tipo not in ("luce","gas"): raise HTTPException(400,"tipo deve essere luce o gas")
     if profilo not in IVA: raise HTTPException(400,"profilo non valido")
     raw = await file.read()
@@ -382,9 +419,21 @@ async def analizza(tipo: str, file: UploadFile = File(...), profilo: str = "D2",
             contents=[prompt, _types.Part.from_bytes(data=raw, mime_type=mime)],
             config=_types.GenerateContentConfig(response_mime_type="application/json")
         )
-        dati = parse_json(resp.text)
+        raw_text = resp.text or ""
+        if not raw_text.strip():
+            raise HTTPException(503, "Il servizio AI non ha restituito dati. Riprova tra qualche minuto.")
+        dati = parse_json(raw_text)
     except HTTPException: raise
-    except Exception as e: raise HTTPException(500, f"Errore AI: {e}")
+    except json.JSONDecodeError as e:
+        log.warning(f"Gemini risposta malformata (JSON): {e}")
+        raise HTTPException(503, "Risposta AI non valida. Riprova tra qualche minuto.")
+    except Exception as e:
+        err_str = str(e).lower()
+        if "quota" in err_str or "resource_exhausted" in err_str or "429" in err_str:
+            log.warning(f"Gemini quota esaurita: {e}")
+            raise HTTPException(503, "Servizio AI temporaneamente non disponibile (quota). Riprova tra qualche minuto.")
+        log.error(f"Errore Gemini analisi: {e}")
+        raise HTTPException(500, f"Errore AI: {e}")
 
     dg=dati.get("dati_generali",{}); dt=dati.get("dati_tecnici",{}); lc=dati.get("letture_e_consumi",{}); dc=dati.get("dettaglio_costi",{}); pf=dg.get("periodo_fatturazione") or {}
     profilo_ai = (dg.get("profilo_stimato") or profilo).upper()
@@ -461,7 +510,12 @@ async def compara(bid: str, bifuel_id: Optional[str] = Body(None, embed=True), b
             if lr and lr["email"]:
                 _lead_email = lr["email"]; _lead_nome = lr["nome"] or ""
 
-    out = {"bolletta_id":bid,"tipo":tipo,"profilo":profilo,"profilo_label":PROFILI.get(profilo),"fornitore_attuale":b.get("fornitore"),"totale_attuale":b.get("totale"),"costo_annuo_attuale":round(att_annuo,2),"periodo_mesi":m,"consumo":b.get("consumo"),"unita":b.get("unita"),"iva_perc":IVA.get(profilo,0.22)*100,"bifuel":bifuel,"pun":pun,"psv":psv,"offerte":risultati,"migliore":risultati[0] if risultati else None,"risparmio_max":round(risultati[0]["risparmio_annuo"],2) if risultati else 0}
+    # Data ultima offerta nel DB (per mostrare all'utente quando sono stati aggiornati i dati)
+    with db() as c2:
+        t_off = "offerte_luce" if tipo == "luce" else "offerte_gas"
+        _ultimo_agg = c2.execute(f"SELECT MAX(inserita) FROM {t_off} WHERE attiva=1").fetchone()[0]
+
+    out = {"bolletta_id":bid,"tipo":tipo,"profilo":profilo,"profilo_label":PROFILI.get(profilo),"fornitore_attuale":b.get("fornitore"),"totale_attuale":b.get("totale"),"costo_annuo_attuale":round(att_annuo,2),"periodo_mesi":m,"consumo":b.get("consumo"),"unita":b.get("unita"),"iva_perc":IVA.get(profilo,0.22)*100,"bifuel":bifuel,"pun":pun,"psv":psv,"offerte":risultati,"migliore":risultati[0] if risultati else None,"risparmio_max":round(risultati[0]["risparmio_annuo"],2) if risultati else 0,"ultimo_aggiornamento_offerte":_ultimo_agg}
 
     # Invia email con i risultati se abbiamo l'email del lead
     if _lead_email and bg:
@@ -568,7 +622,11 @@ async def offerte_pubbliche(tipo: str, profilo: Optional[str]=None):
         p.extend([f"%{profilo}%",f"{profilo},%",f"%,{profilo}",profilo])
     with db() as c:
         rows = c.execute(q+" ORDER BY fornitore", p).fetchall()
-    return [dict(r) for r in rows]
+        max_inserita = c.execute(f"SELECT MAX(inserita) FROM {t} WHERE attiva=1").fetchone()[0]
+    return {
+        "offerte": [dict(r) for r in rows],
+        "ultimo_aggiornamento": max_inserita,
+    }
 
 @app.get("/api/indici")
 async def indici_pubblici():
