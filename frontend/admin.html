@@ -596,7 +596,8 @@ async function loadOfferte(tipo){
   const el=document.getElementById('offerte-body');
   el.innerHTML='<div class="empty"><span class="ei">⏳</span>Caricamento...</div>';
   try{
-    const rows=await adminFetch(`/api/offerte/${tipo}`);
+    const _d=await adminFetch(`/api/offerte/${tipo}`);
+    const rows=(_d && _d.offerte) ? _d.offerte : (Array.isArray(_d) ? _d : []);
     if(!rows.length){el.innerHTML='<div class="empty"><span class="ei">🏷️</span>Nessuna offerta</div>';return;}
     const isL=tipo==='luce';
     el.innerHTML=`<div class="card" style="padding:0;overflow:hidden"><table class="tbl"><thead><tr><th>Fornitore</th><th>Offerta</th><th>Tipo</th><th>Profili</th>${isL?'<th>F1</th><th>F2</th><th>F3</th><th>F23</th>':'<th>€/Smc</th>'}<th>BiFuel%</th><th>Q.Fissa</th><th>Valida</th><th></th></tr></thead><tbody>${rows.map(o=>`<tr>

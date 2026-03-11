@@ -799,7 +799,7 @@ async def scraper_run(bg: BackgroundTasks):
         raise HTTPException(400, "GEMINI_API_KEY non configurata nel .env")
     if _stato_scraper()["in_corso"]:
         raise HTTPException(409, "Scraping già in corso. Controlla /status.")
-    bg.add_task(esegui_scraping, db, GEMINI_API_KEY)
+    bg.add_task(esegui_scraping, get_db, GEMINI_API_KEY)
     return {"avviato": True, "messaggio": "Scraping avviato in background. Controlla /api/admin/scraper/status."}
 
 @app.get("/api/admin/scraper/status", dependencies=[Depends(require_admin)])
@@ -819,7 +819,7 @@ async def scraper_schedule(payload: dict = Body(...)):
     ore = int(payload.get("ore", 0))
     if ore < 0 or ore > 168:
         raise HTTPException(400, "ore deve essere tra 0 e 168")
-    avvia_scheduler(db, GEMINI_API_KEY, ore)
+    avvia_scheduler(get_db, GEMINI_API_KEY, ore)
     msg = "Scheduler disabilitato" if ore == 0 else f"Scheduler attivo: run ogni {ore}h"
     return {"ore": ore, "messaggio": msg}
 
