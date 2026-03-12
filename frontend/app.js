@@ -44,10 +44,17 @@ function setTipo(t, el) {
   currentTipo = t;
   document.querySelectorAll('.tipo-tab').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
-  const sel = document.getElementById('profilo-sel');
-  sel.innerHTML = t === 'luce'
-    ? '<option value="D2">D2 – Uso domestico residente</option><option value="D3">D3 – Uso domestico non residente</option><option value="BTA">BTA – Piccola impresa</option><option value="CDO">CDO – Condominio</option>'
-    : '<option value="D2">D2 – Uso domestico residente</option><option value="D3">D3 – Uso domestico non residente</option><option value="BTA">BTA – Piccola impresa</option>';
+  // CDO (Condominio) non si applica al gas
+  const cdoOpt = document.querySelector('.profilo-cdo-opt');
+  if (cdoOpt) {
+    cdoOpt.style.display = t === 'gas' ? 'none' : '';
+    if (t === 'gas') {
+      const cdoInput = cdoOpt.querySelector('input');
+      if (cdoInput && cdoInput.checked) {
+        document.querySelector('input[name="profilo-sel"][value="D2"]').checked = true;
+      }
+    }
+  }
 }
 
 // ── File handling
@@ -84,7 +91,7 @@ async function analizza() {
   const btn = document.getElementById('btn-analyze');
   btn.disabled = true;
   btn.innerHTML = '<div class="spinner"></div> Analisi in corso…';
-  const profilo = document.getElementById('profilo-sel').value;
+  const profilo = (document.querySelector('input[name="profilo-sel"]:checked') || {}).value || 'D2';
   const fd = new FormData();
   fd.append('file', selectedFile);
   try {
@@ -181,6 +188,10 @@ function resetAnalyzer() {
   document.getElementById('result-panel').classList.remove('visible');
   document.getElementById('offerte-list').style.display = 'none';
   document.getElementById('lead-form').style.display = 'flex';
+  const ctasEl = document.getElementById('offerte-ctas');
+  if (ctasEl) ctasEl.style.display = 'none';
+  const bestBox = document.getElementById('offerta-best-already');
+  if (bestBox) { bestBox.style.display = 'none'; bestBox.innerHTML = ''; }
   const sb = document.getElementById('share-banner');
   if (sb) sb.remove();
   clearFile();
@@ -237,10 +248,33 @@ function showOfferte(offerte, ultimoAggiornamento) {
       agg.style.display = 'none';
     }
   }
+
   const list = document.getElementById('offerte-list');
+  const bestBox = document.getElementById('offerta-best-already');
+  const ctasEl = document.getElementById('offerte-ctas');
   list.style.display = 'flex';
-  if (!offerte.length) { list.innerHTML = '<p style="font-size:.88rem;color:var(--gray-400);text-align:center;padding:1rem">Nessuna offerta trovata per il tuo profilo.</p>'; return; }
+
+  if (!offerte.length) {
+    list.innerHTML = '<p style="font-size:.88rem;color:var(--gray-400);text-align:center;padding:1rem">Nessuna offerta trovata per il tuo profilo.</p>';
+    if (ctasEl) ctasEl.style.display = 'block';
+    return;
+  }
+
   const sorted = [...offerte].sort((a,b) => (a.costo_annuo||999) - (b.costo_annuo||999));
+  const bestSaving = sorted[0].risparmio_annuo || 0;
+
+  // Se l'offerta attuale è già la più economica (risparmio <= 0)
+  if (bestSaving <= 0 && bestBox) {
+    bestBox.style.display = 'block';
+    bestBox.innerHTML = `
+      <div class="best-already-icon">🏆</div>
+      <div class="best-already-text">
+        <strong>Ottimo fiuto! La tua offerta attuale è già competitiva.</strong>
+        <p>Abbiamo confrontato la tua bolletta con tutte le offerte del mercato libero e non abbiamo trovato un'alternativa che ti farebbe risparmiare in modo significativo. Significa che hai già scelto bene.</p>
+        <p style="margin-top:.4rem;font-size:.82rem;color:var(--gray-400)">Vuoi comunque parlare con un consulente per valutare offerte bundle o soluzioni fotovoltaico?</p>
+      </div>`;
+  }
+
   list.innerHTML = sorted.map((o, i) => {
     const best = i === 0;
     const saving = o.risparmio_annuo;
@@ -252,10 +286,12 @@ function showOfferte(offerte, ultimoAggiornamento) {
       </div>
       <div>
         <div class="offerta-price">${o.costo_annuo ? o.costo_annuo.toFixed(0)+'€/anno' : '—'}</div>
-        ${saving && saving > 0 ? `<div class="offerta-saving">risparmi ${saving.toFixed(0)}€/anno</div>` : ''}
+        ${saving && saving > 0 ? `<div class="offerta-saving">risparmi ${saving.toFixed(0)}€/anno</div>` : saving < 0 ? '<div class="offerta-saving" style="color:var(--gray-400)">già conveniente</div>' : ''}
       </div>
     </div>`;
   }).join('');
+
+  if (ctasEl) ctasEl.style.display = 'block';
 }
 
 // ── Contact form
@@ -285,7 +321,15 @@ async function submitContact() {
   }
 }
 
-function scrollToContact() { document.getElementById('contatti').scrollIntoView({behavior:'smooth'}); }
+function scrollToContact() { openContact(); }
+function openContact() {
+  document.getElementById('contact-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeContact() {
+  document.getElementById('contact-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
 
 // ── FAQ accordion
 function toggleFaq(el) {
@@ -367,3 +411,75 @@ function nascondiBannerRipristino() {
 
 // Avvio all'apertura della pagina
 window.addEventListener('DOMContentLoaded', autoRestore);
+
+// ── MODALE INPUT MANUALE ──
+function openManualModal() {
+  document.getElementById('manual-modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeManualModal() {
+  document.getElementById('manual-modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeContact(); closeManualModal(); } });
+
+async function analizzaManuale(e) {
+  e.preventDefault();
+  const getVal = id => { const el = document.getElementById(id); return el ? el.value : ''; };
+  const getChecked = name => [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(el => el.value);
+
+  const dati = {
+    tipo: getVal('m-tipo'),
+    profilo: getVal('m-profilo'),
+    fornitore: getVal('m-fornitore'),
+    mercato: getVal('m-mercato'),
+    spesa_mensile: getVal('m-spesa'),
+    kwh_anno: getVal('m-kwh'),
+    smc_anno: getVal('m-smc'),
+    potenza_kw: getVal('m-potenza'),
+    fascia: getVal('m-fascia'),
+    persone: getVal('m-persone'),
+    mq: getVal('m-mq'),
+    riscaldamento: getVal('m-riscaldamento'),
+    applianze: getChecked('applianze'),
+    orario_uso: getVal('m-orario'),
+    fotovoltaico: getVal('m-fotovoltaico'),
+    priorita: getVal('m-priorita'),
+  };
+
+  // Chiudi modale e passa al result panel
+  closeManualModal();
+  currentTipo = dati.tipo.includes('gas') && !dati.tipo.includes('luce') ? 'gas' : 'luce';
+  document.getElementById('upload-view').style.display = 'none';
+  document.getElementById('result-panel').style.display = 'block';
+
+  // Mostra stats sintetici dai dati inseriti
+  const statsEl = document.getElementById('result-stats');
+  statsEl.innerHTML = '';
+  if (dati.spesa_mensile) statsEl.innerHTML += `<div class="result-stat"><div class="stat-val">€${dati.spesa_mensile}/mese</div><div class="stat-lbl">Spesa dichiarata</div></div>`;
+  if (dati.kwh_anno) statsEl.innerHTML += `<div class="result-stat"><div class="stat-val">${parseInt(dati.kwh_anno).toLocaleString('it')} kWh</div><div class="stat-lbl">Consumo luce/anno</div></div>`;
+  if (dati.smc_anno) statsEl.innerHTML += `<div class="result-stat"><div class="stat-val">${parseInt(dati.smc_anno).toLocaleString('it')} Smc</div><div class="stat-lbl">Consumo gas/anno</div></div>`;
+  if (dati.persone) statsEl.innerHTML += `<div class="result-stat"><div class="stat-val">${dati.persone}</div><div class="stat-lbl">Persone in casa</div></div>`;
+
+  // Chiama backend con i dati manuali
+  try {
+    const resp = await fetch('/api/analizza-manuale', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(dati)
+    });
+    if (!resp.ok) throw new Error('Errore server');
+    const res = await resp.json();
+    if (res.suggerimenti?.length) {
+      document.getElementById('ai-suggerimenti').style.display = 'block';
+      document.getElementById('suggerimenti-list').innerHTML = res.suggerimenti.map(s => `<div class="sug-item">${s}</div>`).join('');
+    }
+    if (res.anomalie?.length) {
+      document.getElementById('ai-anomalie').style.display = 'block';
+      document.getElementById('anomalie-list').innerHTML = res.anomalie.map(a => `<div class="anom-item">${a}</div>`).join('');
+    }
+  } catch {
+    // Mostra sezione confronto direttamente
+  }
+  document.getElementById('compare-section').style.display = 'block';
+}

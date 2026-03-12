@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc -l /c/Users/imiei/Downloads/energy-advisor/bollette-risparmio/backend/*.py)",
+      "Bash(find . -type f -name *scrape* -o -name *crawl*)",
+      "Bash(find . -type f \\\\\\(-name *.py -o -name *.js -o -name *.ts -o -name *.jsx -o -name *.tsx \\\\\\))",
+      "Bash(xargs grep:*)",
+      "Bash(find . -type f \\\\\\(-name .env* -o -name config* -o -name *.json -o -name *.yaml -o -name *.yml \\\\\\))",
+      "WebFetch(domain:www.ilportaleofferte.it)",
+      "WebFetch(domain:www.wekiwi.it)",
+      "WebFetch(domain:www.sorgenia.it)",
+      "WebFetch(domain:www.enel.it)",
+      "WebFetch(domain:www.enigas.it)",
+      "Bash(curl -s 'https://www.sorgenia.it/jsonapi')",
+      "Bash(curl -s 'https://www.enel.it/api/v1/offers')",
+      "Bash(curl -s 'https://www.wekiwi.it/wp-json/wp/v2/posts?per_page=1')",
+      "Bash(curl -s 'https://www.ilportaleOfferte.it/portaleOfferte/resources/static/js/confrontaOfferte.js')",
+      "Bash(python -c \"import ast; ast.parse\\(open\\(''backend/scraper.py''\\).read\\(\\)\\); print\\(''OK - nessun errore di sintassi''\\)\")",
+      "Bash(python -c \"import ast; ast.parse\\(open\\(''backend/scraper.py'', encoding=''utf-8''\\).read\\(\\)\\); print\\(''OK - nessun errore di sintassi''\\)\")",
+      "Bash(python -c \"import ast; ast.parse\\(open\\(''backend/main.py'', encoding=''utf-8''\\).read\\(\\)\\); print\\(''main.py OK''\\)\")",
+      "Bash(python -c \"import ast; ast.parse\\(open\\(''backend/scraper.py'', encoding=''utf-8''\\).read\\(\\)\\); print\\(''scraper.py OK''\\)\")",
+      "Bash(python -c \":*)"
+    ]
+  }
+}

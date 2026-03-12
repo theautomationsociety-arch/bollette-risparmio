@@ -57,27 +57,27 @@
       </div>
     </a>
     <div class="nav-links">
-      <a href="/#offerte">Offerte Luce &amp; Gas</a>
-      <a href="/#come-funziona">Come Funziona</a>
+      <a href="/offerte">Offerte Luce &amp; Gas</a>
+      <a href="/come-funziona">Come Funziona</a>
       <a href="/guide">Guide</a>
-      <a href="/#chi-siamo">Chi Siamo</a>
+      <a href="/chi-siamo">Chi Siamo</a>
       <a href="tel:0819131897" class="nav-phone">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.07 1.18 2 2 0 012.04 0H5a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg>
         081 91 31 897
       </a>
-      <a href="/#contatti" class="nav-cta">Consulenza Gratuita</a>
+      <button class="nav-cta" onclick="openContact()">Consulenza Gratuita</button>
     </div>
     <button class="hamburger" onclick="document.querySelector('.mobile-menu').classList.toggle('open')" aria-label="Menu">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
   </div>
   <div class="mobile-menu">
-    <a href="/#offerte">Offerte Luce &amp; Gas</a>
-    <a href="/#come-funziona">Come Funziona</a>
+    <a href="/offerte">Offerte Luce &amp; Gas</a>
+    <a href="/come-funziona">Come Funziona</a>
     <a href="/guide">Guide</a>
-    <a href="/#chi-siamo">Chi Siamo</a>
+    <a href="/chi-siamo">Chi Siamo</a>
     <a href="tel:0819131897">📞 081 91 31 897</a>
-    <a href="/#contatti" style="color:var(--accent);font-weight:700">Consulenza Gratuita →</a>
+    <button onclick="openContact();document.querySelector('.mobile-menu').classList.remove('open')" style="color:var(--accent);font-weight:700;background:none;border:none;cursor:pointer;font-size:1rem;padding:.5rem 1rem">Consulenza Gratuita →</button>
   </div>
 </nav>
 
@@ -138,13 +138,30 @@
           </button>
         </div>
         <div class="profilo-select-wrap">
-          <label for="profilo-sel">Tipo di utenza</label>
-          <select id="profilo-sel">
-            <option value="D2">D2 – Uso domestico residente</option>
-            <option value="D3">D3 – Uso domestico non residente</option>
-            <option value="BTA">BTA – Piccola impresa (luce)</option>
-            <option value="CDO">CDO – Condominio</option>
-          </select>
+          <label>Tipo di utenza</label>
+          <div class="profilo-radio-group" id="profilo-radio-group">
+            <label class="profilo-radio-option">
+              <input type="radio" name="profilo-sel" id="profilo-sel" value="D2" checked/>
+              <span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+                Residente
+              </span>
+            </label>
+            <label class="profilo-radio-option">
+              <input type="radio" name="profilo-sel" value="D3"/>
+              <span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M17 21v-2a4 4 0 00-8 0v2"/></svg>
+                Non Residente
+              </span>
+            </label>
+            <label class="profilo-radio-option profilo-cdo-opt">
+              <input type="radio" name="profilo-sel" value="CDO"/>
+              <span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                Condominio
+              </span>
+            </label>
+          </div>
         </div>
         <div class="dropzone" id="dropzone" ondragover="onDrag(event,true)" ondragleave="onDrag(event,false)" ondrop="onDrop(event)">
           <input type="file" id="file-input" accept=".pdf,.jpg,.jpeg,.png" onchange="onFile(this)"/>
@@ -170,7 +187,16 @@
           <span class="privacy-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Dati protetti e sicuri</span>
           <span class="privacy-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>100% Gratuito</span>
         </div>
-        <p class="consulente-fallback">Preferisci parlare con un esperto? <a href="#contatti" onclick="scrollToContact()">Richiedi analisi con consulente →</a></p>
+        <p class="consulente-fallback">Preferisci parlare con un esperto? <a href="#" onclick="openContact();return false">Richiedi analisi con consulente →</a></p>
+
+        <!-- INSERIMENTO MANUALE — trigger modale -->
+        <div class="manual-panel">
+          <button class="manual-panel-toggle" onclick="openManualModal()" type="button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Non hai il PDF? Inserisci i dati manualmente
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-left:auto"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
       </div>
 
       <!-- Result view -->
@@ -215,90 +241,21 @@
           </div>
           <p id="offerte-aggiornamento" style="display:none;font-size:.75rem;color:var(--gray-400);text-align:right;margin-top:.5rem"></p>
           <div class="offerte-list" id="offerte-list" style="display:none"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- COME FUNZIONA -->
-<section class="how-section" id="come-funziona">
-  <div class="wrap">
-    <p class="section-label">Come Funziona</p>
-    <h2 class="section-title">Risparmia in 3 semplici passi</h2>
-    <p class="section-sub">Nessuna competenza tecnica richiesta. Il nostro sistema AI fa tutto il lavoro per te in pochi secondi.</p>
-    <div class="steps-grid">
-      <div class="step-item">
-        <div class="step-connector"></div>
-        <p class="step-num">PASSO 01</p>
-        <div class="step-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        </div>
-        <h3 class="step-title">Carica la Bolletta</h3>
-        <p class="step-desc">Carica il PDF della tua ultima bolletta luce o gas. Il file rimane privato e sicuro.</p>
-      </div>
-      <div class="step-item">
-        <div class="step-connector"></div>
-        <p class="step-num">PASSO 02</p>
-        <div class="step-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-        </div>
-        <h3 class="step-title">Analisi AI Istantanea</h3>
-        <p class="step-desc">L'AI di Google Gemini legge la bolletta, trova anomalie e calcola il tuo costo unitario reale.</p>
-      </div>
-      <div class="step-item">
-        <p class="step-num">PASSO 03</p>
-        <div class="step-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
-        </div>
-        <h3 class="step-title">Confronto & Risparmio</h3>
-        <p class="step-desc">Confrontiamo la tua tariffa con le migliori offerte e ti indichiamo quanto risparmi cambiando fornitore.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- SICUREZZA DATI -->
-<section class="sicurezza-section">
-  <div class="wrap">
-    <div class="sicurezza-grid">
-      <div class="sicurezza-left">
-        <div class="sicurezza-shield">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        </div>
-        <div>
-          <p class="section-label">Privacy & Sicurezza</p>
-          <h2 class="section-title" style="font-size:1.8rem">I tuoi dati<br/>sono al sicuro</h2>
-          <p style="color:var(--gray-700);margin-top:.75rem;line-height:1.7">Caricare una bolletta richiede fiducia. Ecco come trattiamo i tuoi dati.</p>
-        </div>
-      </div>
-      <div class="sicurezza-faq">
-        <div class="sic-item">
-          <div class="sic-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-          <div>
-            <h4>Come vengono usati i miei dati?</h4>
-            <p>Esclusivamente per analizzare la bolletta e trovare offerte più convenienti per te. Nessun altro uso, nessuna profilazione pubblicitaria.</p>
-          </div>
-        </div>
-        <div class="sic-item">
-          <div class="sic-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
-          <div>
-            <h4>La bolletta viene salvata?</h4>
-            <p>No. Il file viene elaborato in tempo reale e non archiviato. Solo i dati tecnici estratti (consumi, tariffe) vengono conservati per il confronto offerte.</p>
-          </div>
-        </div>
-        <div class="sic-item">
-          <div class="sic-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
-          <div>
-            <h4>Chi può vedere le mie informazioni?</h4>
-            <p>Solo il sistema AI (e il consulente in caso di analisi manuale) per il tempo strettamente necessario. Accesso protetto da protocolli di sicurezza.</p>
-          </div>
-        </div>
-        <div class="sic-item">
-          <div class="sic-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
-          <div>
-            <h4>Serve registrarsi?</h4>
-            <p>No. L'analisi AI è completamente anonima. Lasci l'email solo se vuoi ricevere i risultati del confronto offerte per email.</p>
+          <!-- Box congratulatorio se l'offerta attuale è già ottima -->
+          <div class="offerta-best-already" id="offerta-best-already" style="display:none"></div>
+          <!-- 2 CTAs post-confronto -->
+          <div class="offerte-ctas" id="offerte-ctas" style="display:none">
+            <p class="offerte-ctas-label">Vuoi procedere? Siamo pronti ad aiutarti:</p>
+            <div class="offerte-ctas-row">
+              <button class="btn-offerta-contact" onclick="openContact()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Richiedi consulenza gratuita
+              </button>
+              <a class="btn-offerta-call" href="tel:0819131897">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.07 1.18 2 2 0 012.04 0H5a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg>
+                Chiama ora — 081 91 31 897
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -306,350 +263,219 @@
   </div>
 </section>
 
-<!-- OFFERTE LUCE E GAS -->
-<section class="offerte-section" id="offerte">
-  <div class="wrap">
-    <p class="section-label">Le Nostre Offerte</p>
-    <h2 class="section-title">Offerte Luce e Gas Selezionate</h2>
-    <p class="section-sub">Offerte aggiornate dai migliori fornitori del mercato libero. Confrontale e scegli quella più adatta a te.</p>
-    <div class="offerte-grid" id="offerte-pubbliche">
-      <!-- Filled by JS -->
-      <div class="offerta-promo-card featured">
-        <p class="provider-name">Acea</p>
-        <p class="offerta-promo-name">Offerta Imperdibile Acea</p>
-        <p class="offerta-promo-desc">Prezzi bloccati luce e gas, valida un anno. Approfittane subito.</p>
-        <div class="price-tags">
-          <div class="price-tag"><div class="tipo">LUCE</div><div class="valore">€0.12/KWh</div></div>
-          <div class="price-tag"><div class="tipo">GAS</div><div class="valore">€0.39/Smc</div></div>
-        </div>
-        <ul class="offerta-features">
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Fisso €6/mese</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Nessun costo di attivazione</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Cambio fornitore gratuito</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Disdetta senza penali</li>
-        </ul>
-        <button class="btn-richiedi" onclick="scrollToContact()">Richiedi Ora</button>
-      </div>
-      <div class="offerta-promo-card">
-        <p class="provider-name">Duferco</p>
-        <p class="offerta-promo-name">Tariffa Luce</p>
-        <p class="offerta-promo-desc">Energia trasparente, costi fissi e convenienza per la tua casa.</p>
-        <div class="price-tags">
-          <div class="price-tag"><div class="tipo">LUCE</div><div class="valore">€0.12/KWh</div></div>
-        </div>
-        <ul class="offerta-features">
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>CCV: €180/anno</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Nessun costo di attivazione</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Cambio fornitore gratuito</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Disdetta senza penali</li>
-        </ul>
-        <button class="btn-richiedi" onclick="scrollToContact()">Richiedi Ora</button>
-      </div>
-      <div class="offerta-promo-card">
-        <p class="provider-name">Energiasi</p>
-        <p class="offerta-promo-name">Tariffa Luce Indicizzata</p>
-        <p class="offerta-promo-desc">Prezzo indicizzato e costi fissi sempre trasparenti.</p>
-        <div class="price-tags">
-          <div class="price-tag"><div class="tipo">LUCE</div><div class="valore">PUN +€0.02</div></div>
-        </div>
-        <ul class="offerta-features">
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>CCV: €16/mese</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Nessun costo di attivazione</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Cambio fornitore gratuito</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Disdetta senza penali</li>
-        </ul>
-        <button class="btn-richiedi" onclick="scrollToContact()">Richiedi Ora</button>
-      </div>
-      <div class="offerta-promo-card">
-        <p class="provider-name">Union Energie</p>
-        <p class="offerta-promo-name">Tariffa Luce</p>
-        <p class="offerta-promo-desc">Prezzo competitivo, energia garantita, costi trasparenti.</p>
-        <div class="price-tags">
-          <div class="price-tag"><div class="tipo">LUCE</div><div class="valore">€0.13/KWh</div></div>
-        </div>
-        <ul class="offerta-features">
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>CCV: €13/mese</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Nessun costo di attivazione</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Cambio fornitore gratuito</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Disdetta senza penali</li>
-        </ul>
-        <button class="btn-richiedi" onclick="scrollToContact()">Richiedi Ora</button>
-      </div>
+<!-- MODALE INSERIMENTO MANUALE -->
+<div class="manual-modal-overlay" id="manual-modal-overlay" onclick="if(event.target===this)closeManualModal()">
+  <div class="manual-modal">
+    <div class="manual-modal-header">
+      <span class="manual-modal-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:middle;margin-right:.4rem"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Inserisci i dati manualmente
+      </span>
+      <button class="manual-modal-close" onclick="closeManualModal()" aria-label="Chiudi">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="manual-modal-body">
+      <p style="font-size:.83rem;color:var(--gray-400);margin-bottom:1.25rem">Compila i campi che conosci — più dati fornisci, più accurata sarà l'analisi.</p>
+      <form class="mform" id="manual-form" onsubmit="analizzaManuale(event)">
+
+              <!-- DATI FORNITURA -->
+              <div class="mform-section">
+                <div class="mform-section-title">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                  Dati fornitura
+                </div>
+                <div class="mform-row">
+                  <div class="mform-field">
+                    <label>Tipo utenza</label>
+                    <select id="m-tipo">
+                      <option value="luce">⚡ Luce</option>
+                      <option value="gas">🔥 Gas</option>
+                      <option value="luce_gas">⚡🔥 Luce + Gas</option>
+                    </select>
+                  </div>
+                  <div class="mform-field">
+                    <label>Profilo contrattuale</label>
+                    <select id="m-profilo">
+                      <option value="D2">D2 – Domestico residente</option>
+                      <option value="D3">D3 – Domestico non residente</option>
+                      <option value="CDO">CDO – Condominio</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="mform-row" style="margin-top:.65rem">
+                  <div class="mform-field">
+                    <label>Fornitore attuale</label>
+                    <input type="text" id="m-fornitore" placeholder="es. Enel, Eni, Acea…"/>
+                  </div>
+                  <div class="mform-field">
+                    <label>Tipo mercato</label>
+                    <select id="m-mercato">
+                      <option value="tutelato">Mercato tutelato</option>
+                      <option value="libero">Mercato libero</option>
+                      <option value="non_so">Non so</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- CONSUMI -->
+              <div class="mform-section">
+                <div class="mform-section-title">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+                  Consumi
+                </div>
+                <div class="mform-row-3">
+                  <div class="mform-field">
+                    <label>Spesa media mensile (€)</label>
+                    <input type="number" id="m-spesa" placeholder="es. 80" min="0" step="1"/>
+                  </div>
+                  <div class="mform-field">
+                    <label>kWh/anno (luce)</label>
+                    <input type="number" id="m-kwh" placeholder="es. 2700" min="0"/>
+                  </div>
+                  <div class="mform-field">
+                    <label>Smc/anno (gas)</label>
+                    <input type="number" id="m-smc" placeholder="es. 800" min="0"/>
+                  </div>
+                </div>
+                <div class="mform-row" style="margin-top:.65rem">
+                  <div class="mform-field">
+                    <label>Potenza impegnata (kW)</label>
+                    <select id="m-potenza">
+                      <option value="3">3 kW (standard)</option>
+                      <option value="4.5">4,5 kW</option>
+                      <option value="6">6 kW</option>
+                      <option value="10">10 kW+</option>
+                    </select>
+                  </div>
+                  <div class="mform-field">
+                    <label>Fascia oraria preferita</label>
+                    <select id="m-fascia">
+                      <option value="monoraria">Monoraria</option>
+                      <option value="bioraria">Bioraria (F1/F23)</option>
+                      <option value="non_so">Non so</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ABITAZIONE -->
+              <div class="mform-section">
+                <div class="mform-section-title">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                  Abitazione
+                </div>
+                <div class="mform-row">
+                  <div class="mform-field">
+                    <label>N° persone in casa</label>
+                    <select id="m-persone">
+                      <option value="1">1 persona</option>
+                      <option value="2">2 persone</option>
+                      <option value="3">3 persone</option>
+                      <option value="4">4 persone</option>
+                      <option value="5">5+</option>
+                    </select>
+                  </div>
+                  <div class="mform-field">
+                    <label>Superficie (mq)</label>
+                    <select id="m-mq">
+                      <option value="50">Fino a 50 mq</option>
+                      <option value="80">50–80 mq</option>
+                      <option value="120">80–120 mq</option>
+                      <option value="150">120–150 mq</option>
+                      <option value="200">Oltre 150 mq</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="mform-field" style="margin-top:.65rem">
+                  <label>Riscaldamento principale</label>
+                  <select id="m-riscaldamento">
+                    <option value="gas_autonomo">Gas autonomo (caldaia)</option>
+                    <option value="gas_centralizzato">Gas centralizzato</option>
+                    <option value="pompa_calore">Pompa di calore elettrica</option>
+                    <option value="elettrico">Elettrico (termo-convettori)</option>
+                    <option value="pellet">Pellet / legna</option>
+                    <option value="teleriscaldamento">Teleriscaldamento</option>
+                    <option value="altro">Altro</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- ELETTRODOMESTICI E ABITUDINI -->
+              <div class="mform-section">
+                <div class="mform-section-title">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                  Elettrodomestici intensivi presenti
+                </div>
+                <div class="checkgroup">
+                  <label><input type="checkbox" name="applianze" value="lavasciuga"/> Lavasciuga</label>
+                  <label><input type="checkbox" name="applianze" value="lavastoviglie"/> Lavastoviglie</label>
+                  <label><input type="checkbox" name="applianze" value="pompa_calore_acs"/> Pompa calore ACS</label>
+                  <label><input type="checkbox" name="applianze" value="auto_elettrica"/> Auto elettrica</label>
+                  <label><input type="checkbox" name="applianze" value="climatizzatore"/> Climatizzatore</label>
+                  <label><input type="checkbox" name="applianze" value="forno_elettrico"/> Forno elettrico</label>
+                  <label><input type="checkbox" name="applianze" value="piastra_induzione"/> Piano a induzione</label>
+                  <label><input type="checkbox" name="applianze" value="server_nas"/> Server / NAS</label>
+                  <label><input type="checkbox" name="applianze" value="jacuzzi_piscina"/> Jacuzzi / Piscina</label>
+                </div>
+              </div>
+
+              <!-- ABITUDINI D'USO -->
+              <div class="mform-section">
+                <div class="mform-section-title">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  Abitudini d'uso
+                </div>
+                <div class="mform-row">
+                  <div class="mform-field">
+                    <label>Fascia oraria prevalente in casa</label>
+                    <select id="m-orario">
+                      <option value="sempre">Sempre a casa (smart working)</option>
+                      <option value="mattina">Solo la mattina</option>
+                      <option value="sera">Solo la sera / weekend</option>
+                      <option value="variabile">Variabile</option>
+                    </select>
+                  </div>
+                  <div class="mform-field">
+                    <label>Produzione fotovoltaico</label>
+                    <select id="m-fotovoltaico">
+                      <option value="no">No</option>
+                      <option value="si_piccolo">Sì – fino a 3 kWp</option>
+                      <option value="si_medio">Sì – 3–6 kWp</option>
+                      <option value="si_grande">Sì – oltre 6 kWp</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="mform-field" style="margin-top:.65rem">
+                  <label>Priorità nel cambio offerta</label>
+                  <select id="m-priorita">
+                    <option value="risparmio">Massimo risparmio</option>
+                    <option value="verde">Energia verde / rinnovabile</option>
+                    <option value="stabilita">Prezzo fisso e stabilità</option>
+                    <option value="servizio">Qualità del servizio clienti</option>
+                    <option value="tutto">Un po' di tutto</option>
+                  </select>
+                </div>
+              </div>
+
+              <button type="submit" class="btn-manual-analyze">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline;vertical-align:middle;margin-right:.4rem"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                Analizza con AI
+              </button>
+            </form>
     </div>
   </div>
-</section>
+</div>
 
-<!-- PERCHÉ BOLLETTE RISPARMIO -->
-<section class="perche-section">
-  <div class="wrap">
-    <p class="section-label">Perché Sceglierci</p>
-    <h2 class="section-title">Il tuo alleato per bollette<br/>senza sorprese</h2>
-    <p class="section-sub" style="color:rgba(255,255,255,.7)">Oltre 25 anni di esperienza nel settore energetico. Migliaia di famiglie ci hanno scelto per risparmiare davvero.</p>
-    <div class="pillars-grid">
-      <div class="pillar-card">
-        <div class="pillar-num">01</div>
-        <div class="pillar-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
-        </div>
-        <h3 class="pillar-title">Confronto Istantaneo</h3>
-        <p class="pillar-desc">Confronta centinaia di offerte in tempo reale con l'AI. Risultati personalizzati sul tuo profilo di consumo.</p>
-      </div>
-      <div class="pillar-card">
-        <div class="pillar-num">02</div>
-        <div class="pillar-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-        </div>
-        <h3 class="pillar-title">Esperti al Tuo Fianco</h3>
-        <p class="pillar-desc">Il nostro team di consulenti ti guida nella scelta migliore. Disponibili per chiamata, email e chat.</p>
-      </div>
-      <div class="pillar-card">
-        <div class="pillar-num">03</div>
-        <div class="pillar-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-        </div>
-        <h3 class="pillar-title">Attivazione Semplice</h3>
-        <p class="pillar-desc">Dopo aver scelto l'offerta, gestiamo noi il passaggio al nuovo fornitore. Zero burocrazia per te.</p>
-      </div>
-      <div class="pillar-card">
-        <div class="pillar-num">04</div>
-        <div class="pillar-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
-        </div>
-        <h3 class="pillar-title">Supporto Continuo</h3>
-        <p class="pillar-desc">Non ti abbandoniamo dopo l'attivazione. Supporto 24/7 anche per eventuali problemi post-cambio.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CHI SIAMO -->
-<section class="about-section" id="chi-siamo">
-  <div class="wrap">
-    <div class="about-grid">
-      <div>
-        <p class="section-label">Chi Siamo</p>
-        <h2 class="section-title">Bollette Risparmio.<br/>25 anni al tuo servizio.</h2>
-        <p style="color:var(--gray-700);margin-bottom:1.5rem;line-height:1.8">Con <strong>Bolletterisparmio.it</strong> trovi le migliori offerte per luce, gas e internet. Il nostro team di esperti ti guida verso la scelta più conveniente, con trasparenza e semplicità.</p>
-        <div class="about-feature">
-          <div class="about-feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="about-feature-text">
-            <h4>Servizio di Qualità Garantito</h4>
-            <p>Soluzioni personalizzate e assistenza dedicata completa per ogni cliente.</p>
-          </div>
-        </div>
-        <div class="about-feature">
-          <div class="about-feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="about-feature-text">
-            <h4>Confronto Imparziale</h4>
-            <p>Offerte aggiornate dai migliori fornitori del mercato libero. Nessun conflitto d'interessi.</p>
-          </div>
-        </div>
-        <div class="about-feature">
-          <div class="about-feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="about-feature-text">
-            <h4>Partnership con Leader del Settore</h4>
-            <p>Collaboriamo con Acea, Duferco, Energiasi, Union, TIM, Wind Tre e altri top player.</p>
-          </div>
-        </div>
-        <div class="about-stats">
-          <div class="about-stat"><div class="num">+25</div><div class="lbl">Anni di Esperienza</div></div>
-          <div class="about-stat"><div class="num">30%</div><div class="lbl">Risparmio Medio</div></div>
-          <div class="about-stat"><div class="num">48h</div><div class="lbl">Attivazione Media</div></div>
-          <div class="about-stat"><div class="num">0€</div><div class="lbl">Costo Consulenza</div></div>
-        </div>
-        <div class="partners-bar">
-          <p>I nostri partner</p>
-          <div class="partners-logos">
-            <div class="partner-logo-wrap" title="Acea">
-              <img src="https://cdn3.comparasemplice.it/images/loghi_energia/logo_acea.jpg" alt="Acea" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-              <span class="partner-chip partner-chip-fb" style="display:none">Acea</span>
-            </div>
-            <div class="partner-logo-wrap" title="Duferco">
-              <img src="https://cdn3.comparasemplice.it/images/loghi_energia/logo_duferco.jpg" alt="Duferco" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-              <span class="partner-chip partner-chip-fb" style="display:none">Duferco</span>
-            </div>
-            <div class="partner-logo-wrap" title="Enel">
-              <img src="https://cdn3.comparasemplice.it/images/loghi_energia/logo_enel.jpg" alt="Enel" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-              <span class="partner-chip partner-chip-fb" style="display:none">Enel</span>
-            </div>
-            <div class="partner-logo-wrap" title="Eni Plenitude">
-              <img src="https://cdn3.comparasemplice.it/images/loghi_energia/logo_plenitude.jpg" alt="Eni Plenitude" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-              <span class="partner-chip partner-chip-fb" style="display:none">Plenitude</span>
-            </div>
-            <div class="partner-logo-wrap" title="Iren">
-              <img src="https://cdn3.comparasemplice.it/images/loghi_energia/logo_iren.jpg" alt="Iren" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-              <span class="partner-chip partner-chip-fb" style="display:none">Iren</span>
-            </div>
-            <div class="partner-logo-wrap" title="Edison">
-              <img src="https://cdn3.comparasemplice.it/images/loghi_energia/logo_edison.jpg" alt="Edison" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-              <span class="partner-chip partner-chip-fb" style="display:none">Edison</span>
-            </div>
-            <div class="partner-logo-wrap" title="TIM">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/TIM_logo_2016.svg/200px-TIM_logo_2016.svg.png" alt="TIM" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-              <span class="partner-chip partner-chip-fb" style="display:none">TIM</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="about-img-stack">
-        <div class="about-img-main">
-          <div style="text-align:center;color:rgba(255,255,255,.4)">
-            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
-            <p style="font-family:var(--font-display);font-size:1.2rem;font-weight:700;margin-top:.5rem">Energia per tutti</p>
-          </div>
-        </div>
-        <div class="about-img-accent">
-          <div style="text-align:center">
-            <div style="font-family:var(--font-display);font-size:2.5rem;font-weight:800;color:var(--accent)">25+</div>
-            <div style="font-size:.78rem;color:var(--gray-700);font-weight:600">Anni di<br/>esperienza</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- RECENSIONI -->
-<section class="reviews-section">
-  <div class="wrap">
-    <p class="section-label" style="text-align:center">Cosa dicono i clienti</p>
-    <h2 class="section-title" style="text-align:center">Migliaia di famiglie<br/>hanno già risparmiato</h2>
-    <div class="reviews-stars-total">
-      <div class="stars-big">★★★★★</div>
-      <div class="stars-score">4.8 <span>/ 5</span></div>
-      <div class="stars-count">Basato su oltre 200 recensioni verificate</div>
-    </div>
-    <div class="reviews-grid">
-      <div class="review-card">
-        <div class="review-stars">★★★★★</div>
-        <p class="review-text">"Ho risparmiato quasi 300€ in un anno solo cambiando fornitore. Il processo è stato semplicissimo, mi hanno guidato in tutto."</p>
-        <div class="review-author">
-          <div class="review-avatar">MR</div>
-          <div>
-            <strong>Marco R.</strong>
-            <span>Napoli · Cliente da 2 anni</span>
-          </div>
-        </div>
-      </div>
-      <div class="review-card review-featured">
-        <div class="review-stars">★★★★★</div>
-        <p class="review-text">"L'analisi AI è stata sorprendente: ha trovato un errore nella mia bolletta che nemmeno il fornitore mi aveva segnalato. Rimborso ottenuto in pochi giorni!"</p>
-        <div class="review-author">
-          <div class="review-avatar">GF</div>
-          <div>
-            <strong>Giulia F.</strong>
-            <span>Salerno · Analisi AI</span>
-          </div>
-        </div>
-      </div>
-      <div class="review-card">
-        <div class="review-stars">★★★★★</div>
-        <p class="review-text">"Consulenza professionale e veloce. Ho cambiato luce e gas insieme e la nuova bolletta è già più bassa del 25%. Consiglio a tutti."</p>
-        <div class="review-author">
-          <div class="review-avatar">AL</div>
-          <div>
-            <strong>Antonio L.</strong>
-            <span>Caserta · Offerta Bifuel</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- FAQ -->
-<section class="faq-section">
-  <div class="wrap">
-    <div class="faq-grid">
-      <div>
-        <p class="section-label">Domande Frequenti</p>
-        <h2 class="section-title">Cosa chiedono<br/>i nostri clienti</h2>
-        <p class="section-sub">Risposte chiare ai dubbi più comuni sul risparmio energetico.</p>
-        <div class="faq-list">
-          <div class="faq-item">
-            <div class="faq-q" onclick="toggleFaq(this)">
-              Quali fornitori posso confrontare?
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div class="faq-a"><div class="faq-a-inner">Puoi confrontare Plenitude, Iren, Acea, Enel Energia, Hera, Edison, Duferco, Energiasi, Tim, Wind, Vodafone e molti altri. Il nostro database è aggiornato costantemente con le migliori offerte disponibili.</div></div>
-          </div>
-          <div class="faq-item">
-            <div class="faq-q" onclick="toggleFaq(this)">
-              Come funziona il passaggio da un gestore all'altro?
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div class="faq-a"><div class="faq-a-inner">È semplice e gratuito: dopo la scelta dell'offerta, gestiamo noi tutto il processo di cambio. Non ci sono interruzioni del servizio e non devi contattare il vecchio fornitore.</div></div>
-          </div>
-          <div class="faq-item">
-            <div class="faq-q" onclick="toggleFaq(this)">
-              Posso cambiare gestore senza penali?
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div class="faq-a"><div class="faq-a-inner">Sì, nella maggior parte dei casi il cambio è senza penali. Verifichiamo la tua situazione specifica prima di procedere, così sei sempre al sicuro.</div></div>
-          </div>
-          <div class="faq-item">
-            <div class="faq-q" onclick="toggleFaq(this)">
-              Quanto tempo ci vuole per attivare l'offerta?
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div class="faq-a"><div class="faq-a-inner">L'attivazione avviene generalmente entro 24-48 ore dal completamento della procedura. Per i contratti gas i tempi possono variare leggermente.</div></div>
-          </div>
-          <div class="faq-item">
-            <div class="faq-q" onclick="toggleFaq(this)">
-              Cosa serve per ricevere un preventivo personalizzato?
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div class="faq-a"><div class="faq-a-inner">Basta compilare il form con nome, servizio scelto e contatti, oppure caricare la tua bolletta PDF per un'analisi completa. Puoi anche chiamarci direttamente al 081 91 31 897.</div></div>
-          </div>
-          <div class="faq-item">
-            <div class="faq-q" onclick="toggleFaq(this)">
-              Cos'è il mercato libero e conviene passarci?
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div class="faq-a"><div class="faq-a-inner">Il mercato libero ti permette di scegliere il fornitore con le condizioni più vantaggiose. Nella maggior parte dei casi offre tariffe inferiori rispetto al mercato tutelato. <a href="/guida/differenza-mercato-libero-tutelato" style="color:var(--accent)">Leggi la guida completa →</a></div></div>
-          </div>
-        </div>
-      </div>
-      <div class="faq-cta-box">
-        <h3>Hai ancora dubbi?</h3>
-        <p>I nostri consulenti sono disponibili dal lunedì al venerdì, 9:00–18:00.</p>
-        <a href="tel:0819131897" class="faq-cta-phone">
-          <div class="faq-cta-phone-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.07 1.18 2 2 0 012.04 0H5a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg>
-          </div>
-          <div class="faq-cta-phone-text">
-            <small>Chiama subito</small>
-            <strong>081 91 31 897</strong>
-          </div>
-        </a>
-        <a href="mailto:info@bolletterisparmio.it" class="faq-cta-phone">
-          <div class="faq-cta-phone-icon" style="background:var(--primary-mid)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-          </div>
-          <div class="faq-cta-phone-text">
-            <small>Scrivi una email</small>
-            <strong>info@bolletterisparmio.it</strong>
-          </div>
-        </a>
-        <div style="height:.75rem"></div>
-        <a href="#contatti" class="btn-white" onclick="scrollToContact()">Richiedi Consulenza Gratuita</a>
-        <p style="font-size:.75rem;color:rgba(255,255,255,.5);text-align:center;margin-top:.75rem">Nessun impegno. Risposta entro 24h.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CONTATTACI -->
-<section class="contact-section" id="contatti">
-  <div class="wrap">
-    <div class="contact-grid">
-      <div class="contact-left">
+<!-- CONTACT OVERLAY -->
+<div class="contact-overlay" id="contact-overlay" onclick="if(event.target===this)closeContact()">
+  <div class="contact-modal">
+    <button class="contact-modal-close" onclick="closeContact()" aria-label="Chiudi">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="contact-modal-inner">
+      <div class="contact-modal-left">
         <h2>Siamo sempre pronti<br/>a rispondere</h2>
         <p>Richiedi una consulenza gratuita, prenota un appuntamento o chiedi informazioni sulle offerte. Il nostro team risponde entro 24 ore.</p>
         <div class="contact-items">
@@ -701,7 +527,7 @@
       </div>
     </div>
   </div>
-</section>
+</div>
 
 <!-- FOOTER -->
 <footer>

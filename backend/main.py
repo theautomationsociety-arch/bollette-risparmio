@@ -24,7 +24,6 @@ except ImportError:
 from backend.email_utils import (
     build_risultati, build_consulente_utente, build_consulente_admin, send_email as _send_email
 )
-from backend.scraper import esegui_scraping, avvia_scheduler, stato_scraper as _stato_scraper
 import backend.guide_pages as _gp
 
 # ── Paths ──────────────────────────────────────────────────────────────────
@@ -194,51 +193,9 @@ def init_db():
         CREATE INDEX IF NOT EXISTS idx_i_tipo ON indici(tipo, periodo);
     """)
     c.commit()
-    if c.execute("SELECT COUNT(*) FROM offerte_luce").fetchone()[0] == 0:
-        _seed_luce(c)
-    if c.execute("SELECT COUNT(*) FROM offerte_gas").fetchone()[0] == 0:
-        _seed_gas(c)
     if c.execute("SELECT COUNT(*) FROM indici").fetchone()[0] == 0:
         _seed_indici(c)
     c.close()
-
-def _seed_luce(c):
-    now = datetime.now().isoformat()
-    rows = [
-        ("enel-web",     "Enel Energia",   "Luce Web",           "VARIABILE","D2,D3,BTA,CDO",0.1823,0.1523,0.1423,0.1473,None,0.018, 72, 45, 5.0,"2026-12-31","Indicizzato PUN, sconto 5% bifuel","Libero","https://www.enel.it"),
-        ("a2a-biz",      "A2A Energia",    "Smart Business",     "FISSO",    "BTA,CDO",       0.1650,0.1450,0.1350,None,  None,None,  84, 50, 4.0,"2026-06-30","PMI e condomini, fisso 12 mesi",  "Libero","https://www.a2a.eu"),
-        ("a2a-casa",     "A2A Energia",    "Smart Casa",         "FISSO",    "D2,D3",         0.1670,0.1470,None,  0.1470,None,None,  72, 45, 4.0,"2026-06-30","Domestico, biorario F1/F23",      "Libero","https://www.a2a.eu"),
-        ("eni-biz",      "Eni Plenitude",  "Business Verde",     "FISSO",    "BTA",           0.1720,0.1520,0.1420,None,  None,None,  96, 48, 5.0,"2026-09-30","100% rinnovabile PMI",            "Libero","https://www.plenitude.com"),
-        ("eni-casa",     "Eni Plenitude",  "Casa Verde",         "FISSO",    "D2,D3",         0.1700,0.1500,None,  0.1500,None,None,  84, 46, 5.0,"2026-09-30","100% rinnovabile domestico",      "Libero","https://www.plenitude.com"),
-        ("sorgenia",     "Sorgenia",       "Open Power",         "VARIABILE","D2,D3,BTA,CDO", 0.1800,0.1500,0.1400,0.1450,None,0.017, 54, 43, 4.5,"2026-12-31","Rinnovabile, app PMI, -4.5% bifuel","Libero","https://www.sorgenia.it"),
-        ("wekiwi-biz",   "Wekiwi",         "PMI Digitale",       "FISSO",    "BTA",           0.1590,0.1390,0.1290,None,  None,None,  48, 40, 3.0,"2026-08-31","Solo online, PMI",               "Libero","https://www.wekiwi.it"),
-        ("wekiwi-casa",  "Wekiwi",         "Casa Digitale",      "FISSO",    "D2,D3",         0.1610,0.1410,None,  0.1410,None,None,  42, 39, 3.0,"2026-08-31","Domestico, senza canone dom.",    "Libero","https://www.wekiwi.it"),
-        ("illumia-biz",  "Illumia",        "Smart Business",     "FISSO",    "BTA,CDO",       0.1610,0.1410,0.1310,None,  None,None,  60, 41, 3.5,"2026-09-30","PMI assistenza 7/7",             "Libero","https://www.illumia.it"),
-        ("illumia-casa", "Illumia",        "Smart Casa",         "FISSO",    "D2,D3",         0.1625,0.1425,None,  0.1425,None,None,  54, 40, 3.5,"2026-09-30","Domestico fisso 12 mesi",         "Libero","https://www.illumia.it"),
-        ("edison",       "Edison Energia", "Start Famiglia",     "FISSO",    "D2,D3",         0.1630,0.1430,None,  0.1430,None,None,  66, 44, 4.0,"2026-07-31","Canone incluso 24 mesi",          "Libero","https://www.edison.it"),
-        ("iren-casa",    "Iren Mercato",   "Luce Sempre",        "FISSO",    "D2,D3",         0.1645,0.1445,None,  0.1445,None,None,  60, 42, 3.5,"2026-08-31","Domestico Nord Italia",           "Libero","https://www.irenmercato.it"),
-        ("octopus",      "Octopus Energy", "Energia Verde",      "VARIABILE","D2,D3,BTA,CDO", 0.1790,0.1490,0.1390,0.1440,None,0.016, 48, 41, 4.0,"2026-12-31","100% rinnovabile, app smart",    "Libero","https://www.octopusenergy.it"),
-    ]
-    c.executemany("""INSERT INTO offerte_luce (id,fornitore,nome,tipo,profili,prezzo_f1,prezzo_f2,prezzo_f3,prezzo_f23,prezzo_mono,spread_pun,quota_fissa,oneri_trasp,sconto_bifuel,valida_fino,note,mercato,url,attiva,inserita) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1,?)""",
-        [r+(now,) for r in rows])
-    c.commit()
-
-def _seed_gas(c):
-    now = datetime.now().isoformat()
-    rows = [
-        ("enel-gas",    "Enel Energia",  "Gas Web",         "VARIABILE","D2,D3,BTA",0.48,0.02, 60,0.02, 5.0,"2026-12-31","PSV+spread, -5% bifuel",                "Libero","https://www.enel.it"),
-        ("a2a-gas-biz", "A2A Energia",   "Gas Business",    "FISSO",    "BTA",       0.52,None, 72,0.02, 4.0,"2026-06-30","PMI fisso 12 mesi",                     "Libero","https://www.a2a.eu"),
-        ("a2a-gas-casa","A2A Energia",   "Gas Smart Casa",  "FISSO",    "D2,D3",     0.50,None, 66,0.02, 4.0,"2026-06-30","Domestico CACR fisso",                  "Libero","https://www.a2a.eu"),
-        ("eni-gas-biz", "Eni Plenitude", "Gas Business",    "FISSO",    "BTA",       0.50,None, 84,0.025,5.0,"2026-09-30","Sconto 5% con luce Plenitude",          "Libero","https://www.plenitude.com"),
-        ("eni-gas-casa","Eni Plenitude", "Gas Casa Verde",  "FISSO",    "D2,D3",     0.49,None, 78,0.022,5.0,"2026-09-30","Domestico CO2 neutro",                  "Libero","https://www.plenitude.com"),
-        ("sorgenia-gas","Sorgenia",      "Open Gas",        "VARIABILE","D2,D3,BTA", 0.47,0.019,54,0.02, 4.5,"2026-12-31","PSV+spread, -4.5% bifuel",              "Libero","https://www.sorgenia.it"),
-        ("illumia-gas", "Illumia",       "Gas Smart",       "FISSO",    "D2,D3,BTA", 0.495,None,60,0.019,3.5,"2026-09-30","Online, fisso 12 mesi",                 "Libero","https://www.illumia.it"),
-        ("wekiwi-gas",  "Wekiwi",        "Gas Digitale",    "FISSO",    "D2,D3,BTA", 0.488,None,48,0.018,3.0,"2026-08-31","Solo online",                           "Libero","https://www.wekiwi.it"),
-        ("iren-gas",    "Iren Mercato",  "Gas Sempre",      "FISSO",    "D2,D3",     0.502,None,60,0.02, 3.5,"2026-08-31","Domestico Nord Italia",                 "Libero","https://www.irenmercato.it"),
-    ]
-    c.executemany("""INSERT INTO offerte_gas (id,fornitore,nome,tipo,profili,prezzo_smc,spread_psv,quota_fissa,quota_var,sconto_bifuel,valida_fino,note,mercato,url,attiva,inserita) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,1,?)""",
-        [r+(now,) for r in rows])
-    c.commit()
 
 def _seed_indici(c):
     now = datetime.now().isoformat()
@@ -772,56 +729,93 @@ async def indice_manuale(payload: dict = Body(...)):
     c.commit(); c.close()
     return {"updated":True}
 
+_INDICI_ENDPOINTS = [
+    # Endpoint API (stessa famiglia di geoService che funziona)
+    "https://www.ilportaleofferte.it/portaleOfferte/api/rs/it/portal/prezziStoriciService.json",
+    "https://www.ilportaleofferte.it/portaleOfferte/api/rs/it/portal/indiciMercatoService.json",
+    # Endpoint REST classico (bloccato da WAF ma proviamo comunque)
+    "https://www.ilportaleofferte.it/portaleOfferte/rest/prezziStoriciIndici",
+]
+_INDICI_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0 Safari/537.36",
+    "Accept": "application/json, */*",
+    "Accept-Language": "it-IT,it;q=0.9",
+    "Referer": "https://www.ilportaleofferte.it/portaleOfferte/it/confronto-tariffe-prezzi-luce-gas.page",
+    "X-Requested-With": "XMLHttpRequest",
+}
+
 async def _fetch_indici():
+    """
+    Tenta di aggiornare gli indici PUN/PSV dal Portale ARERA.
+    Prova più endpoint in sequenza; se tutti falliscono, mantiene i dati esistenti.
+    """
+    data = None
+    endpoint_ok = None
     try:
-        async with httpx.AsyncClient(timeout=20,follow_redirects=True) as hc:
-            r = await hc.get("https://www.ilportaleofferte.it/portaleOfferte/rest/prezziStoriciIndici")
-            data = r.json()
-        c = get_db(); count=0
-        for e in data:
-            tipo=(e.get("codiceIndice") or "").upper()
-            mese=e.get("meseAnno",""); v=e.get("prezzoMedio")
-            if tipo not in ("PUN","PSV","CMEM") or not mese or v is None: continue
-            parts=mese.split("/")
-            if len(parts)!=2: continue
-            periodo=f"{parts[1]}-{parts[0].zfill(2)}"; iid=f"{tipo.lower()}-{periodo}"
-            c.execute("INSERT OR REPLACE INTO indici (id,tipo,periodo,valore,fonte,aggiornato) VALUES (?,?,?,?,'Portale ARERA',?)",(iid,tipo,periodo,float(v),datetime.now().isoformat()))
-            count+=1
-        c.commit(); c.close(); log.info(f"Indici aggiornati: {count}")
-    except Exception as e: log.error(f"Errore indici: {e}")
+        async with httpx.AsyncClient(
+            headers=_INDICI_HEADERS, follow_redirects=True, timeout=20, verify=False
+        ) as hc:
+            # Warm-up: ottieni cookie di sessione
+            try:
+                await hc.get(
+                    "https://www.ilportaleofferte.it/portaleOfferte/it/confronto-tariffe-prezzi-luce-gas.page",
+                    timeout=10,
+                )
+            except Exception:
+                pass
+            for endpoint in _INDICI_ENDPOINTS:
+                try:
+                    r = await hc.get(endpoint)
+                    if r.status_code == 200 and r.text.strip().startswith(("[", "{")):
+                        data = r.json()
+                        endpoint_ok = endpoint
+                        break
+                    else:
+                        log.debug(f"Indici {endpoint}: status={r.status_code}, body_len={len(r.text)}")
+                except Exception as e:
+                    log.debug(f"Indici {endpoint}: {e}")
+    except Exception as e:
+        log.error(f"Errore connessione fetch indici: {e}")
+        return
 
-# ── SCRAPER ENDPOINTS ────────────────────────────────────────────────────────
+    if data is None:
+        log.warning(
+            "Indici PUN/PSV: nessun endpoint ARERA disponibile. "
+            "Aggiorna manualmente via POST /api/admin/indici/manuale"
+        )
+        return
 
-@app.post("/api/admin/scraper/run", dependencies=[Depends(require_admin)])
-async def scraper_run(bg: BackgroundTasks):
-    """Avvia lo scraping in background. Ritorna subito."""
-    if not GEMINI_API_KEY:
-        raise HTTPException(400, "GEMINI_API_KEY non configurata nel .env")
-    if _stato_scraper()["in_corso"]:
-        raise HTTPException(409, "Scraping già in corso. Controlla /status.")
-    bg.add_task(esegui_scraping, get_db, GEMINI_API_KEY)
-    return {"avviato": True, "messaggio": "Scraping avviato in background. Controlla /api/admin/scraper/status."}
-
-@app.get("/api/admin/scraper/status", dependencies=[Depends(require_admin)])
-async def scraper_status():
-    """Stato e log dell'ultimo run."""
-    return _stato_scraper()
-
-@app.post("/api/admin/scraper/schedule", dependencies=[Depends(require_admin)])
-async def scraper_schedule(payload: dict = Body(...)):
-    """
-    Abilita/disabilita run automatico.
-    Body: {"ore": 24}   → run ogni 24h
-    Body: {"ore": 0}    → disabilita
-    """
-    if not GEMINI_API_KEY:
-        raise HTTPException(400, "GEMINI_API_KEY non configurata nel .env")
-    ore = int(payload.get("ore", 0))
-    if ore < 0 or ore > 168:
-        raise HTTPException(400, "ore deve essere tra 0 e 168")
-    avvia_scheduler(get_db, GEMINI_API_KEY, ore)
-    msg = "Scheduler disabilitato" if ore == 0 else f"Scheduler attivo: run ogni {ore}h"
-    return {"ore": ore, "messaggio": msg}
+    c = get_db(); count = 0
+    try:
+        items = data if isinstance(data, list) else (
+            data.get("prezzi") or data.get("indici") or data.get("result", {}).get("indici") or []
+        )
+        for e in items:
+            tipo = (e.get("codiceIndice") or e.get("tipo") or "").upper()
+            mese = e.get("meseAnno") or e.get("periodo") or ""
+            v = e.get("prezzoMedio") or e.get("valore")
+            if tipo not in ("PUN", "PSV", "CMEM") or not mese or v is None:
+                continue
+            # Formato mese: "MM/YYYY" → "YYYY-MM"
+            parts = str(mese).split("/")
+            if len(parts) == 2:
+                periodo = f"{parts[1]}-{parts[0].zfill(2)}"
+            elif len(parts) == 1 and len(mese) == 7:
+                periodo = mese  # già "YYYY-MM"
+            else:
+                continue
+            iid = f"{tipo.lower()}-{periodo}"
+            c.execute(
+                "INSERT OR REPLACE INTO indici (id,tipo,periodo,valore,fonte,aggiornato) VALUES (?,?,?,?,'Portale ARERA',?)",
+                (iid, tipo, periodo, float(v), datetime.now().isoformat()),
+            )
+            count += 1
+        c.commit()
+        log.info(f"Indici aggiornati: {count} record da {endpoint_ok}")
+    except Exception as e:
+        log.error(f"Errore salvataggio indici: {e}")
+    finally:
+        c.close()
 
 # Export CSV admin
 @app.get("/api/admin/export/bollette", dependencies=[Depends(require_admin)])
@@ -839,6 +833,24 @@ async def export_leads():
     for r in rows:
         d=dict(r); lines.append(",".join([f'"{str(d.get(k,"") or "")}"' for k in ("id","nome","cognome","email","telefono","tipo_richiesta","bolletta_id","data","stato","note")]))
     return StreamingResponse(io.BytesIO("\n".join(lines).encode("utf-8-sig")),media_type="text/csv",headers={"Content-Disposition":f"attachment; filename=leads_{datetime.now().strftime('%Y%m%d')}.csv"})
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PAGINE INTERNE
+# ══════════════════════════════════════════════════════════════════════════════
+@app.get("/offerte", include_in_schema=False)
+async def pagina_offerte_route():
+    from fastapi.responses import HTMLResponse
+    return HTMLResponse(_gp.pagina_offerte())
+
+@app.get("/come-funziona", include_in_schema=False)
+async def pagina_come_funziona_route():
+    from fastapi.responses import HTMLResponse
+    return HTMLResponse(_gp.pagina_come_funziona())
+
+@app.get("/chi-siamo", include_in_schema=False)
+async def pagina_chi_siamo_route():
+    from fastapi.responses import HTMLResponse
+    return HTMLResponse(_gp.pagina_chi_siamo())
 
 # ══════════════════════════════════════════════════════════════════════════════
 # PAGINE LEGALI

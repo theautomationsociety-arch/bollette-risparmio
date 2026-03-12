@@ -1359,3 +1359,539 @@ Email: <a href="mailto:privacy@bolletterisparmio.it">privacy@bolletterisparmio.i
 <p>Il sito utilizza cookie tecnici necessari al funzionamento. Non utilizziamo cookie di profilazione di terze parti. Per i dettagli consulta la <a href="https://www.iubenda.com/privacy-policy/30631851/cookie-policy" target="_blank">Cookie Policy completa</a>.</p>
 """
     return _legal_page("Privacy Policy", body)
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# PAGINA OFFERTE
+# ════════════════════════════════════════════════════════════════════════════
+def pagina_offerte() -> str:
+    today = datetime.now().strftime("%d %B %Y")
+    canonical = f"{SITE_URL}/offerte"
+    return f"""<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Offerte Luce e Gas 2025 — Bollette Risparmio</title>
+<meta name="description" content="Confronta le migliori offerte luce e gas del mercato libero italiano. Analisi AI gratuita e consulenza personalizzata da esperti con 25 anni di esperienza.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="{canonical}">
+<meta property="og:title" content="Offerte Luce e Gas 2025 — Bollette Risparmio">
+<meta property="og:description" content="Le migliori offerte luce e gas del mercato libero. Risparmia fino al 30% con la nostra analisi AI gratuita.">
+<meta property="og:url" content="{canonical}">
+<meta property="og:locale" content="it_IT">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+{_CSS}
+/* OVERRIDES PAGINE INTERNE */
+.page-hero{{background:linear-gradient(135deg,var(--primary) 0%,#1d4ed8 55%,#163272 100%);padding:4rem 1.5rem 3rem;position:relative;overflow:hidden}}
+.page-hero::after{{content:'';position:absolute;bottom:-2px;left:0;right:0;height:50px;background:var(--white);clip-path:ellipse(55% 100% at 50% 100%)}}
+.page-hero-inner{{max-width:860px;margin:0 auto;position:relative;z-index:1}}
+.page-badge{{display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.9);padding:.3rem .85rem;border-radius:50px;font-size:.75rem;font-weight:600;letter-spacing:.05em;margin-bottom:1rem}}
+.page-hero h1{{font-family:'Sora',sans-serif;font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;color:#fff;line-height:1.15;margin-bottom:.75rem}}
+.page-hero p{{font-size:1rem;color:rgba(255,255,255,.78);max-width:560px;margin-bottom:1.5rem}}
+.page-hero-actions{{display:flex;gap:.9rem;flex-wrap:wrap}}
+.btn-hero-primary{{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:.8rem 1.6rem;font-family:'Sora',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;transition:all .2s;box-shadow:0 4px 16px rgba(0,0,0,.2)}}
+.btn-hero-primary:hover{{background:#1976d2;transform:translateY(-2px)}}
+.btn-hero-secondary{{background:rgba(255,255,255,.1);color:#fff;border:1.5px solid rgba(255,255,255,.3);border-radius:10px;padding:.8rem 1.6rem;font-family:'Sora',sans-serif;font-size:.9rem;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;transition:all .2s}}
+.btn-hero-secondary:hover{{background:rgba(255,255,255,.18)}}
+.page-content{{max-width:1100px;margin:0 auto;padding:3rem 1.5rem 5rem}}
+.section-label-inner{{font-size:.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem}}
+.section-title-inner{{font-family:'Sora',sans-serif;font-size:clamp(1.4rem,2.5vw,1.9rem);font-weight:800;color:var(--primary);line-height:1.2;margin-bottom:.75rem}}
+.section-sub-inner{{font-size:.93rem;color:var(--muted);max-width:560px;margin-bottom:2rem}}
+.offerte-intro-grid{{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:3rem}}
+@media(max-width:700px){{.offerte-intro-grid{{grid-template-columns:1fr}}}}
+.offerte-tipo-card{{background:var(--white);border:2px solid var(--border);border-radius:20px;padding:2rem;transition:all .25s;position:relative;overflow:hidden}}
+.offerte-tipo-card:hover{{border-color:var(--accent);box-shadow:0 8px 32px rgba(30,58,138,.12);transform:translateY(-4px)}}
+.offerte-tipo-card.featured{{border-color:var(--accent);background:linear-gradient(135deg,#fff 0%,var(--accent-pale) 100%)}}
+.offerte-tipo-icon{{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.75rem;margin-bottom:1.25rem}}
+.offerte-tipo-icon.luce{{background:#fff9e6}}
+.offerte-tipo-icon.gas{{background:#fff1f0}}
+.offerte-tipo-card h3{{font-family:'Sora',sans-serif;font-size:1.15rem;font-weight:800;color:var(--primary);margin-bottom:.4rem}}
+.offerte-tipo-card p{{font-size:.88rem;color:var(--muted);line-height:1.6;margin-bottom:1.25rem}}
+.offerta-feature-list{{list-style:none;display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.5rem}}
+.offerta-feature-list li{{font-size:.83rem;color:var(--ink);display:flex;align-items:center;gap:.5rem}}
+.offerta-feature-list li::before{{content:'✓';color:var(--green);font-weight:700;flex-shrink:0}}
+.btn-card{{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;background:var(--primary);color:#fff;border:none;border-radius:9px;padding:.7rem 1.4rem;font-family:'Sora',sans-serif;font-size:.85rem;font-weight:700;text-decoration:none;transition:all .2s;cursor:pointer;width:100%}}
+.btn-card:hover{{background:var(--accent)}}
+.how-banner{{background:var(--primary);border-radius:20px;padding:2.5rem;display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:center;margin:3rem 0}}
+@media(max-width:700px){{.how-banner{{grid-template-columns:1fr}}}}
+.how-banner h3{{font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:800;color:#fff;margin-bottom:.5rem}}
+.how-banner p{{font-size:.88rem;color:rgba(255,255,255,.7);line-height:1.6}}
+.steps-row{{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin:2.5rem 0}}
+@media(max-width:700px){{.steps-row{{grid-template-columns:1fr}}}}
+.step-card{{background:var(--bg);border-radius:16px;padding:1.5rem;text-align:center}}
+.step-icon-big{{font-size:2rem;margin-bottom:.75rem}}
+.step-card h4{{font-family:'Sora',sans-serif;font-size:.95rem;font-weight:700;color:var(--primary);margin-bottom:.4rem}}
+.step-card p{{font-size:.83rem;color:var(--muted);line-height:1.6}}
+.faq-block{{margin:3rem 0}}
+.faq-block h2{{font-family:'Sora',sans-serif;font-size:1.3rem;font-weight:800;color:var(--primary);margin-bottom:1.5rem}}
+.faq-q-item{{border:1.5px solid var(--border);border-radius:12px;margin-bottom:.6rem;overflow:hidden}}
+.faq-q-item.open{{border-color:var(--accent)}}
+.faq-q-btn{{width:100%;padding:1rem 1.25rem;background:none;border:none;text-align:left;font-family:'Sora',sans-serif;font-size:.9rem;font-weight:600;color:var(--primary);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:1rem}}
+.faq-q-item.open .faq-q-btn{{background:var(--accent-pale);color:var(--accent)}}
+.faq-q-btn svg{{transition:transform .2s;flex-shrink:0;color:var(--muted)}}
+.faq-q-item.open .faq-q-btn svg{{transform:rotate(180deg);color:var(--accent)}}
+.faq-ans{{max-height:0;overflow:hidden;transition:max-height .3s ease}}
+.faq-q-item.open .faq-ans{{max-height:200px}}
+.faq-ans-inner{{padding:.8rem 1.25rem 1rem;font-size:.87rem;color:var(--muted);line-height:1.7}}
+.cta-bottom{{background:linear-gradient(135deg,var(--primary),#1d4ed8);border-radius:20px;padding:3rem 2rem;text-align:center;margin-top:3rem}}
+.cta-bottom h2{{font-family:'Sora',sans-serif;font-size:1.5rem;font-weight:800;color:#fff;margin-bottom:.6rem}}
+.cta-bottom p{{color:rgba(255,255,255,.75);font-size:.93rem;margin-bottom:1.75rem}}
+.cta-btn-group{{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}}
+.btn-cta-white{{background:#fff;color:var(--primary);border:none;border-radius:10px;padding:.8rem 1.75rem;font-family:'Sora',sans-serif;font-size:.9rem;font-weight:700;text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:.4rem}}
+.btn-cta-white:hover{{background:var(--accent);color:#fff}}
+.btn-cta-outline{{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.35);border-radius:10px;padding:.8rem 1.75rem;font-family:'Sora',sans-serif;font-size:.9rem;font-weight:600;text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:.4rem}}
+.btn-cta-outline:hover{{border-color:#fff;background:rgba(255,255,255,.08)}}
+</style>
+</head>
+<body>
+{_NAV}
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="page-badge">⚡ Mercato Libero Energia</div>
+    <h1>Le Migliori Offerte<br>Luce e Gas 2025</h1>
+    <p>Trova l'offerta giusta per le tue esigenze. Confronto gratuito, analisi AI personalizzata e consulenza con esperti che conoscono il mercato italiano da oltre 25 anni.</p>
+    <div class="page-hero-actions">
+      <a href="/" class="btn-hero-primary">⚡ Analizza la Bolletta Gratis</a>
+      <a href="tel:0819131897" class="btn-hero-secondary">📞 Chiama un Esperto</a>
+    </div>
+  </div>
+</div>
+
+<div class="page-content">
+  <div style="text-align:center;margin-bottom:2.5rem">
+    <div class="section-label-inner">Cosa offriamo</div>
+    <div class="section-title-inner">Offerte per ogni tipo di utenza</div>
+    <div class="section-sub-inner" style="margin:0 auto .5rem">Selezioniamo le tariffe più competitive del mercato libero e le abbiniamo al tuo profilo di consumo reale — non a una media generica.</div>
+  </div>
+
+  <div class="offerte-intro-grid">
+    <div class="offerte-tipo-card featured">
+      <div class="offerte-tipo-icon luce">⚡</div>
+      <h3>Offerte Luce</h3>
+      <p>Tariffe a prezzo fisso, variabile indicizzato al PUN o miste. Ti aiutiamo a capire quale struttura si adatta ai tuoi consumi e abitudini.</p>
+      <ul class="offerta-feature-list">
+        <li>Prezzi aggiornati in tempo reale</li>
+        <li>Offerte con o senza canone fisso</li>
+        <li>Soluzioni per fotovoltaico e auto elettrica</li>
+        <li>Bonus e promozioni attive</li>
+      </ul>
+      <a href="/" class="btn-card">Confronta le offerte luce →</a>
+    </div>
+    <div class="offerte-tipo-card">
+      <div class="offerte-tipo-icon gas">🔥</div>
+      <h3>Offerte Gas</h3>
+      <p>Tariffe indicizzate al PSV o a prezzo fisso per il riscaldamento domestico e la cucina. Confronta la tua spesa attuale con le migliori alternative.</p>
+      <ul class="offerta-feature-list">
+        <li>Indicizzazione al PSV o prezzo bloccato</li>
+        <li>Offerte combinate luce + gas</li>
+        <li>Analisi del consumo annuo in Smc</li>
+        <li>Assistenza post-contratto inclusa</li>
+      </ul>
+      <a href="/" class="btn-card">Confronta le offerte gas →</a>
+    </div>
+  </div>
+
+  <div class="how-banner">
+    <div>
+      <h3>Come funziona il confronto?</h3>
+      <p>Carica la tua bolletta (o inserisci i dati manualmente): la nostra AI estrae i dati chiave — consumo, prezzo unitario, fornitore attuale — e li confronta con tutte le offerte nel nostro database, trovando quella che ti fa risparmiare di più.</p>
+    </div>
+    <a href="/" style="background:var(--accent);color:#fff;text-decoration:none;border-radius:10px;padding:.85rem 1.6rem;font-family:'Sora',sans-serif;font-weight:700;font-size:.88rem;white-space:nowrap;display:inline-flex;align-items:center;gap:.4rem">⚡ Analizza gratis →</a>
+  </div>
+
+  <div class="steps-row">
+    <div class="step-card">
+      <div class="step-icon-big">📄</div>
+      <h4>1. Carica la bolletta</h4>
+      <p>Carica il PDF o la foto della tua bolletta luce o gas — oppure inserisci i dati manualmente.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-icon-big">🤖</div>
+      <h4>2. Analisi AI</h4>
+      <p>La nostra intelligenza artificiale legge i consumi, il prezzo unitario e confronta migliaia di combinazioni tariffarie.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-icon-big">💰</div>
+      <h4>3. Risparmia</h4>
+      <p>Ricevi le migliori offerte personalizzate e scegli con un esperto la soluzione più adatta a te.</p>
+    </div>
+  </div>
+
+  <div class="faq-block">
+    <h2>Domande frequenti sulle offerte</h2>
+    <div class="faq-q-item">
+      <button class="faq-q-btn" onclick="this.parentElement.classList.toggle('open')">
+        Cambiare fornitore è complicato?
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="faq-ans"><div class="faq-ans-inner">No. Il cambio di fornitore nel mercato libero è completamente gratuito, non richiede tecnici e non interrompe mai la fornitura. Ti bastano il codice POD (per la luce) o PDR (per il gas) che trovi sulla bolletta. Il passaggio si completa in circa 30 giorni lavorativi.</div></div>
+    </div>
+    <div class="faq-q-item">
+      <button class="faq-q-btn" onclick="this.parentElement.classList.toggle('open')">
+        Meglio prezzo fisso o variabile?
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="faq-ans"><div class="faq-ans-inner">Dipende dal mercato e dalla tua tolleranza al rischio. Il prezzo fisso offre certezza nei costi per la durata del contratto (di solito 12-24 mesi). Il variabile indicizzato al PUN o PSV segue il mercato all'ingrosso e può essere più conveniente nei periodi di prezzi bassi. Il nostro team ti aiuta a scegliere in base all'andamento attuale.</div></div>
+    </div>
+    <div class="faq-q-item">
+      <button class="faq-q-btn" onclick="this.parentElement.classList.toggle('open')">
+        Il confronto è davvero gratuito?
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="faq-ans"><div class="faq-ans-inner">Sì, al 100%. L'analisi AI, il confronto delle offerte e la consulenza iniziale con un esperto sono completamente gratuiti. Guadagniamo una commissione dai fornitori solo se scegli di attivare un contratto tramite noi — senza costi aggiuntivi per te.</div></div>
+    </div>
+    <div class="faq-q-item">
+      <button class="faq-q-btn" onclick="this.parentElement.classList.toggle('open')">
+        Posso tornare al mercato tutelato?
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="faq-ans"><div class="faq-ans-inner">Con la conclusione definitiva del mercato tutelato nel 2024 per l'energia elettrica (e nei prossimi anni per il gas), il mercato libero è diventato l'unica opzione per i nuovi contratti. I clienti vulnerabili possono accedere al Servizio a Tutele Graduali.</div></div>
+    </div>
+  </div>
+
+  <div class="cta-bottom">
+    <h2>Pronto a risparmiare sulla bolletta?</h2>
+    <p>Carica la bolletta o chiama il nostro team: in meno di 30 secondi scopri quanto puoi risparmiare cambiando offerta.</p>
+    <div class="cta-btn-group">
+      <a href="/" class="btn-cta-white">⚡ Analisi AI Gratuita</a>
+      <a href="tel:0819131897" class="btn-cta-outline">📞 081 91 31 897</a>
+    </div>
+  </div>
+</div>
+
+{_FOOTER}
+</body>
+</html>"""
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# PAGINA COME FUNZIONA
+# ════════════════════════════════════════════════════════════════════════════
+def pagina_come_funziona() -> str:
+    canonical = f"{SITE_URL}/come-funziona"
+    return f"""<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Come Funziona — Bollette Risparmio</title>
+<meta name="description" content="Scopri come funziona Bollette Risparmio: analisi AI della bolletta, confronto offerte e consulenza gratuita. In 3 semplici passaggi risparmi fino al 30%.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="{canonical}">
+<meta property="og:title" content="Come Funziona — Bollette Risparmio">
+<meta property="og:url" content="{canonical}">
+<meta property="og:locale" content="it_IT">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+{_CSS}
+.page-hero{{background:linear-gradient(135deg,var(--primary) 0%,#1d4ed8 55%,#163272 100%);padding:4rem 1.5rem 3rem;position:relative;overflow:hidden}}
+.page-hero::after{{content:'';position:absolute;bottom:-2px;left:0;right:0;height:50px;background:var(--white);clip-path:ellipse(55% 100% at 50% 100%)}}
+.page-hero-inner{{max-width:860px;margin:0 auto;position:relative;z-index:1}}
+.page-badge{{display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.9);padding:.3rem .85rem;border-radius:50px;font-size:.75rem;font-weight:600;letter-spacing:.05em;margin-bottom:1rem}}
+.page-hero h1{{font-family:'Sora',sans-serif;font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;color:#fff;line-height:1.15;margin-bottom:.75rem}}
+.page-hero p{{font-size:1rem;color:rgba(255,255,255,.78);max-width:560px;margin-bottom:1.5rem}}
+.btn-hero-primary{{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:.8rem 1.6rem;font-family:'Sora',sans-serif;font-size:.9rem;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;transition:all .2s;box-shadow:0 4px 16px rgba(0,0,0,.2)}}
+.btn-hero-primary:hover{{background:#1976d2;transform:translateY(-2px)}}
+.page-content{{max-width:1000px;margin:0 auto;padding:3rem 1.5rem 5rem}}
+.cf-step-list{{display:flex;flex-direction:column;gap:2.5rem;margin:2.5rem 0}}
+.cf-step{{display:grid;grid-template-columns:80px 1fr;gap:2rem;align-items:start}}
+@media(max-width:640px){{.cf-step{{grid-template-columns:1fr}}}}
+.cf-step-num{{width:72px;height:72px;background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:20px;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-size:2rem;font-weight:800;color:#fff;flex-shrink:0}}
+.cf-step-body h3{{font-family:'Sora',sans-serif;font-size:1.15rem;font-weight:800;color:var(--primary);margin-bottom:.5rem}}
+.cf-step-body p{{font-size:.9rem;color:var(--muted);line-height:1.7;margin-bottom:.5rem}}
+.cf-step-body ul{{list-style:none;display:flex;flex-direction:column;gap:.35rem;margin-top:.5rem}}
+.cf-step-body ul li{{font-size:.85rem;color:var(--ink);display:flex;align-items:center;gap:.5rem}}
+.cf-step-body ul li::before{{content:'→';color:var(--accent);font-weight:700}}
+.divider{{width:2px;height:40px;background:linear-gradient(to bottom,var(--accent),transparent);margin:0 auto;display:block}}
+.features-grid{{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin:3rem 0}}
+@media(max-width:700px){{.features-grid{{grid-template-columns:1fr}}}}
+.feature-card{{background:var(--bg);border-radius:16px;padding:1.5rem;border:1.5px solid var(--border);transition:all .25s}}
+.feature-card:hover{{background:#fff;box-shadow:0 4px 20px rgba(30,58,138,.08);border-color:var(--accent)}}
+.feature-icon{{font-size:2rem;margin-bottom:.75rem}}
+.feature-card h4{{font-family:'Sora',sans-serif;font-size:.95rem;font-weight:700;color:var(--primary);margin-bottom:.4rem}}
+.feature-card p{{font-size:.83rem;color:var(--muted);line-height:1.6}}
+.trust-strip{{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;background:var(--primary);border-radius:20px;padding:2rem;margin:3rem 0;text-align:center}}
+@media(max-width:700px){{.trust-strip{{grid-template-columns:1fr 1fr}}}}
+.trust-num{{font-family:'Sora',sans-serif;font-size:2rem;font-weight:800;color:var(--accent)}}
+.trust-lbl{{font-size:.8rem;color:rgba(255,255,255,.65);margin-top:.25rem}}
+.cta-bottom{{background:linear-gradient(135deg,var(--primary),#1d4ed8);border-radius:20px;padding:3rem 2rem;text-align:center;margin-top:3rem}}
+.cta-bottom h2{{font-family:'Sora',sans-serif;font-size:1.5rem;font-weight:800;color:#fff;margin-bottom:.6rem}}
+.cta-bottom p{{color:rgba(255,255,255,.75);font-size:.93rem;margin-bottom:1.75rem}}
+.cta-btn-group{{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}}
+.btn-cta-white{{background:#fff;color:var(--primary);border:none;border-radius:10px;padding:.8rem 1.75rem;font-family:'Sora',sans-serif;font-size:.9rem;font-weight:700;text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:.4rem}}
+.btn-cta-white:hover{{background:var(--accent);color:#fff}}
+.btn-cta-outline{{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.35);border-radius:10px;padding:.8rem 1.75rem;font-family:'Sora',sans-serif;font-size:.9rem;font-weight:600;text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:.4rem}}
+.btn-cta-outline:hover{{border-color:#fff}}
+</style>
+</head>
+<body>
+{_NAV}
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="page-badge">🤖 Come funziona</div>
+    <h1>Risparmia in 3<br>Semplici Passaggi</h1>
+    <p>Nessuna burocrazia, nessun costo nascosto. La nostra intelligenza artificiale analizza la tua bolletta e ti mostra quanto puoi risparmiare in meno di 30 secondi.</p>
+    <a href="/" class="btn-hero-primary">⚡ Inizia l'analisi gratuita →</a>
+  </div>
+</div>
+
+<div class="page-content">
+  <div class="cf-step-list">
+    <div class="cf-step">
+      <div class="cf-step-num">1</div>
+      <div class="cf-step-body">
+        <h3>Carica la tua bolletta</h3>
+        <p>Basta un file PDF o una foto della bolletta dal telefono. Supportiamo tutti i principali fornitori italiani: Enel, Eni, Acea, A2A, Edison, Iren e molti altri.</p>
+        <ul>
+          <li>Formati accettati: PDF, JPG, PNG (max 10 MB)</li>
+          <li>Non hai il PDF? Inserisci i dati manualmente</li>
+          <li>Il file non viene mai salvato sui nostri server</li>
+        </ul>
+      </div>
+    </div>
+    <div class="cf-step">
+      <div class="cf-step-num">2</div>
+      <div class="cf-step-body">
+        <h3>L'AI analizza tutto in 30 secondi</h3>
+        <p>Il nostro sistema basato su Gemini AI legge ogni voce della bolletta: consumo, prezzo unitario, oneri di sistema, accise e IVA. Confronta il tuo costo attuale con gli indici PUN/PSV di mercato e identifica eventuali anomalie o voci gonfiare.</p>
+        <ul>
+          <li>Estrazione automatica di tutti i dati chiave</li>
+          <li>Rilevamento anomalie e voci non standard</li>
+          <li>Confronto con prezzi di mercato aggiornati</li>
+        </ul>
+      </div>
+    </div>
+    <div class="cf-step">
+      <div class="cf-step-num">3</div>
+      <div class="cf-step-body">
+        <h3>Confronta le offerte e scegli</h3>
+        <p>Vedi le migliori offerte calibrate sul tuo profilo reale — non su una media. Se vuoi andare avanti, uno dei nostri esperti ti accompagna passo passo nell'attivazione, gratuitamente.</p>
+        <ul>
+          <li>Offerte ordinate per risparmio effettivo</li>
+          <li>Consulenza telefonica gratuita con un esperto</li>
+          <li>Attivazione completamente gestita dal nostro team</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <h4>Privacy garantita</h4>
+      <p>Non salviamo il file della bolletta. I dati estratti sono cifrati e usati solo per l'analisi. Puoi richiederne la cancellazione in qualsiasi momento.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💸</div>
+      <h4>100% Gratuito</h4>
+      <p>Analisi, confronto e consulenza iniziale sono sempre gratuiti. Guadagniamo solo se attivi un contratto tramite noi — e il prezzo per te non cambia.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📞</div>
+      <h4>Esperti sempre disponibili</h4>
+      <p>Il nostro team di consulenti energetici risponde dal lunedì al sabato. Nessun bot, solo persone che conoscono il mercato italiano da 25 anni.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h4>Nessuna interruzione</h4>
+      <p>Cambiare fornitore non interrompe mai la fornitura di luce o gas. Il passaggio avviene in background, completamente gestito da noi.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🤖</div>
+      <h4>AI sempre aggiornata</h4>
+      <p>Il database delle offerte e gli indici PUN/PSV vengono aggiornati in tempo reale, garantendo che il confronto rifletta il mercato attuale.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h4>Analisi salvata e condivisibile</h4>
+      <p>L'analisi viene salvata e puoi condividerne il link con chi vuoi, oppure riaprirla in qualsiasi momento dallo stesso browser.</p>
+    </div>
+  </div>
+
+  <div class="trust-strip">
+    <div><div class="trust-num">+25</div><div class="trust-lbl">anni di esperienza</div></div>
+    <div><div class="trust-num">30"</div><div class="trust-lbl">per l'analisi AI</div></div>
+    <div><div class="trust-num">30%</div><div class="trust-lbl">risparmio medio</div></div>
+    <div><div class="trust-num">0€</div><div class="trust-lbl">costo per te</div></div>
+  </div>
+
+  <div class="cta-bottom">
+    <h2>Hai ancora dubbi? Chiamaci.</h2>
+    <p>Il nostro team risponde dal lunedì al sabato, dalle 9 alle 19. Oppure inizia subito con l'analisi AI gratuita.</p>
+    <div class="cta-btn-group">
+      <a href="/" class="btn-cta-white">⚡ Analizza la Bolletta</a>
+      <a href="tel:0819131897" class="btn-cta-outline">📞 081 91 31 897</a>
+    </div>
+  </div>
+</div>
+
+{_FOOTER}
+</body>
+</html>"""
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# PAGINA CHI SIAMO
+# ════════════════════════════════════════════════════════════════════════════
+def pagina_chi_siamo() -> str:
+    canonical = f"{SITE_URL}/chi-siamo"
+    return f"""<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Chi Siamo — Bollette Risparmio</title>
+<meta name="description" content="Bollette Risparmio è il servizio di comparazione tariffe luce e gas di walktotalk.srl, con sede a Napoli e oltre 25 anni di esperienza nel mercato energetico italiano.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="{canonical}">
+<meta property="og:title" content="Chi Siamo — Bollette Risparmio">
+<meta property="og:url" content="{canonical}">
+<meta property="og:locale" content="it_IT">
+<script type="application/ld+json">{{
+  "@context":"https://schema.org",
+  "@type":"Organization",
+  "name":"Bollette Risparmio",
+  "url":"{SITE_URL}",
+  "telephone":"+390819131897",
+  "email":"info@bolletterisparmio.it",
+  "address":{{"@type":"PostalAddress","streetAddress":"Via Cesario Console 3","addressLocality":"Napoli","postalCode":"80132","addressCountry":"IT"}},
+  "description":"Servizio di comparazione tariffe luce e gas con analisi AI gratuita."
+}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+{_CSS}
+.page-hero{{background:linear-gradient(135deg,var(--primary) 0%,#1d4ed8 55%,#163272 100%);padding:4.5rem 1.5rem 3.5rem;position:relative;overflow:hidden}}
+.page-hero::after{{content:'';position:absolute;bottom:-2px;left:0;right:0;height:50px;background:var(--white);clip-path:ellipse(55% 100% at 50% 100%)}}
+.page-hero-inner{{max-width:860px;margin:0 auto;position:relative;z-index:1;display:grid;grid-template-columns:1fr 280px;gap:3rem;align-items:center}}
+@media(max-width:700px){{.page-hero-inner{{grid-template-columns:1fr}}}}
+.page-badge{{display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.9);padding:.3rem .85rem;border-radius:50px;font-size:.75rem;font-weight:600;letter-spacing:.05em;margin-bottom:1rem}}
+.page-hero h1{{font-family:'Sora',sans-serif;font-size:clamp(1.8rem,4vw,2.4rem);font-weight:800;color:#fff;line-height:1.15;margin-bottom:.75rem}}
+.page-hero p{{font-size:.95rem;color:rgba(255,255,255,.78);line-height:1.7}}
+.hero-stats-card{{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:1.75rem}}
+.hero-stat-item{{margin-bottom:1.25rem}}
+.hero-stat-item:last-child{{margin-bottom:0}}
+.hero-stat-num{{font-family:'Sora',sans-serif;font-size:1.9rem;font-weight:800;color:#fff}}
+.hero-stat-lbl{{font-size:.8rem;color:rgba(255,255,255,.6)}}
+.page-content{{max-width:960px;margin:0 auto;padding:3.5rem 1.5rem 5rem}}
+.mission-block{{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;margin-bottom:4rem}}
+@media(max-width:700px){{.mission-block{{grid-template-columns:1fr}}}}
+.mission-label{{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem}}
+.mission-title{{font-family:'Sora',sans-serif;font-size:clamp(1.4rem,3vw,1.9rem);font-weight:800;color:var(--primary);line-height:1.2;margin-bottom:1rem}}
+.mission-text{{font-size:.93rem;color:var(--muted);line-height:1.8;margin-bottom:1rem}}
+.mission-img{{background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:24px;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;font-size:5rem}}
+.values-grid{{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin:3rem 0}}
+@media(max-width:700px){{.values-grid{{grid-template-columns:1fr 1fr}}}}
+.value-card{{background:var(--bg);border-radius:16px;padding:1.5rem;border:1.5px solid var(--border);transition:all .25s}}
+.value-card:hover{{background:#fff;border-color:var(--accent);box-shadow:0 4px 20px rgba(30,58,138,.08)}}
+.value-icon{{font-size:1.75rem;margin-bottom:.75rem}}
+.value-card h4{{font-family:'Sora',sans-serif;font-size:.95rem;font-weight:700;color:var(--primary);margin-bottom:.35rem}}
+.value-card p{{font-size:.82rem;color:var(--muted);line-height:1.6}}
+.company-block{{background:var(--primary);border-radius:20px;padding:2.5rem;color:#fff;margin:3rem 0}}
+.company-block h3{{font-family:'Sora',sans-serif;font-size:1.25rem;font-weight:800;margin-bottom:1.25rem}}
+.company-grid{{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}}
+@media(max-width:600px){{.company-grid{{grid-template-columns:1fr}}}}
+.company-info-item{{display:flex;flex-direction:column;gap:.25rem}}
+.company-info-label{{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.45)}}
+.company-info-value{{font-size:.9rem;color:rgba(255,255,255,.9);font-weight:500}}
+.company-info-value a{{color:var(--accent);text-decoration:none}}
+.cta-bottom{{background:linear-gradient(135deg,var(--primary),#1d4ed8);border-radius:20px;padding:3rem 2rem;text-align:center;margin-top:3rem}}
+.cta-bottom h2{{font-family:'Sora',sans-serif;font-size:1.5rem;font-weight:800;color:#fff;margin-bottom:.6rem}}
+.cta-bottom p{{color:rgba(255,255,255,.75);font-size:.93rem;margin-bottom:1.75rem}}
+.cta-btn-group{{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}}
+.btn-cta-white{{background:#fff;color:var(--primary);border:none;border-radius:10px;padding:.8rem 1.75rem;font-family:'Sora',sans-serif;font-size:.9rem;font-weight:700;text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:.4rem}}
+.btn-cta-white:hover{{background:var(--accent);color:#fff}}
+.btn-cta-outline{{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.35);border-radius:10px;padding:.8rem 1.75rem;font-family:'Sora',sans-serif;font-size:.9rem;font-weight:600;text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:.4rem}}
+.btn-cta-outline:hover{{border-color:#fff}}
+</style>
+</head>
+<body>
+{_NAV}
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div>
+      <div class="page-badge">🏢 Chi siamo</div>
+      <h1>Il tuo alleato per risparmiare sull'energia</h1>
+      <p>Siamo un team di esperti del mercato energetico italiano con base a Napoli. Da oltre 25 anni aiutiamo famiglie e condomini a orientarsi nel mondo delle tariffe luce e gas — adesso, con il supporto dell'intelligenza artificiale.</p>
+    </div>
+    <div class="hero-stats-card">
+      <div class="hero-stat-item"><div class="hero-stat-num">25+</div><div class="hero-stat-lbl">anni di esperienza nel mercato energetico</div></div>
+      <div class="hero-stat-item"><div class="hero-stat-num">30%</div><div class="hero-stat-lbl">risparmio medio ottenuto dai nostri clienti</div></div>
+      <div class="hero-stat-item"><div class="hero-stat-num">0€</div><div class="hero-stat-lbl">costo per il cliente</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="page-content">
+  <div class="mission-block">
+    <div>
+      <div class="mission-label">La nostra missione</div>
+      <div class="mission-title">Rendere il mercato energetico accessibile a tutti</div>
+      <p class="mission-text">Il mercato libero dell'energia è complesso: sigle, fasce orarie, indici PUN e PSV, offerte variabili o fisse, contratti con clausole difficili da interpretare. La maggior parte delle persone finisce per pagare più del dovuto semplicemente perché non ha gli strumenti per confrontare.</p>
+      <p class="mission-text">Bollette Risparmio nasce per cambiare questo. Abbiamo unito la competenza dei nostri consulenti alla potenza dell'intelligenza artificiale per creare uno strumento che analizza la tua bolletta in 30 secondi, identifica le anomalie e ti mostra le offerte che fanno davvero la differenza.</p>
+    </div>
+    <div class="mission-img">⚡</div>
+  </div>
+
+  <div class="values-grid">
+    <div class="value-card">
+      <div class="value-icon">🎯</div>
+      <h4>Trasparenza</h4>
+      <p>Nessun costo nascosto, nessun abbonamento. Il nostro compenso viene dai fornitori — mai da te.</p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">🔬</div>
+      <h4>Precisione</h4>
+      <p>L'AI analizza ogni singola voce della bolletta, non si ferma al totale. I confronti si basano sui tuoi consumi reali.</p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">🤝</div>
+      <h4>Umano prima di tutto</h4>
+      <p>La tecnologia ci supporta, ma ogni offerta importante viene valutata con un consulente in carne e ossa.</p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">🔒</div>
+      <h4>Privacy</h4>
+      <p>La tua bolletta non viene mai salvata. I dati estratti sono usati solo per l'analisi e mai ceduti a terzi senza consenso.</p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">📍</div>
+      <h4>Radicati nel territorio</h4>
+      <p>Siamo a Napoli, conosciamo le specificità del mercato del Sud Italia e i distributori locali come nessun altro.</p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">🚀</div>
+      <h4>Sempre aggiornati</h4>
+      <p>Monitoriamo ogni giorno le variazioni del PUN e del PSV e aggiorniamo il database delle offerte in tempo reale.</p>
+    </div>
+  </div>
+
+  <div class="company-block">
+    <h3>Dati aziendali</h3>
+    <div class="company-grid">
+      <div class="company-info-item"><div class="company-info-label">Ragione sociale</div><div class="company-info-value">walktotalk.srl</div></div>
+      <div class="company-info-item"><div class="company-info-label">P. IVA</div><div class="company-info-value">IT 07986081219</div></div>
+      <div class="company-info-item"><div class="company-info-label">Sede legale</div><div class="company-info-value">Via Cesario Console 3, 80132 Napoli</div></div>
+      <div class="company-info-item"><div class="company-info-label">PEC</div><div class="company-info-value">walktotalk2@pec.it</div></div>
+      <div class="company-info-item"><div class="company-info-label">Email</div><div class="company-info-value"><a href="mailto:info@bolletterisparmio.it">info@bolletterisparmio.it</a></div></div>
+      <div class="company-info-item"><div class="company-info-label">Telefono</div><div class="company-info-value"><a href="tel:0819131897">081 91 31 897</a></div></div>
+    </div>
+  </div>
+
+  <div class="cta-bottom">
+    <h2>Vuoi conoscerci meglio?</h2>
+    <p>Chiamaci o analizza subito la tua bolletta — è gratuito e non vincolante.</p>
+    <div class="cta-btn-group">
+      <a href="/" class="btn-cta-white">⚡ Analizza la Bolletta Gratis</a>
+      <a href="tel:0819131897" class="btn-cta-outline">📞 081 91 31 897</a>
+    </div>
+  </div>
+</div>
+
+{_FOOTER}
+</body>
+</html>"""
