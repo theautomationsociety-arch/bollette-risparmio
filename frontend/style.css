@@ -476,3 +476,20 @@ footer{background:var(--primary);color:rgba(255,255,255,.7);padding:3.5rem 0 1.5
   .manual-modal{border-radius:16px}
   .manual-modal-body{padding:1.25rem 1.25rem 1.75rem}
 }
+
+/* ── FAB (Floating Action Button) ── */
+.fab-container{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9000;display:flex;flex-direction:column;align-items:flex-end;gap:.6rem}
+.fab-main{width:56px;height:56px;border-radius:50%;background:var(--primary);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(30,58,138,.4);transition:all .25s;flex-shrink:0;color:#fff}
+.fab-main:hover{background:var(--accent);transform:scale(1.08)}
+.fab-main svg{width:24px;height:24px;position:absolute;transition:opacity .2s,transform .2s}
+.fab-icon-open{opacity:1;transform:scale(1)}
+.fab-icon-close{opacity:0;transform:scale(.5)}
+.fab-container.open .fab-icon-open{opacity:0;transform:scale(.5)}
+.fab-container.open .fab-icon-close{opacity:1;transform:scale(1)}
+.fab-options{display:flex;flex-direction:column;align-items:flex-end;gap:.45rem;opacity:0;pointer-events:none;transform:translateY(10px);transition:opacity .2s,transform .2s}
+.fab-container.open .fab-options{opacity:1;pointer-events:all;transform:translateY(0)}
+.fab-option{display:flex;align-items:center;gap:.6rem;background:#fff;color:var(--primary);text-decoration:none;border:none;cursor:pointer;border-radius:100px;padding:.55rem .95rem .55rem .75rem;font-size:.85rem;font-weight:600;font-family:var(--font-body);box-shadow:0 2px 12px rgba(0,0,0,.15);transition:all .2s;white-space:nowrap}
+.fab-option:hover{background:var(--accent-pale);color:var(--accent);transform:translateX(-3px)}
+.fab-option svg{width:16px;height:16px;flex-shrink:0}
+.fab-option-cta{background:var(--accent);color:#fff}
+.fab-option-cta:hover{background:var(--accent-hover);color:#fff}

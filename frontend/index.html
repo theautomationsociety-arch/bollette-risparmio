@@ -23,24 +23,10 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"LocalBusiness","name":"Bollette Risparmio","telephone":"+390819131897","email":"info@bolletterisparmio.it","address":{"@type":"PostalAddress","streetAddress":"Via Cesario Console 3","addressLocality":"Napoli","postalCode":"80132","addressCountry":"IT"}}
 </script>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
 <link rel="stylesheet" href="/static/style.css"/>
 </head>
 <body>
-
-<!-- TOPBAR -->
-<div class="topbar">
-  <div class="wrap">
-    <a href="mailto:info@bolletterisparmio.it">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-      info@bolletterisparmio.it
-    </a>
-    <a href="tel:0819131897">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.07 1.18 2 2 0 012.04 0H5a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg>
-      081 91 31 897
-    </a>
-    <a href="/guide" class="guide-link">📚 Guide Gratuite</a>
-  </div>
-</div>
 
 <!-- NAVBAR -->
 <nav>
@@ -554,10 +540,10 @@
       <div class="footer-col">
         <h4>Servizi</h4>
         <ul>
-          <li><a href="/#offerte">Offerte Luce e Gas</a></li>
+          <li><a href="/offerte">Offerte Luce e Gas</a></li>
           <li><a href="/#analyzer">Analisi AI Bolletta</a></li>
-          <li><a href="/#contatti">Consulenza Gratuita</a></li>
-          <li><a href="/#chi-siamo">Chi Siamo</a></li>
+          <li><a href="#" onclick="openContact();return false;">Consulenza Gratuita</a></li>
+          <li><a href="/chi-siamo">Chi Siamo</a></li>
         </ul>
       </div>
       <div class="footer-col">
@@ -581,6 +567,28 @@
     </div>
   </div>
 </footer>
+
+<!-- FAB -->
+<div class="fab-container" id="fab-container">
+  <div class="fab-options" id="fab-options">
+    <a href="tel:0819131897" class="fab-option">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.07 1.18 2 2 0 012.04 0H5a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg>
+      <span>081 91 31 897</span>
+    </a>
+    <a href="mailto:info@bolletterisparmio.it" class="fab-option">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      <span>info@bolletterisparmio.it</span>
+    </a>
+    <button class="fab-option fab-option-cta" onclick="openContact();closeFab()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      <span>Richiedi Consulenza Gratuita</span>
+    </button>
+  </div>
+  <button class="fab-main" id="fab-main" onclick="toggleFab()" aria-label="Contattaci">
+    <svg class="fab-icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    <svg class="fab-icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+</div>
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>

@@ -421,7 +421,19 @@ function closeManualModal() {
   document.getElementById('manual-modal-overlay').classList.remove('open');
   document.body.style.overflow = '';
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeContact(); closeManualModal(); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeContact(); closeManualModal(); closeFab(); } });
+
+// ── FAB ──────────────────────────────────────────────────────────────────────
+function toggleFab() {
+  document.getElementById('fab-container').classList.toggle('open');
+}
+function closeFab() {
+  document.getElementById('fab-container')?.classList.remove('open');
+}
+document.addEventListener('click', e => {
+  const fab = document.getElementById('fab-container');
+  if (fab && fab.classList.contains('open') && !fab.contains(e.target)) closeFab();
+});
 
 async function analizzaManuale(e) {
   e.preventDefault();

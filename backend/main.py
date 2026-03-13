@@ -270,6 +270,12 @@ P_OFFERTA = """Estrai dati da questa offerta commerciale energia italiana. Resti
 # ══════════════════════════════════════════════════════════════════════════════
 # ROUTES — Pagine
 # ══════════════════════════════════════════════════════════════════════════════
+@app.get("/favicon.svg", include_in_schema=False)
+async def favicon(): return FileResponse(str(FRONTEND/"favicon.svg"), media_type="image/svg+xml")
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon_ico(): return FileResponse(str(FRONTEND/"favicon.svg"), media_type="image/svg+xml")
+
 @app.get("/", include_in_schema=False)
 async def root(): return FileResponse(str(FRONTEND/"index.html"))
 

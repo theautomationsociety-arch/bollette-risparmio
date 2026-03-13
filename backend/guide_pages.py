@@ -33,13 +33,41 @@ body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--ink);-
 #progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--primary),var(--accent));width:0%;z-index:200;transition:width .1s}
 
 /* NAV */
-.nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 1.5rem;height:64px;display:flex;align-items:center;justify-content:space-between}
-.nav-logo{display:flex;align-items:center;gap:.5rem;text-decoration:none}
-.nav-logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--primary),#1e40af);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem}
-.nav-logo-text{font-family:'Sora','Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.05rem;color:var(--primary);letter-spacing:-.5px}
-.nav-logo-text span{color:var(--accent)}
-.nav-cta{background:var(--primary);color:white;text-decoration:none;font-size:.84rem;font-weight:600;padding:7px 16px;border-radius:var(--r-sm);transition:all var(--t)}
-.nav-cta:hover{background:var(--accent-hover, #1976d2);transform:translateY(-1px)}
+nav{background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+nav .wrap{display:flex;align-items:center;gap:1.5rem;padding:.9rem 0}
+.nav-logo{display:flex;align-items:center;gap:.6rem;text-decoration:none;flex-shrink:0}
+.nav-logo svg{width:36px;height:36px}
+.nav-logo-text{display:flex;flex-direction:column;line-height:1.1}
+.nav-logo-text .brand{font-family:'Sora',sans-serif;font-weight:800;font-size:1.05rem;color:var(--primary)}
+.nav-logo-text .sub{font-size:.65rem;font-weight:600;color:var(--accent);letter-spacing:.06em;text-transform:uppercase;opacity:.85}
+.nav-links{display:flex;align-items:center;gap:.2rem;margin-left:auto}
+.nav-links a{font-size:.88rem;font-weight:500;color:var(--muted);text-decoration:none;padding:.45rem .8rem;border-radius:8px;transition:all var(--t)}
+.nav-links a:hover{color:var(--accent);background:var(--accent-pale)}
+.nav-cta{background:var(--accent);color:#fff!important;border-radius:8px;padding:.45rem 1rem!important;font-weight:600!important;text-decoration:none}
+.nav-cta:hover{background:#1976d2!important}
+.nav-phone{font-family:'Sora',sans-serif;font-weight:700;font-size:.88rem;color:var(--primary)!important;text-decoration:none;display:flex;align-items:center;gap:.4rem;padding:.45rem .8rem;border:1.5px solid #e8f0fe;border-radius:8px}
+.nav-phone:hover{border-color:var(--primary);background:#eff6ff}
+.hamburger{display:none;background:none;border:none;cursor:pointer;padding:.4rem;color:var(--primary)}
+.mobile-menu{display:none;flex-direction:column;gap:.3rem;padding:.75rem 1.5rem 1rem;border-top:1px solid var(--border);max-width:1160px;margin:0 auto}
+.mobile-menu.open{display:flex}
+.mobile-menu a{font-size:.92rem;font-weight:500;color:var(--muted);text-decoration:none;padding:.6rem .5rem;border-radius:8px}
+.mobile-menu a:hover{color:var(--accent);background:var(--accent-pale)}
+/* FAB */
+.fab-container{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9000;display:flex;flex-direction:column;align-items:flex-end;gap:.6rem}
+.fab-main{width:56px;height:56px;border-radius:50%;background:var(--primary);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(30,58,138,.4);transition:all .25s;flex-shrink:0;color:#fff}
+.fab-main:hover{background:var(--accent);transform:scale(1.08)}
+.fab-main svg{width:24px;height:24px;position:absolute;transition:opacity .2s,transform .2s}
+.fab-icon-open{opacity:1;transform:scale(1)}
+.fab-icon-close{opacity:0;transform:scale(.5)}
+.fab-container.open .fab-icon-open{opacity:0;transform:scale(.5)}
+.fab-container.open .fab-icon-close{opacity:1;transform:scale(1)}
+.fab-options{display:flex;flex-direction:column;align-items:flex-end;gap:.45rem;opacity:0;pointer-events:none;transform:translateY(10px);transition:opacity .2s,transform .2s}
+.fab-container.open .fab-options{opacity:1;pointer-events:all;transform:translateY(0)}
+.fab-option{display:flex;align-items:center;gap:.6rem;background:#fff;color:var(--primary);text-decoration:none;border:none;cursor:pointer;border-radius:100px;padding:.55rem .95rem .55rem .75rem;font-size:.85rem;font-weight:600;box-shadow:0 2px 12px rgba(0,0,0,.15);transition:all .2s;white-space:nowrap}
+.fab-option:hover{background:var(--accent-pale);color:var(--accent);transform:translateX(-3px)}
+.fab-option svg{width:16px;height:16px;flex-shrink:0}
+.fab-option-cta{background:var(--accent);color:#fff}
+.fab-option-cta:hover{background:#1976d2;color:#fff}
 
 /* BREADCRUMB */
 .breadcrumb-bar{background:var(--bg);border-bottom:1px solid var(--border);padding:.65rem 1.5rem}
@@ -144,62 +172,162 @@ body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--ink);-
 .correlate-card-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.9rem;color:var(--ink);margin-bottom:.3rem}
 .correlate-card-desc{font-size:.78rem;color:var(--muted);line-height:1.55}
 
+/* WRAP */
+.wrap{max-width:1160px;margin:0 auto;padding:0 1.5rem}
 /* FOOTER */
-.footer{background:var(--primary);padding:2.5rem 1.5rem;color:rgba(255,255,255,.45)}
-.footer-inner{max-width:1060px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
-.footer-logo{font-family:'Sora','Bricolage Grotesque',sans-serif;font-weight:800;color:white;font-size:1rem}
-.footer-logo span{color:var(--accent)}
-.footer-links{display:flex;gap:1rem;flex-wrap:wrap}
-.footer-links a{color:rgba(255,255,255,.35);text-decoration:none;font-size:.8rem;transition:color var(--t)}
-.footer-links a:hover{color:rgba(255,255,255,.75)}
-.footer-copy{font-size:.75rem;text-align:right}
-@media(max-width:600px){.footer-inner{flex-direction:column;text-align:center}.footer-copy{text-align:center}}
+footer{background:var(--primary);padding:3rem 0 0;color:rgba(255,255,255,.55)}
+footer .wrap{padding-bottom:0}
+.footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:2.5rem;padding-bottom:2.5rem}
+@media(max-width:860px){.footer-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.footer-grid{grid-template-columns:1fr}}
+.footer-logo-area{display:flex;align-items:center;gap:.6rem;margin-bottom:.75rem}
+.footer-logo-text{display:flex;flex-direction:column;line-height:1.1}
+.footer-logo-text .brand{font-family:'Sora',sans-serif;font-weight:800;font-size:1rem;color:#fff}
+.footer-logo-text .sub{font-size:.62rem;font-weight:600;color:var(--accent);letter-spacing:.06em;text-transform:uppercase;opacity:.85}
+.footer-desc{font-size:.83rem;color:rgba(255,255,255,.5);line-height:1.65;margin-bottom:1rem;max-width:300px}
+.footer-contacts{display:flex;flex-direction:column;gap:.4rem}
+.footer-contacts a,.footer-contacts span{font-size:.82rem;color:rgba(255,255,255,.55);text-decoration:none;display:flex;align-items:center;gap:.4rem;transition:color var(--t)}
+.footer-contacts a:hover{color:#fff}
+.footer-contacts svg{width:14px;height:14px;flex-shrink:0}
+.footer-col h4{font-family:'Sora',sans-serif;font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.35);margin-bottom:.75rem}
+.footer-col ul{list-style:none}
+.footer-col ul li{margin-bottom:.4rem}
+.footer-col ul a{font-size:.84rem;color:rgba(255,255,255,.5);text-decoration:none;transition:color var(--t)}
+.footer-col ul a:hover{color:#fff}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding:1.25rem 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.75rem;font-size:.77rem;color:rgba(255,255,255,.35)}
+.footer-legal{display:flex;gap:1rem;flex-wrap:wrap}
+.footer-legal a{color:rgba(255,255,255,.35);text-decoration:none;transition:color var(--t)}
+.footer-legal a:hover{color:rgba(255,255,255,.7)}
+@media(max-width:560px){.footer-bottom{flex-direction:column;text-align:center}}
+@media(max-width:860px){.hamburger{display:flex}.nav-links{display:none}}
 """
 
 # ── Navbar ───────────────────────────────────────────────────────────────
 _NAV = """<div id="progress"></div>
-<nav class="nav">
-  <a href="/" class="nav-logo">
-    <svg width="26" height="33" viewBox="1 7 37 40" xmlns="http://www.w3.org/2000/svg">
-      <path fill="#1e3a8a" d="M28.5,19.9h-2.1l-15.3,17.4h17.4c4.8,0,8.7-3.9,8.7-8.7c0-4.8-3.9-8.7-8.7-8.7Z"/>
-      <path fill="#2196f3" d="M28,8h-9.8l-5.3,10.5-0.7,1.3-1.8,3.6c-0.2,0.3,0,0.7,0.3,0.7h3.9L1.5,45.8l22.7-25.9h-5.4l0.7-1.4h8.4c2.9,0,5.3-2.4,5.3-5.3S30.9,8,28,8Z"/>
-    </svg>
-    <span class="nav-logo-text">Bollette <span>Risparmio</span></span>
-  </a>
-  <div style="display:flex;align-items:center;gap:.75rem">
-    <a href="tel:0819131897" style="font-size:.82rem;color:var(--primary);text-decoration:none;font-weight:600;display:none" class="nav-phone-desktop">&#128222; 081 91 31 897</a>
-    <a href="/" class="nav-cta">Analizza Bolletta &#x2192;</a>
+<nav>
+  <div class="wrap">
+    <a href="/" class="nav-logo">
+      <svg width="32" height="41" viewBox="1 7 37 40" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#1e3a8a" d="M28.5,19.9h-2.1l-15.3,17.4h17.4c4.8,0,8.7-3.9,8.7-8.7c0-4.8-3.9-8.7-8.7-8.7Z"/>
+        <path fill="#2196f3" d="M28,8h-9.8l-5.3,10.5-0.7,1.3-1.8,3.6c-0.2,0.3,0,0.7,0.3,0.7h3.9L1.5,45.8l22.7-25.9h-5.4l0.7-1.4h8.4c2.9,0,5.3-2.4,5.3-5.3S30.9,8,28,8Z"/>
+      </svg>
+      <div class="nav-logo-text">
+        <span class="brand">Bollette Risparmio</span>
+        <span class="sub">Analisi AI Gratuita</span>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="/offerte">Offerte Luce &amp; Gas</a>
+      <a href="/come-funziona">Come Funziona</a>
+      <a href="/guide">Guide</a>
+      <a href="/chi-siamo">Chi Siamo</a>
+      <a href="tel:0819131897" class="nav-phone">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.07 1.18 2 2 0 012.04 0H5a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg>
+        081 91 31 897
+      </a>
+      <a href="/" class="nav-cta">Analizza Bolletta &rarr;</a>
+    </div>
+    <button class="hamburger" onclick="document.querySelector('.mobile-menu').classList.toggle('open')" aria-label="Menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="mobile-menu">
+    <a href="/offerte">Offerte Luce &amp; Gas</a>
+    <a href="/come-funziona">Come Funziona</a>
+    <a href="/guide">Guide</a>
+    <a href="/chi-siamo">Chi Siamo</a>
+    <a href="tel:0819131897">&#128222; 081 91 31 897</a>
+    <a href="/" style="color:var(--accent);font-weight:700">Analizza Bolletta &rarr;</a>
   </div>
 </nav>"""
 
+# ── FAB (shared) ─────────────────────────────────────────────────────────
+_FAB = """<div class="fab-container" id="fab-container">
+  <div class="fab-options" id="fab-options">
+    <a href="tel:0819131897" class="fab-option">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.07 1.18 2 2 0 012.04 0H5a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg>
+      <span>081 91 31 897</span>
+    </a>
+    <a href="mailto:info@bolletterisparmio.it" class="fab-option">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      <span>info@bolletterisparmio.it</span>
+    </a>
+    <a href="/" class="fab-option fab-option-cta">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      <span>Analizza la Bolletta</span>
+    </a>
+  </div>
+  <button class="fab-main" id="fab-main" onclick="toggleFab()" aria-label="Contattaci">
+    <svg class="fab-icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    <svg class="fab-icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+</div>"""
+
 # ── Footer ───────────────────────────────────────────────────────────────
-_FOOTER = """<footer class="footer">
-  <div class="footer-inner">
-    <div>
-      <div class="footer-logo">Bollette <span>Risparmio</span></div>
-      <div style="font-size:.75rem;margin-top:.25rem">Analisi AI gratuita bollette luce e gas</div>
-      <div style="font-size:.75rem;margin-top:.35rem;opacity:.6">Via Cesario Console 3, 80132 Napoli &middot; info@bolletterisparmio.it</div>
+_FOOTER = f"""{_FAB}
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo-area">
+          <svg width="32" height="41" viewBox="1 7 37 40" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#1e3a8a" opacity=".6" d="M28.5,19.9h-2.1l-15.3,17.4h17.4c4.8,0,8.7-3.9,8.7-8.7c0-4.8-3.9-8.7-8.7-8.7Z"/>
+            <path fill="#2196f3" d="M28,8h-9.8l-5.3,10.5-0.7,1.3-1.8,3.6c-0.2,0.3,0,0.7,0.3,0.7h3.9L1.5,45.8l22.7-25.9h-5.4l0.7-1.4h8.4c2.9,0,5.3-2.4,5.3-5.3S30.9,8,28,8Z"/>
+          </svg>
+          <div class="footer-logo-text">
+            <span class="brand">Bollette Risparmio</span>
+            <span class="sub">Analisi AI Gratuita</span>
+          </div>
+        </div>
+        <p class="footer-desc">Il tuo alleato per confrontare tariffe di luce, gas e internet. Risparmia in modo semplice, veloce e trasparente con l&#39;AI.</p>
+        <div class="footer-contacts">
+          <a href="tel:0819131897"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.07 1.18 2 2 0 012.04 0H5a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg>081 91 31 897</a>
+          <a href="mailto:info@bolletterisparmio.it"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>info@bolletterisparmio.it</a>
+          <span style="font-size:.83rem;display:flex;align-items:center;gap:.5rem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Via Cesario Console 3, 80132 Napoli</span>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Servizi</h4>
+        <ul>
+          <li><a href="/offerte">Offerte Luce e Gas</a></li>
+          <li><a href="/">Analisi AI Bolletta</a></li>
+          <li><a href="/chi-siamo">Chi Siamo</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Guide Gratuite</h4>
+        <ul>
+          <li><a href="/guida/differenza-mercato-libero-tutelato">Mercato Libero vs Tutelato</a></li>
+          <li><a href="/guida/come-leggere-bolletta-luce">Come Leggere la Bolletta</a></li>
+          <li><a href="/guida/fasce-orarie-f1-f2-f3">Fasce Orarie F1 F2 F3</a></li>
+          <li><a href="/guida/come-cambiare-fornitore-energia">Come Cambiare Fornitore</a></li>
+          <li><a href="/guida/pun-psv-cosa-sono">PUN e PSV Cosa Sono</a></li>
+        </ul>
+      </div>
     </div>
-    <div class="footer-links">
-      <a href="/">Analisi AI Gratuita</a>
-      <a href="/#offerte">Offerte Luce &amp; Gas</a>
-      <a href="/guide">Guide Gratuite</a>
-      <a href="/#contatti">Contatti</a>
-    </div>
-    <div class="footer-copy">
-      &#169; Bollette Risparmio, diritti riservati.<br>
-      <a href="https://www.iubenda.com/privacy-policy/30631851" target="_blank" style="color:rgba(255,255,255,.4);text-decoration:none;font-size:.72rem">Privacy Policy</a> &middot;
-      <a href="/condizioni-generali" style="color:rgba(255,255,255,.4);text-decoration:none;font-size:.72rem">Condizioni Generali</a>
+    <div class="footer-bottom">
+      <span>&#169; Bollette Risparmio, tutti i diritti riservati.</span>
+      <div class="footer-legal">
+        <a href="/privacy">Privacy Policy</a>
+        <a href="https://www.iubenda.com/privacy-policy/30631851/cookie-policy" target="_blank">Cookie Policy</a>
+        <a href="/termini">Termini e Condizioni</a>
+      </div>
     </div>
   </div>
 </footer>
 <script>
-window.addEventListener('scroll',()=>{
+window.addEventListener('scroll',()=>{{
   const p=document.getElementById('progress');
   const h=document.documentElement;
   const pct=(h.scrollTop||document.body.scrollTop)/(h.scrollHeight-h.clientHeight)*100;
   if(p) p.style.width=pct+'%';
-});
+}});
+function toggleFab(){{document.getElementById('fab-container').classList.toggle('open');}}
+document.addEventListener('click',e=>{{
+  const f=document.getElementById('fab-container');
+  if(f&&f.classList.contains('open')&&!f.contains(e.target))f.classList.remove('open');
+}});
+document.addEventListener('keydown',e=>{{if(e.key==='Escape')document.getElementById('fab-container')?.classList.remove('open');}});
 </script>"""
 
 _ALL_GUIDES = [
@@ -293,8 +421,9 @@ def _page(
 <meta name="twitter:title" content="{title} — Bollette Risparmio">
 <meta name="twitter:description" content="{desc}">
 <script type="application/ld+json">{schema}</script>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
 <style>{_CSS}</style>
 </head>
 <body>
@@ -1063,6 +1192,7 @@ def _static_page(title: str, path: str, desc: str, body: str) -> str:
 <meta name="description" content="{desc}">
 <meta name="robots" content="noindex, follow">
 <link rel="canonical" href="{canonical}">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -1220,8 +1350,9 @@ def _legal_page(title: str, body_html: str) -> str:
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title} — Bollette Risparmio</title>
 <meta name="robots" content="index,follow">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 {_CSS}
 /* LEGAL PAGE OVERRIDES */
@@ -1380,6 +1511,7 @@ def pagina_offerte() -> str:
 <meta property="og:description" content="Le migliori offerte luce e gas del mercato libero. Risparmia fino al 30% con la nostra analisi AI gratuita.">
 <meta property="og:url" content="{canonical}">
 <meta property="og:locale" content="it_IT">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -1584,6 +1716,7 @@ def pagina_come_funziona() -> str:
 <meta property="og:title" content="Come Funziona — Bollette Risparmio">
 <meta property="og:url" content="{canonical}">
 <meta property="og:locale" content="it_IT">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -1761,6 +1894,7 @@ def pagina_chi_siamo() -> str:
   "address":{{"@type":"PostalAddress","streetAddress":"Via Cesario Console 3","addressLocality":"Napoli","postalCode":"80132","addressCountry":"IT"}},
   "description":"Servizio di comparazione tariffe luce e gas con analisi AI gratuita."
 }}</script>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
