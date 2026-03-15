@@ -15,6 +15,7 @@ RUN pip install --no-cache-dir --upgrade pip \
 # Copia il codice
 COPY backend/ ./backend/
 COPY frontend/ ./frontend/
+COPY templates/ ./templates/
 
 # Crea cartella dati (sovrascritta dal volume in produzione)
 RUN mkdir -p /app/data

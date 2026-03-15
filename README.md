@@ -284,43 +284,44 @@ Quando il confronto offerte viene completato e nessuna alternativa fa risparmiar
 ### Modello utilizzato
 `gemini-2.0-flash-exp` (configurabile) — ottimizzato per velocità su task strutturati.
 
-### Prompt struttura
-Il prompt inviato a Gemini include:
-1. Contesto: analizzatore di bollette energetiche italiane
-2. Tipo (luce/gas) e profilo selezionato
-3. Istruzione di output JSON con schema fisso:
+### Prompt struttura (versione TO-BE — aggiornata marzo 2026)
 
-```json
-{
-  "dati_generali": {
-    "fornitore": "...",
-    "num_fattura": "...",
-    "periodo_inizio/fine": "...",
-    "totale_fattura": 0.0
-  },
-  "letture_e_consumi": {
-    "consumo_totale_periodo": 0,
-    "potenza_impegnata": 0.0
-  },
-  "spese": {
-    "spesa_energia": 0.0,
-    "spesa_trasporto": 0.0,
-    "oneri_sistema": 0.0,
-    "accise": 0.0,
-    "iva": 0.0
-  },
-  "analisi_ai": {
-    "anomalie_rilevate": ["..."],
-    "suggerimenti": ["..."],
-    "valutazione_generale": "..."
-  }
-}
-```
+Tutti e tre i prompt (`P_LUCE`, `P_GAS`, `P_OFFERTA`) seguono la stessa struttura:
+
+1. **Blocco RUOLO** — fornisce contesto al modello: sa che i dati estratti serviranno per calcoli economici e comparazioni. Questo migliora la precisione sui campi critici (consumi per fascia, prezzi unitari).
+2. **Blocco ISTRUZIONI** — regole esplicite: usare `null` per valori mancanti (mai inventare), analizzare tutte le pagine, verificare coerenza dei totali, gestire conversioni (mc→Smc, quota mensile→annuale).
+3. **Schema JSON commentato** — struttura con valori di default `null`. Il modello compila i campi trovati nel documento.
+
+#### Nuovi campi estratti rispetto alla versione precedente
+
+| Campo | Prompt | Uso nel backend |
+|---|---|---|
+| `prezzo_medio_kwh` | P_LUCE | Fallback per `costo_unitario` quando mancano i prezzi per fascia |
+| `prezzo_medio_smc` | P_GAS | Fallback per `costo_unitario` gas |
+| `potenza_disponibile` | P_LUCE | Salvata in `bollette.potenza_disponibile` |
+| `zona_climatica` | P_GAS | Salvata in `bollette.zona_climatica` |
+| `bonus_sociale` | P_LUCE, P_GAS | Salvato in `bollette.bonus_sociale` |
+| `confidence_score` | P_LUCE, P_GAS | 0–100; permette di identificare analisi poco affidabili |
+| `campi_incerti` | P_LUCE, P_GAS | Lista campi con possibili errori di lettura |
+| `prezzo_mono_eur_kwh` | P_OFFERTA | Mappato su `offerte_luce.prezzo_mono` |
+| `oneri_trasporto_eur_kwh` | P_OFFERTA | Mappato su `offerte_luce.oneri_trasp` |
+| `quota_variabile_smc` | P_OFFERTA | Mappato su `offerte_gas.quota_var` |
+| `durata_contratto_mesi` | P_OFFERTA | Informativo (non usato nel calcolo) |
+| `prezzi_lordi_o_netti` | P_OFFERTA | Flag di qualità dati per il team admin |
+
+#### Razionale delle scelte di design
+
+- **`null` invece di `0.0` come default**: permette al backend di distinguere "il valore è zero" da "il dato non era leggibile", evitando che zeri errati si propaghino nei calcoli senza essere rilevati.
+- **`prezzo_medio_kwh` come fallback**: molte bollette italiane riportano solo un prezzo medio senza ripartizione per fasce. Il backend ora usa `prezzo_medio_kwh or (spesa_energia / consumo)` come costo unitario.
+- **Quota fissa annuale in P_OFFERTA**: le CTE la indicano spesso in euro/mese. Il prompt istruisce il modello a convertire (×12) prima di restituirla. Se non convertita, il costo annuo risultante sarebbe sottostimato dell'~92%.
+- **`tipo_prezzo: 'MISTO'`**: supporta offerte ibride (componente fissa + spread su PUN/PSV), già gestite dal DB ma non estraibili con il vecchio prompt.
 
 ### Costo unitario
-Dopo l'estrazione, il backend calcola:
+Dopo l'estrazione, il backend calcola con questa priorità:
 ```python
-costo_unitario = spesa_energia / consumo_totale
+# Preferisce il prezzo medio estratto dal modello (più preciso)
+# Fallback al calcolo derivato spesa/consumo
+costo_unitario = prezzo_medio_kwh or (spesa_energia / consumo_totale if consumo > 0 else None)
 ```
 E confronta con l'ultimo indice PUN/PSV salvato in DB per rilevare se il prezzo è superiore al mercato.
 

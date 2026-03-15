@@ -1,0 +1,166 @@
+{% extends "inner_page.html" %}
+
+{% block title %}Come Funziona — Bollette Risparmio{% endblock %}
+
+{% block meta %}
+<meta name="description" content="Scopri come funziona Bollette Risparmio: analisi AI della bolletta, confronto offerte e consulenza gratuita. In 3 semplici passaggi risparmi fino al 30%.">
+<meta name="author" content="Bollette Risparmio">
+{% endblock %}
+
+{% block canonical %}
+<link rel="canonical" href="{{ site_url }}/come-funziona">
+{% endblock %}
+
+{% block og_tags %}
+<meta property="og:title" content="Come Funziona — Bollette Risparmio">
+<meta property="og:description" content="Analisi AI della bolletta, confronto offerte e consulenza gratuita in 3 semplici passaggi.">
+<meta property="og:url" content="{{ site_url }}/come-funziona">
+<meta property="og:locale" content="it_IT">
+<meta property="og:site_name" content="Bollette Risparmio">
+<meta name="twitter:card" content="summary_large_image">
+{% endblock %}
+
+{% block extra_css %}
+{{ super() }}
+<style>
+.cf-step-list { display: flex; flex-direction: column; gap: 2.5rem; margin: 2.5rem 0; }
+.cf-step { display: grid; grid-template-columns: 80px 1fr; gap: 2rem; align-items: start; }
+@media (max-width: 640px) { .cf-step { grid-template-columns: 1fr; } }
+.cf-step-num {
+  width: 72px; height: 72px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  border-radius: 20px; display: flex; align-items: center; justify-content: center;
+  font-family: 'Sora', sans-serif; font-size: 2rem; font-weight: 800; color: #fff; flex-shrink: 0;
+}
+.cf-step-body h3 { font-family: 'Sora', sans-serif; font-size: 1.15rem; font-weight: 800; color: var(--primary); margin-bottom: .5rem; }
+.cf-step-body > p { font-size: .9rem; color: var(--muted); line-height: 1.7; margin-bottom: .5rem; }
+.cf-step-body ul { list-style: none; display: flex; flex-direction: column; gap: .35rem; margin-top: .5rem; }
+.cf-step-body ul li { font-size: .85rem; color: var(--ink); display: flex; align-items: center; gap: .5rem; }
+.cf-step-body ul li::before { content: '→'; color: var(--accent); font-weight: 700; }
+.features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin: 3rem 0; }
+@media (max-width: 700px) { .features-grid { grid-template-columns: 1fr; } }
+.feature-card { background: var(--bg); border-radius: 16px; padding: 1.5rem; border: 1.5px solid var(--border); transition: all .25s; }
+.feature-card:hover { background: #fff; box-shadow: 0 4px 20px rgba(30,58,138,.08); border-color: var(--accent); }
+.feature-icon { font-size: 2rem; margin-bottom: .75rem; }
+.feature-card h4 { font-family: 'Sora', sans-serif; font-size: .95rem; font-weight: 700; color: var(--primary); margin-bottom: .4rem; }
+.feature-card p  { font-size: .83rem; color: var(--muted); line-height: 1.6; }
+.trust-strip {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;
+  background: var(--primary); border-radius: 20px; padding: 2rem;
+  margin: 3rem 0; text-align: center;
+}
+@media (max-width: 700px) { .trust-strip { grid-template-columns: 1fr 1fr; } }
+.trust-num { font-family: 'Sora', sans-serif; font-size: 2rem; font-weight: 800; color: var(--accent); }
+.trust-lbl { font-size: .8rem; color: rgba(255,255,255,.65); margin-top: .25rem; }
+.page-content { max-width: 1000px; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="page-badge">🤖 Come funziona</div>
+    <h1>Risparmia in 3<br>Semplici Passaggi</h1>
+    <p>Nessuna burocrazia, nessun costo nascosto. La nostra intelligenza artificiale analizza la tua bolletta e ti mostra quanto puoi risparmiare in meno di 30 secondi.</p>
+    <a href="/" class="btn-hero-primary">⚡ Inizia l'analisi gratuita &rarr;</a>
+  </div>
+</div>
+
+<div class="page-content">
+
+  <section aria-labelledby="steps-main-heading">
+    <h2 id="steps-main-heading" style="font-family:'Sora',sans-serif;font-size:1.4rem;font-weight:800;color:var(--primary);margin-bottom:2rem;text-align:center">I 3 passi per risparmiare</h2>
+    <div class="cf-step-list">
+      <div class="cf-step">
+        <div class="cf-step-num" aria-hidden="true">1</div>
+        <div class="cf-step-body">
+          <h3>Carica la tua bolletta</h3>
+          <p>Basta un file PDF o una foto della bolletta dal telefono. Supportiamo tutti i principali fornitori italiani: Enel, Eni, Acea, A2A, Edison, Iren e molti altri.</p>
+          <ul>
+            <li>Formati accettati: PDF, JPG, PNG (max 10 MB)</li>
+            <li>Non hai il PDF? Inserisci i dati manualmente</li>
+            <li>Il file non viene mai salvato sui nostri server</li>
+          </ul>
+        </div>
+      </div>
+      <div class="cf-step">
+        <div class="cf-step-num" aria-hidden="true">2</div>
+        <div class="cf-step-body">
+          <h3>L'AI analizza tutto in 30 secondi</h3>
+          <p>Il nostro sistema basato su Gemini AI legge ogni voce della bolletta: consumo, prezzo unitario, oneri di sistema, accise e IVA. Confronta il tuo costo attuale con gli indici PUN/PSV di mercato e identifica eventuali anomalie.</p>
+          <ul>
+            <li>Estrazione automatica di tutti i dati chiave</li>
+            <li>Rilevamento anomalie e voci non standard</li>
+            <li>Confronto con prezzi di mercato aggiornati</li>
+          </ul>
+        </div>
+      </div>
+      <div class="cf-step">
+        <div class="cf-step-num" aria-hidden="true">3</div>
+        <div class="cf-step-body">
+          <h3>Confronta le offerte e scegli</h3>
+          <p>Vedi le migliori offerte calibrate sul tuo profilo reale — non su una media. Se vuoi andare avanti, uno dei nostri esperti ti accompagna passo passo nell'attivazione, gratuitamente.</p>
+          <ul>
+            <li>Offerte ordinate per risparmio effettivo</li>
+            <li>Consulenza telefonica gratuita con un esperto</li>
+            <li>Attivazione completamente gestita dal nostro team</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features-grid" aria-labelledby="features-heading">
+    <h2 id="features-heading" class="visually-hidden">Caratteristiche del servizio</h2>
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <h3 style="font-family:'Sora',sans-serif;font-size:.95rem;font-weight:700;color:var(--primary);margin-bottom:.4rem">Privacy garantita</h3>
+      <p>Non salviamo il file della bolletta. I dati estratti sono cifrati e usati solo per l'analisi. Puoi richiederne la cancellazione in qualsiasi momento.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💸</div>
+      <h3 style="font-family:'Sora',sans-serif;font-size:.95rem;font-weight:700;color:var(--primary);margin-bottom:.4rem">100% Gratuito</h3>
+      <p>Analisi, confronto e consulenza iniziale sono sempre gratuiti. Guadagniamo solo se attivi un contratto tramite noi — e il prezzo per te non cambia.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📞</div>
+      <h3 style="font-family:'Sora',sans-serif;font-size:.95rem;font-weight:700;color:var(--primary);margin-bottom:.4rem">Esperti sempre disponibili</h3>
+      <p>Il nostro team di consulenti energetici risponde dal lunedì al sabato. Nessun bot, solo persone che conoscono il mercato italiano da 25 anni.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3 style="font-family:'Sora',sans-serif;font-size:.95rem;font-weight:700;color:var(--primary);margin-bottom:.4rem">Nessuna interruzione</h3>
+      <p>Cambiare fornitore non interrompe mai la fornitura di luce o gas. Il passaggio avviene in background, completamente gestito da noi.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🤖</div>
+      <h3 style="font-family:'Sora',sans-serif;font-size:.95rem;font-weight:700;color:var(--primary);margin-bottom:.4rem">AI sempre aggiornata</h3>
+      <p>Il database delle offerte e gli indici PUN/PSV vengono aggiornati in tempo reale, garantendo che il confronto rifletta il mercato attuale.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3 style="font-family:'Sora',sans-serif;font-size:.95rem;font-weight:700;color:var(--primary);margin-bottom:.4rem">Analisi salvata e condivisibile</h3>
+      <p>L'analisi viene salvata e puoi condividerne il link con chi vuoi, oppure riaprirla in qualsiasi momento dallo stesso browser.</p>
+    </div>
+  </section>
+
+  <div class="trust-strip" role="list">
+    <div role="listitem"><div class="trust-num">+25</div><div class="trust-lbl">anni di esperienza</div></div>
+    <div role="listitem"><div class="trust-num">30"</div><div class="trust-lbl">per l'analisi AI</div></div>
+    <div role="listitem"><div class="trust-num">30%</div><div class="trust-lbl">risparmio medio</div></div>
+    <div role="listitem"><div class="trust-num">0€</div><div class="trust-lbl">costo per te</div></div>
+  </div>
+
+  <div class="cta-bottom">
+    <h2>Hai ancora dubbi? Chiamaci.</h2>
+    <p>Il nostro team risponde dal lunedì al sabato, dalle 9 alle 19. Oppure inizia subito con l'analisi AI gratuita.</p>
+    <div class="cta-btn-group">
+      <a href="/" class="btn-cta-white">⚡ Analizza la Bolletta</a>
+      <a href="tel:0819131897" class="btn-cta-outline">📞 081 91 31 897</a>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

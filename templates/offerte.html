@@ -1,0 +1,212 @@
+{% extends "inner_page.html" %}
+
+{% block title %}Offerte Luce e Gas 2025 — Bollette Risparmio{% endblock %}
+
+{% block meta %}
+<meta name="description" content="Confronta le migliori offerte luce e gas del mercato libero italiano. Analisi AI gratuita e consulenza personalizzata da esperti con 25 anni di esperienza.">
+<meta name="author" content="Bollette Risparmio">
+{% endblock %}
+
+{% block canonical %}
+<link rel="canonical" href="{{ site_url }}/offerte">
+{% endblock %}
+
+{% block og_tags %}
+<meta property="og:title" content="Offerte Luce e Gas 2025 — Bollette Risparmio">
+<meta property="og:description" content="Le migliori offerte luce e gas del mercato libero. Risparmia fino al 30% con la nostra analisi AI gratuita.">
+<meta property="og:url" content="{{ site_url }}/offerte">
+<meta property="og:locale" content="it_IT">
+<meta property="og:site_name" content="Bollette Risparmio">
+<meta name="twitter:card" content="summary_large_image">
+{% endblock %}
+
+{% block extra_css %}
+{{ super() }}
+<style>
+.offerte-intro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 3rem; }
+@media (max-width: 700px) { .offerte-intro-grid { grid-template-columns: 1fr; } }
+.offerte-tipo-card {
+  background: var(--white); border: 2px solid var(--border); border-radius: 20px;
+  padding: 2rem; transition: all .25s; position: relative; overflow: hidden;
+}
+.offerte-tipo-card:hover { border-color: var(--accent); box-shadow: 0 8px 32px rgba(30,58,138,.12); transform: translateY(-4px); }
+.offerte-tipo-card.featured { border-color: var(--accent); background: linear-gradient(135deg, #fff 0%, var(--accent-pale) 100%); }
+.offerte-tipo-icon { width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin-bottom: 1.25rem; }
+.offerte-tipo-icon.luce { background: #fff9e6; }
+.offerte-tipo-icon.gas  { background: #fff1f0; }
+.offerte-tipo-card h3   { font-family: 'Sora', sans-serif; font-size: 1.15rem; font-weight: 800; color: var(--primary); margin-bottom: .4rem; }
+.offerte-tipo-card p    { font-size: .88rem; color: var(--muted); line-height: 1.6; margin-bottom: 1.25rem; }
+.offerta-feature-list   { list-style: none; display: flex; flex-direction: column; gap: .4rem; margin-bottom: 1.5rem; }
+.offerta-feature-list li { font-size: .83rem; color: var(--ink); display: flex; align-items: center; gap: .5rem; }
+.offerta-feature-list li::before { content: '✓'; color: var(--green); font-weight: 700; flex-shrink: 0; }
+.btn-card {
+  display: inline-flex; align-items: center; justify-content: center; gap: .4rem;
+  background: var(--primary); color: #fff; border: none; border-radius: 9px;
+  padding: .7rem 1.4rem; font-family: 'Sora', sans-serif; font-size: .85rem; font-weight: 700;
+  text-decoration: none; transition: all .2s; cursor: pointer; width: 100%;
+}
+.btn-card:hover { background: var(--accent); }
+.how-banner {
+  background: var(--primary); border-radius: 20px; padding: 2.5rem;
+  display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: center; margin: 3rem 0;
+}
+@media (max-width: 700px) { .how-banner { grid-template-columns: 1fr; } }
+.how-banner h3 { font-family: 'Sora', sans-serif; font-size: 1.2rem; font-weight: 800; color: #fff; margin-bottom: .5rem; }
+.how-banner p  { font-size: .88rem; color: rgba(255,255,255,.7); line-height: 1.6; }
+.steps-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin: 2.5rem 0; }
+@media (max-width: 700px) { .steps-row { grid-template-columns: 1fr; } }
+.step-card { background: var(--bg); border-radius: 16px; padding: 1.5rem; text-align: center; }
+.step-icon-big  { font-size: 2rem; margin-bottom: .75rem; }
+.step-card h4   { font-family: 'Sora', sans-serif; font-size: .95rem; font-weight: 700; color: var(--primary); margin-bottom: .4rem; }
+.step-card p    { font-size: .83rem; color: var(--muted); line-height: 1.6; }
+.faq-block { margin: 3rem 0; }
+.faq-block > h2 { font-family: 'Sora', sans-serif; font-size: 1.3rem; font-weight: 800; color: var(--primary); margin-bottom: 1.5rem; }
+.faq-q-item { border: 1.5px solid var(--border); border-radius: 12px; margin-bottom: .6rem; overflow: hidden; }
+.faq-q-item.open { border-color: var(--accent); }
+.faq-q-btn {
+  width: 100%; padding: 1rem 1.25rem; background: none; border: none; text-align: left;
+  font-family: 'Sora', sans-serif; font-size: .9rem; font-weight: 600; color: var(--primary);
+  cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+}
+.faq-q-item.open .faq-q-btn { background: var(--accent-pale); color: var(--accent); }
+.faq-q-btn svg { transition: transform .2s; flex-shrink: 0; color: var(--muted); }
+.faq-q-item.open .faq-q-btn svg { transform: rotate(180deg); color: var(--accent); }
+.faq-ans { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+.faq-q-item.open .faq-ans { max-height: 200px; }
+.faq-ans-inner { padding: .8rem 1.25rem 1rem; font-size: .87rem; color: var(--muted); line-height: 1.7; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="page-badge">⚡ Mercato Libero Energia</div>
+    <h1>Le Migliori Offerte<br>Luce e Gas 2025</h1>
+    <p>Trova l'offerta giusta per le tue esigenze. Confronto gratuito, analisi AI personalizzata e consulenza con esperti che conoscono il mercato italiano da oltre 25 anni.</p>
+    <div class="page-hero-actions">
+      <a href="/" class="btn-hero-primary">⚡ Analizza la Bolletta Gratis</a>
+      <a href="tel:0819131897" class="btn-hero-secondary">📞 Chiama un Esperto</a>
+    </div>
+  </div>
+</div>
+
+<div class="page-content">
+
+  <div style="text-align:center;margin-bottom:2.5rem">
+    <div class="section-label-inner">Cosa offriamo</div>
+    <h2 class="section-title-inner">Offerte per ogni tipo di utenza</h2>
+    <p class="section-sub-inner" style="margin:0 auto .5rem">Selezioniamo le tariffe più competitive del mercato libero e le abbiniamo al tuo profilo di consumo reale — non a una media generica.</p>
+  </div>
+
+  <div class="offerte-intro-grid">
+    <div class="offerte-tipo-card featured">
+      <div class="offerte-tipo-icon luce">⚡</div>
+      <h3>Offerte Luce</h3>
+      <p>Tariffe a prezzo fisso, variabile indicizzato al PUN o miste. Ti aiutiamo a capire quale struttura si adatta ai tuoi consumi e abitudini.</p>
+      <ul class="offerta-feature-list">
+        <li>Prezzi aggiornati in tempo reale</li>
+        <li>Offerte con o senza canone fisso</li>
+        <li>Soluzioni per fotovoltaico e auto elettrica</li>
+        <li>Bonus e promozioni attive</li>
+      </ul>
+      <a href="/" class="btn-card">Confronta le offerte luce &rarr;</a>
+    </div>
+    <div class="offerte-tipo-card">
+      <div class="offerte-tipo-icon gas">🔥</div>
+      <h3>Offerte Gas</h3>
+      <p>Tariffe indicizzate al PSV o a prezzo fisso per il riscaldamento domestico e la cucina. Confronta la tua spesa attuale con le migliori alternative.</p>
+      <ul class="offerta-feature-list">
+        <li>Indicizzazione al PSV o prezzo bloccato</li>
+        <li>Offerte combinate luce + gas</li>
+        <li>Analisi del consumo annuo in Smc</li>
+        <li>Assistenza post-contratto inclusa</li>
+      </ul>
+      <a href="/" class="btn-card">Confronta le offerte gas &rarr;</a>
+    </div>
+  </div>
+
+  <div class="how-banner">
+    <div>
+      <h3>Come funziona il confronto?</h3>
+      <p>Carica la tua bolletta (o inserisci i dati manualmente): la nostra AI estrae i dati chiave — consumo, prezzo unitario, fornitore attuale — e li confronta con tutte le offerte nel nostro database, trovando quella che ti fa risparmiare di più.</p>
+    </div>
+    <a href="/" style="background:var(--accent);color:#fff;text-decoration:none;border-radius:10px;padding:.85rem 1.6rem;font-family:'Sora',sans-serif;font-weight:700;font-size:.88rem;white-space:nowrap;display:inline-flex;align-items:center;gap:.4rem">⚡ Analizza gratis &rarr;</a>
+  </div>
+
+  <section aria-labelledby="steps-heading">
+    <h2 id="steps-heading" style="font-family:'Sora',sans-serif;font-size:1.3rem;font-weight:800;color:var(--primary);margin-bottom:1.5rem;text-align:center">Come funziona in 3 passi</h2>
+    <div class="steps-row">
+      <div class="step-card">
+        <div class="step-icon-big">📄</div>
+        <h3 style="font-family:'Sora',sans-serif;font-size:.95rem;font-weight:700;color:var(--primary);margin-bottom:.4rem">1. Carica la bolletta</h3>
+        <p>Carica il PDF o la foto della tua bolletta luce o gas — oppure inserisci i dati manualmente.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-icon-big">🤖</div>
+        <h3 style="font-family:'Sora',sans-serif;font-size:.95rem;font-weight:700;color:var(--primary);margin-bottom:.4rem">2. Analisi AI</h3>
+        <p>La nostra intelligenza artificiale legge i consumi, il prezzo unitario e confronta migliaia di combinazioni tariffarie.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-icon-big">💰</div>
+        <h3 style="font-family:'Sora',sans-serif;font-size:.95rem;font-weight:700;color:var(--primary);margin-bottom:.4rem">3. Risparmia</h3>
+        <p>Ricevi le migliori offerte personalizzate e scegli con un esperto la soluzione più adatta a te.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="faq-block" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">Domande frequenti sulle offerte</h2>
+    <div class="faq-q-item">
+      <button class="faq-q-btn" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
+        Cambiare fornitore è complicato?
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="faq-ans"><div class="faq-ans-inner">No. Il cambio di fornitore nel mercato libero è completamente gratuito, non richiede tecnici e non interrompe mai la fornitura. Ti bastano il codice POD (per la luce) o PDR (per il gas) che trovi sulla bolletta. Il passaggio si completa in circa 30 giorni lavorativi.</div></div>
+    </div>
+    <div class="faq-q-item">
+      <button class="faq-q-btn" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
+        Meglio prezzo fisso o variabile?
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="faq-ans"><div class="faq-ans-inner">Dipende dal mercato e dalla tua tolleranza al rischio. Il prezzo fisso offre certezza nei costi per la durata del contratto (di solito 12-24 mesi). Il variabile indicizzato al PUN o PSV segue il mercato all'ingrosso e può essere più conveniente nei periodi di prezzi bassi. Il nostro team ti aiuta a scegliere in base all'andamento attuale.</div></div>
+    </div>
+    <div class="faq-q-item">
+      <button class="faq-q-btn" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
+        Il confronto è davvero gratuito?
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="faq-ans"><div class="faq-ans-inner">Sì, al 100%. L'analisi AI, il confronto delle offerte e la consulenza iniziale con un esperto sono completamente gratuiti. Guadagniamo una commissione dai fornitori solo se scegli di attivare un contratto tramite noi — senza costi aggiuntivi per te.</div></div>
+    </div>
+    <div class="faq-q-item">
+      <button class="faq-q-btn" onclick="this.parentElement.classList.toggle('open')" aria-expanded="false">
+        Posso tornare al mercato tutelato?
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="faq-ans"><div class="faq-ans-inner">Con la conclusione definitiva del mercato tutelato nel 2024 per l'energia elettrica, il mercato libero è diventato l'unica opzione per i nuovi contratti. I clienti vulnerabili possono accedere al Servizio a Tutele Graduali.</div></div>
+    </div>
+  </section>
+
+  <div class="cta-bottom">
+    <h2>Pronto a risparmiare sulla bolletta?</h2>
+    <p>Carica la bolletta o chiama il nostro team: in meno di 30 secondi scopri quanto puoi risparmiare cambiando offerta.</p>
+    <div class="cta-btn-group">
+      <a href="/" class="btn-cta-white">⚡ Analisi AI Gratuita</a>
+      <a href="tel:0819131897" class="btn-cta-outline">📞 081 91 31 897</a>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.faq-q-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const open = btn.parentElement.classList.contains('open');
+    btn.setAttribute('aria-expanded', open ? 'false' : 'true');
+  });
+});
+</script>
+{% endblock %}

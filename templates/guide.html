@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} — Bollette Risparmio{% endblock %}
+
+{% block meta %}
+<meta name="description" content="{{ desc }}">
+<meta name="author" content="Bollette Risparmio">
+{% endblock %}
+
+{% block canonical %}
+<link rel="canonical" href="{{ canonical }}">
+{% endblock %}
+
+{% block og_tags %}
+<meta property="og:type" content="article">
+<meta property="og:title" content="{{ title }} — Bollette Risparmio">
+<meta property="og:description" content="{{ desc }}">
+<meta property="og:url" content="{{ canonical }}">
+<meta property="og:locale" content="it_IT">
+<meta property="og:site_name" content="Bollette Risparmio">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ title }} — Bollette Risparmio">
+<meta name="twitter:description" content="{{ desc }}">
+{% endblock %}
+
+{% block schema %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "@id": "{{ canonical }}#article",
+      "headline": "{{ title }}",
+      "description": "{{ desc }}",
+      "inLanguage": "it-IT",
+      "author": {"@type": "Organization", "name": "Bollette Risparmio", "url": "{{ site_url }}"},
+      "publisher": {"@type": "Organization", "name": "Bollette Risparmio", "url": "{{ site_url }}"},
+      "dateModified": "{{ date_iso }}",
+      "mainEntityOfPage": "{{ canonical }}"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "Home",  "item": "{{ site_url }}/"},
+        {"@type": "ListItem", "position": 2, "name": "Guide", "item": "{{ site_url }}/guide"},
+        {"@type": "ListItem", "position": 3, "name": "{{ title }}", "item": "{{ canonical }}"}
+      ]
+    }
+    {% if schema_extra %},{{ schema_extra | safe }}{% endif %}
+  ]
+}
+</script>
+{% endblock %}
+
+{% block content %}
+
+<!-- BREADCRUMB -->
+<nav class="breadcrumb-bar" aria-label="Breadcrumb">
+  <ol class="breadcrumb" vocab="https://schema.org/" typeof="BreadcrumbList">
+    <li property="itemListElement" typeof="ListItem">
+      <a href="/" property="item" typeof="WebPage"><span property="name">Home</span></a>
+      <meta property="position" content="1">
+    </li>
+    <span class="breadcrumb-sep" aria-hidden="true">&#8250;</span>
+    <li property="itemListElement" typeof="ListItem">
+      <a href="/guide" property="item" typeof="WebPage"><span property="name">Guide</span></a>
+      <meta property="position" content="2">
+    </li>
+    <span class="breadcrumb-sep" aria-hidden="true">&#8250;</span>
+    <li property="itemListElement" typeof="ListItem">
+      <span property="name">{{ title }}</span>
+      <meta property="position" content="3">
+    </li>
+  </ol>
+</nav>
+
+<!-- HERO -->
+<div class="guide-hero">
+  <div class="guide-hero-inner">
+    <div class="guide-category">&#x1F4DA; {{ category }}</div>
+    <h1 class="guide-title">{{ title }}</h1>
+    <p class="guide-desc">{{ desc }}</p>
+    <div class="guide-meta">
+      <span>&#x1F4C5; Aggiornato: {{ today }}</span>
+      <span>&#x23F1; {{ read_min }} min di lettura</span>
+      <span>&#x1F1EE;&#x1F1F9; Mercato energetico italiano</span>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENT + SIDEBAR -->
+<div class="guide-layout">
+  <article class="article" aria-labelledby="guide-heading">
+    {{ body | safe }}
+  </article>
+
+  <aside class="sidebar" aria-label="Indice e contatti">
+    <div class="sidebar-card">
+      <div class="sidebar-title" id="toc-label">Indice</div>
+      <nav aria-labelledby="toc-label">
+        <ul class="toc-list">
+          {% for slug, label in toc %}
+          <li><a href="#{{ slug }}">{{ label }}</a></li>
+          {% endfor %}
+        </ul>
+      </nav>
+    </div>
+    <div class="sidebar-cta">
+      <h4>Scopri quanto risparmi</h4>
+      <p>Carica la bolletta e confronta le offerte in 30 secondi</p>
+      <a href="tel:0819131897" style="background:var(--accent);color:white;text-decoration:none;border-radius:var(--r-sm);padding:.6rem;font-weight:700;font-size:.84rem;display:block;margin-bottom:.6rem" aria-label="Chiama 081 91 31 897">&#128222; 081 91 31 897</a>
+      <a href="/">&#9889; Analizza gratis &rarr;</a>
+    </div>
+  </aside>
+</div>
+
+<!-- ARTICOLI CORRELATI -->
+<section class="correlate-section" aria-labelledby="correlate-heading">
+  <h2 class="correlate-title" id="correlate-heading">&#x1F4DA; Altre guide che potrebbero interessarti</h2>
+  <div class="correlate-grid">
+    {{ correlate | safe }}
+  </div>
+</section>
+
+{% endblock %}

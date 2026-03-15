@@ -1,0 +1,175 @@
+{% extends "inner_page.html" %}
+
+{% block title %}Chi Siamo — Bollette Risparmio{% endblock %}
+
+{% block meta %}
+<meta name="description" content="Bollette Risparmio è il servizio di comparazione tariffe luce e gas di walktotalk.srl, con sede a Napoli e oltre 25 anni di esperienza nel mercato energetico italiano.">
+<meta name="author" content="Bollette Risparmio">
+{% endblock %}
+
+{% block canonical %}
+<link rel="canonical" href="{{ site_url }}/chi-siamo">
+{% endblock %}
+
+{% block og_tags %}
+<meta property="og:title" content="Chi Siamo — Bollette Risparmio">
+<meta property="og:description" content="Team di esperti del mercato energetico italiano con sede a Napoli e oltre 25 anni di esperienza.">
+<meta property="og:url" content="{{ site_url }}/chi-siamo">
+<meta property="og:locale" content="it_IT">
+<meta property="og:site_name" content="Bollette Risparmio">
+<meta name="twitter:card" content="summary_large_image">
+{% endblock %}
+
+{% block schema %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Bollette Risparmio",
+  "url": "{{ site_url }}",
+  "telephone": "+390819131897",
+  "email": "info@bolletterisparmio.it",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Via Cesario Console 3",
+    "addressLocality": "Napoli",
+    "postalCode": "80132",
+    "addressCountry": "IT"
+  },
+  "description": "Servizio di comparazione tariffe luce e gas con analisi AI gratuita."
+}
+</script>
+{% endblock %}
+
+{% block extra_css %}
+{{ super() }}
+<style>
+.page-hero-inner.two-col {
+  display: grid; grid-template-columns: 1fr 280px; gap: 3rem; align-items: center;
+}
+@media (max-width: 700px) { .page-hero-inner.two-col { grid-template-columns: 1fr; } }
+.hero-stats-card {
+  background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15);
+  border-radius: 20px; padding: 1.75rem;
+}
+.hero-stat-item { margin-bottom: 1.25rem; }
+.hero-stat-item:last-child { margin-bottom: 0; }
+.hero-stat-num { font-family: 'Sora', sans-serif; font-size: 1.9rem; font-weight: 800; color: #fff; }
+.hero-stat-lbl { font-size: .8rem; color: rgba(255,255,255,.6); }
+.page-content { max-width: 960px; padding: 3.5rem 1.5rem 5rem; }
+.mission-block { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; margin-bottom: 4rem; }
+@media (max-width: 700px) { .mission-block { grid-template-columns: 1fr; } }
+.mission-label { font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: .5rem; }
+.mission-title { font-family: 'Sora', sans-serif; font-size: clamp(1.4rem, 3vw, 1.9rem); font-weight: 800; color: var(--primary); line-height: 1.2; margin-bottom: 1rem; }
+.mission-text { font-size: .93rem; color: var(--muted); line-height: 1.8; margin-bottom: 1rem; }
+.mission-img {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  border-radius: 24px; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; font-size: 5rem;
+}
+.values-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin: 3rem 0; }
+@media (max-width: 700px) { .values-grid { grid-template-columns: 1fr 1fr; } }
+.value-card { background: var(--bg); border-radius: 16px; padding: 1.5rem; border: 1.5px solid var(--border); transition: all .25s; }
+.value-card:hover { background: #fff; border-color: var(--accent); box-shadow: 0 4px 20px rgba(30,58,138,.08); }
+.value-icon { font-size: 1.75rem; margin-bottom: .75rem; }
+.value-card h3 { font-family: 'Sora', sans-serif; font-size: .95rem; font-weight: 700; color: var(--primary); margin-bottom: .35rem; }
+.value-card p  { font-size: .82rem; color: var(--muted); line-height: 1.6; }
+.company-block { background: var(--primary); border-radius: 20px; padding: 2.5rem; color: #fff; margin: 3rem 0; }
+.company-block h3 { font-family: 'Sora', sans-serif; font-size: 1.25rem; font-weight: 800; margin-bottom: 1.25rem; }
+.company-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+@media (max-width: 600px) { .company-grid { grid-template-columns: 1fr; } }
+.company-info-item { display: flex; flex-direction: column; gap: .25rem; }
+.company-info-label { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.45); }
+.company-info-value { font-size: .9rem; color: rgba(255,255,255,.9); font-weight: 500; }
+.company-info-value a { color: var(--accent); text-decoration: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <div class="page-hero-inner two-col">
+    <div>
+      <div class="page-badge">🏢 Chi siamo</div>
+      <h1>Il tuo alleato per risparmiare sull'energia</h1>
+      <p>Siamo un team di esperti del mercato energetico italiano con base a Napoli. Da oltre 25 anni aiutiamo famiglie e condomini a orientarsi nel mondo delle tariffe luce e gas — adesso, con il supporto dell'intelligenza artificiale.</p>
+    </div>
+    <div class="hero-stats-card" aria-label="Numeri chiave">
+      <div class="hero-stat-item"><div class="hero-stat-num">25+</div><div class="hero-stat-lbl">anni di esperienza nel mercato energetico</div></div>
+      <div class="hero-stat-item"><div class="hero-stat-num">30%</div><div class="hero-stat-lbl">risparmio medio ottenuto dai nostri clienti</div></div>
+      <div class="hero-stat-item"><div class="hero-stat-num">0€</div><div class="hero-stat-lbl">costo per il cliente</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="page-content">
+
+  <section class="mission-block">
+    <div>
+      <div class="mission-label">La nostra missione</div>
+      <h2 class="mission-title">Rendere il mercato energetico accessibile a tutti</h2>
+      <p class="mission-text">Il mercato libero dell'energia è complesso: sigle, fasce orarie, indici PUN e PSV, offerte variabili o fisse, contratti con clausole difficili da interpretare. La maggior parte delle persone finisce per pagare più del dovuto semplicemente perché non ha gli strumenti per confrontare.</p>
+      <p class="mission-text">Bollette Risparmio nasce per cambiare questo. Abbiamo unito la competenza dei nostri consulenti alla potenza dell'intelligenza artificiale per creare uno strumento che analizza la tua bolletta in 30 secondi, identifica le anomalie e ti mostra le offerte che fanno davvero la differenza.</p>
+    </div>
+    <div class="mission-img" aria-hidden="true">⚡</div>
+  </section>
+
+  <section aria-labelledby="values-heading">
+    <h2 id="values-heading" style="font-family:'Sora',sans-serif;font-size:1.3rem;font-weight:800;color:var(--primary);margin-bottom:1.5rem">I nostri valori</h2>
+    <div class="values-grid">
+      <div class="value-card">
+        <div class="value-icon">🎯</div>
+        <h3>Trasparenza</h3>
+        <p>Nessun costo nascosto, nessun abbonamento. Il nostro compenso viene dai fornitori — mai da te.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">🔬</div>
+        <h3>Precisione</h3>
+        <p>L'AI analizza ogni singola voce della bolletta, non si ferma al totale. I confronti si basano sui tuoi consumi reali.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">🤝</div>
+        <h3>Umano prima di tutto</h3>
+        <p>La tecnologia ci supporta, ma ogni offerta importante viene valutata con un consulente in carne e ossa.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">🔒</div>
+        <h3>Privacy</h3>
+        <p>La tua bolletta non viene mai salvata. I dati estratti sono usati solo per l'analisi e mai ceduti a terzi senza consenso.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">📍</div>
+        <h3>Radicati nel territorio</h3>
+        <p>Siamo a Napoli, conosciamo le specificità del mercato del Sud Italia e i distributori locali come nessun altro.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">🚀</div>
+        <h3>Sempre aggiornati</h3>
+        <p>Monitoriamo ogni giorno le variazioni del PUN e del PSV e aggiorniamo il database delle offerte in tempo reale.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="company-block">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.25rem;font-weight:800;margin-bottom:1.25rem;color:#fff">Dati aziendali</h2>
+    <address class="company-grid" style="font-style:normal">
+      <div class="company-info-item"><div class="company-info-label">Ragione sociale</div><div class="company-info-value">walktotalk.srl</div></div>
+      <div class="company-info-item"><div class="company-info-label">P. IVA</div><div class="company-info-value">IT 07986081219</div></div>
+      <div class="company-info-item"><div class="company-info-label">Sede legale</div><div class="company-info-value">Via Cesario Console 3, 80132 Napoli</div></div>
+      <div class="company-info-item"><div class="company-info-label">PEC</div><div class="company-info-value">walktotalk2@pec.it</div></div>
+      <div class="company-info-item"><div class="company-info-label">Email</div><div class="company-info-value"><a href="mailto:info@bolletterisparmio.it">info@bolletterisparmio.it</a></div></div>
+      <div class="company-info-item"><div class="company-info-label">Telefono</div><div class="company-info-value"><a href="tel:0819131897">081 91 31 897</a></div></div>
+    </address>
+  </div>
+
+  <div class="cta-bottom">
+    <h2>Vuoi conoscerci meglio?</h2>
+    <p>Chiamaci o analizza subito la tua bolletta — è gratuito e non vincolante.</p>
+    <div class="cta-btn-group">
+      <a href="/" class="btn-cta-white">⚡ Analizza la Bolletta Gratis</a>
+      <a href="tel:0819131897" class="btn-cta-outline">📞 081 91 31 897</a>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

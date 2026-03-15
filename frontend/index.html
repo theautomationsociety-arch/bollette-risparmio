@@ -109,8 +109,76 @@
 
     <!-- ANALYZER CARD -->
     <div id="analyzer" class="analyzer-card">
-      <!-- Upload view -->
-      <div id="upload-view">
+      <!-- Step 0: Personal data gate -->
+      <div id="personal-data-view">
+        <p class="analyzer-title">⚡ Analisi AI della Bolletta</p>
+        <p class="analyzer-sub">Inserisci i tuoi dati per iniziare l'analisi gratuita</p>
+        <div class="personal-form">
+          <div class="lead-row">
+            <input type="text" id="pd-nome" placeholder="Nome *" required/>
+            <input type="text" id="pd-cognome" placeholder="Cognome *" required/>
+          </div>
+          <input type="tel" id="pd-telefono" placeholder="Telefono *" required/>
+          <input type="email" id="pd-email" placeholder="Email (opzionale)"/>
+
+          <!-- Privacy & Consensi -->
+          <div class="consent-box" id="consent-box">
+            <!-- Accetta tutto -->
+            <label class="consent-item consent-accept-all">
+              <input type="checkbox" id="consent-accept-all" onchange="toggleAcceptAll(this)"/>
+              <span>Cliccando qui, accetto per semplicità la <a href="https://www.iubenda.com/privacy-policy/30631851" target="_blank">Privacy Policy</a> e le <a href="/condizioni-generali" target="_blank">Condizioni Generali</a> del Sito e presto il consenso al trattamento dei miei dati per tutte le finalità qui di seguito.</span>
+            </label>
+
+            <!-- Obbligatori -->
+            <div class="consent-required-group">
+              <label class="consent-item">
+                <input type="checkbox" name="consent-required" id="consent-privacy" onchange="syncAcceptAll()"/>
+                <span>Dichiaro di aver letto e compreso l'<a href="https://www.iubenda.com/privacy-policy/30631851" target="_blank">Informativa Privacy</a> relativa al trattamento dei miei dati personali per l'esecuzione dei servizi richiesti. <strong>(Obbligatorio)</strong></span>
+              </label>
+              <label class="consent-item">
+                <input type="checkbox" name="consent-required" id="consent-terms" onchange="syncAcceptAll()"/>
+                <span>Accetto i termini e le <a href="/condizioni-generali" target="_blank">Condizioni Generali</a> di utilizzo del servizio. <strong>(Obbligatorio)</strong></span>
+              </label>
+              <label class="consent-item">
+                <input type="checkbox" name="consent-required" id="consent-preventivi" onchange="syncAcceptAll()"/>
+                <span>Dichiaro di aver preso atto, nella <a href="https://www.iubenda.com/privacy-policy/30631851" target="_blank">Privacy Policy</a> e nelle <a href="/condizioni-generali" target="_blank">Condizioni Generali</a>, che riceverò i risultati della comparazione/i preventivi da me richiesti tramite email, sms, messaggi su social network e/o istantanei, notifiche push, posta cartacea. <strong>(Obbligatorio)</strong></span>
+              </label>
+            </div>
+
+            <!-- Facoltativi -->
+            <div class="consent-optional-group">
+              <label class="consent-item">
+                <input type="checkbox" id="consent-cessione" onchange="syncAcceptAll()"/>
+                <span>Acconsento alla comunicazione e cessione dei miei dati ai Destinatari Principali (<a href="#" onclick="toggleRecipientList(event)">vedi elenco completo</a>), anche fuori dall'UE, per finalità di contatto commerciale tramite sistemi automatizzati e/o con operatore, email, sms, social, notifiche push, posta cartacea. (Facoltativo)</span>
+              </label>
+              <div class="consent-recipient-list" id="consent-recipient-list" style="display:none">
+                <p><strong>Lista Paesi:</strong> Austria, Belgio, Bulgaria, Cipro, Croazia, Danimarca, Estonia, Finlandia, Francia, Germania, Grecia, Irlanda, Italia, Lettonia, Lituania, Lussemburgo, Malta, Paesi Bassi, Polonia, Portogallo, Repubblica Ceca, Romania, Slovacchia, Slovenia, Spagna, Svezia, Ungheria, Cina, Stati Uniti, India, Giappone, UK.</p>
+                <p><strong>Destinatari principali:</strong> Società finanziarie, agenti, banche, assicurazioni, fornitori di telefonia, ADSL, fibra, energia (Enel, Iren, Acea, Edison, Illumia), Pay TV (DAZN, TIM, Prime Video, NOW TV Sport), servizi televisivi, customer care, vendita diretta, editori, centri media, aziende farmaceutiche e sanitarie, case automobilistiche, concessionari, ospitalità, ristorazione, cultura, sport, informazione e marketing, direct marketing e brokeraggio di liste, società che gestiscono eventi.</p>
+              </div>
+              <label class="consent-item">
+                <input type="checkbox" id="consent-marketing" onchange="syncAcceptAll()"/>
+                <span>Acconsento al trattamento dei miei dati per l'invio di comunicazioni commerciali e/o promozionali da parte del Titolare tramite sistemi automatizzati, email, sms, social, notifiche push, posta cartacea. (Facoltativo)</span>
+              </label>
+              <label class="consent-item">
+                <input type="checkbox" id="consent-profilazione" onchange="syncAcceptAll()"/>
+                <span>Acconsento allo svolgimento di attività di arricchimento e profilazione per finalità statistiche, marketing o commerciali, anche tramite cookies e strumenti di monitoraggio, nonché integrazione con dati raccolti da terze parti. (Facoltativo)</span>
+              </label>
+              <label class="consent-item">
+                <input type="checkbox" id="consent-marketing-terzi" onchange="syncAcceptAll()"/>
+                <span>Acconsento all'invio di comunicazioni commerciali/promozionali di Terzi da parte del Titolare tramite sistemi automatizzati, email, sms, social, notifiche push, posta cartacea. (Facoltativo)</span>
+              </label>
+            </div>
+          </div>
+
+          <button class="btn-analyze" id="btn-personal-next" onclick="submitPersonalData()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            Continua
+          </button>
+        </div>
+      </div>
+
+      <!-- Upload view (hidden until personal data submitted) -->
+      <div id="upload-view" style="display:none">
         <p class="analyzer-title">⚡ Analisi AI della Bolletta</p>
         <p class="analyzer-sub">Carica il PDF e scopri quanto puoi risparmiare</p>
         <div class="tipo-tabs">
@@ -185,63 +253,73 @@
         </div>
       </div>
 
-      <!-- Result view -->
-      <div id="result-panel">
-        <div class="result-header">
-          <h2>📊 Risultati Analisi</h2>
-          <button class="result-back" onclick="resetAnalyzer()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-            Nuova analisi
-          </button>
+      <!-- Progress view — shown during AI analysis -->
+      <div id="progress-view" style="display:none">
+        <p class="analyzer-title">⚡ Analisi AI in corso</p>
+        <p class="analyzer-sub">Stiamo elaborando la tua bolletta…</p>
+        <div class="analysis-steps" id="analysis-steps">
+          <div class="analysis-step" data-step="0"><div class="step-icon">📄</div><div class="step-text">Caricamento del documento in corso...</div></div>
+          <div class="analysis-step" data-step="1"><div class="step-icon">🔍</div><div class="step-text">Lettura della bolletta con intelligenza artificiale...</div></div>
+          <div class="analysis-step" data-step="2"><div class="step-icon">📊</div><div class="step-text">Estrazione dati: fornitore, consumi, costi per fascia...</div></div>
+          <div class="analysis-step" data-step="3"><div class="step-icon">🧮</div><div class="step-text">Calcolo del costo unitario e confronto con indici di mercato...</div></div>
+          <div class="analysis-step" data-step="4"><div class="step-icon">💡</div><div class="step-text">Analisi anomalie e suggerimenti personalizzati...</div></div>
+          <div class="analysis-step" data-step="5"><div class="step-icon">✅</div><div class="step-text">Quasi fatto! Preparazione del report...</div></div>
         </div>
-        <div class="result-grid" id="result-stats"></div>
-        <div class="ai-box" id="ai-anomalie" style="display:none">
-          <h3>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            Anomalie rilevate
-          </h3>
-          <div id="anomalie-list"></div>
-        </div>
-        <div class="ai-box" id="ai-suggerimenti">
-          <h3>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-            Suggerimenti AI
-          </h3>
-          <div id="suggerimenti-list"></div>
-        </div>
-        <div class="compare-section" id="compare-section">
-          <h3>🔍 Confronta le Offerte</h3>
-          <p>Inserisci i tuoi contatti per ricevere il confronto completo</p>
-          <div class="lead-form" id="lead-form">
-            <div class="lead-row">
-              <input type="text" id="lead-nome" placeholder="Nome *" required/>
-              <input type="text" id="lead-cognome" placeholder="Cognome *" required/>
-            </div>
-            <input type="email" id="lead-email" placeholder="Email (per ricevere i risultati)"/>
-            <input type="tel" id="lead-telefono" placeholder="Telefono"/>
-            <button class="btn-compare" id="btn-compare" onclick="confronta()">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
-              Confronta le Offerte
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FULL-SCREEN RESULTS SECTION -->
+<section class="results-fullscreen" id="results-fullscreen" style="display:none">
+  <div class="wrap">
+    <div id="result-panel">
+      <div class="result-header">
+        <h2>📊 Risultati Analisi</h2>
+        <button class="result-back" onclick="resetAnalyzer()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          Nuova analisi
+        </button>
+      </div>
+      <div class="result-grid" id="result-stats"></div>
+      <div class="ai-box" id="ai-anomalie" style="display:none">
+        <h3>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Anomalie rilevate
+        </h3>
+        <div id="anomalie-list"></div>
+      </div>
+      <div class="ai-box" id="ai-suggerimenti">
+        <h3>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+          Suggerimenti AI
+        </h3>
+        <div id="suggerimenti-list"></div>
+      </div>
+      <div class="compare-section" id="compare-section">
+        <h3>🔍 Confronta le Offerte</h3>
+        <p>Scopri le migliori offerte disponibili per il tuo profilo</p>
+        <button class="btn-compare" id="btn-compare" onclick="confronta()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+          Confronta le Offerte
+        </button>
+        <p id="offerte-aggiornamento" style="display:none;font-size:.75rem;color:var(--gray-400);text-align:right;margin-top:.5rem"></p>
+        <div class="offerte-list" id="offerte-list" style="display:none"></div>
+        <!-- Box congratulatorio se l'offerta attuale è già ottima -->
+        <div class="offerta-best-already" id="offerta-best-already" style="display:none"></div>
+        <!-- CTAs post-confronto -->
+        <div class="offerte-ctas" id="offerte-ctas" style="display:none">
+          <p class="offerte-ctas-label">Vuoi procedere? Siamo pronti ad aiutarti:</p>
+          <div class="offerte-ctas-row">
+            <button class="btn-offerta-contact" onclick="openContact()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Richiedi consulenza gratuita
             </button>
-            <p class="privacy-note">Confermando accetti la <a href="https://www.iubenda.com/privacy-policy/30631851" target="_blank">Privacy Policy</a></p>
-          </div>
-          <p id="offerte-aggiornamento" style="display:none;font-size:.75rem;color:var(--gray-400);text-align:right;margin-top:.5rem"></p>
-          <div class="offerte-list" id="offerte-list" style="display:none"></div>
-          <!-- Box congratulatorio se l'offerta attuale è già ottima -->
-          <div class="offerta-best-already" id="offerta-best-already" style="display:none"></div>
-          <!-- 2 CTAs post-confronto -->
-          <div class="offerte-ctas" id="offerte-ctas" style="display:none">
-            <p class="offerte-ctas-label">Vuoi procedere? Siamo pronti ad aiutarti:</p>
-            <div class="offerte-ctas-row">
-              <button class="btn-offerta-contact" onclick="openContact()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                Richiedi consulenza gratuita
-              </button>
-              <a class="btn-offerta-call" href="tel:0819131897">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.07 1.18 2 2 0 012.04 0H5a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg>
-                Chiama ora — 081 91 31 897
-              </a>
-            </div>
+            <a class="btn-offerta-call" href="tel:0819131897">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.07 1.18 2 2 0 012.04 0H5a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg>
+              Chiama ora — 081 91 31 897
+            </a>
           </div>
         </div>
       </div>
@@ -511,6 +589,92 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RICONTATTO TELEFONICO -->
+<div class="modal-overlay" id="ricontatto-modal-overlay" onclick="if(event.target===this)closeRicontattoModal()">
+  <div class="offer-modal">
+    <div class="offer-modal-header">
+      <span class="offer-modal-title">📞 Richiedi ricontatto telefonico</span>
+      <button class="offer-modal-close" onclick="closeRicontattoModal()" aria-label="Chiudi">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="offer-modal-body">
+      <div id="ricontatto-offerta-info" class="offer-modal-offer-badge" style="display:none"></div>
+      <p style="font-size:.83rem;color:var(--gray-400);margin-bottom:1.25rem">Ti richiameremo durante la fascia oraria che preferisci — lun/ven 9:00–18:00.</p>
+      <form id="ricontatto-form" class="mform" onsubmit="submitRicontatto(event)">
+        <div class="mform-row">
+          <div class="mform-field">
+            <label>Nome <span class="req">*</span></label>
+            <input type="text" id="rc-nome" placeholder="es. Mario" required/>
+          </div>
+          <div class="mform-field">
+            <label>Cognome</label>
+            <input type="text" id="rc-cognome" placeholder="es. Rossi"/>
+          </div>
+        </div>
+        <div class="mform-field" style="margin-top:.65rem">
+          <label>Telefono <span class="req">*</span></label>
+          <input type="tel" id="rc-telefono" placeholder="es. 333 1234567" required/>
+          <span class="field-hint">Formato: +39 o 3xx (cellulare italiano)</span>
+        </div>
+        <div class="mform-field" style="margin-top:.65rem">
+          <label>Fascia oraria preferita</label>
+          <select id="rc-fascia">
+            <option value="Mattina 9-12">Mattina 9–12</option>
+            <option value="Pomeriggio 12-15">Pomeriggio 12–15</option>
+            <option value="Pomeriggio 15-18">Pomeriggio 15–18</option>
+            <option value="Qualsiasi orario" selected>Qualsiasi orario</option>
+          </select>
+        </div>
+        <label class="privacy-check-label" style="margin-top:1rem">
+          <input type="checkbox" id="rc-privacy" required/>
+          <span>Ho letto e accetto la <a href="/privacy" target="_blank">Privacy Policy</a> <span class="req">*</span></span>
+        </label>
+        <button type="submit" class="btn-modal-submit" id="rc-submit">Invia richiesta di ricontatto</button>
+        <div class="modal-success" id="rc-success" style="display:none">✅ Richiesta inviata! Ti richiameremo presto.</div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONTATTO VIA EMAIL -->
+<div class="modal-overlay" id="email-offerta-modal-overlay" onclick="if(event.target===this)closeEmailModal()">
+  <div class="offer-modal">
+    <div class="offer-modal-header">
+      <span class="offer-modal-title">✉️ Contattaci via email</span>
+      <button class="offer-modal-close" onclick="closeEmailModal()" aria-label="Chiudi">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="offer-modal-body">
+      <div id="email-offerta-info" class="offer-modal-offer-badge" style="display:none"></div>
+      <p style="font-size:.83rem;color:var(--gray-400);margin-bottom:1.25rem">Ti risponderemo entro 24 ore lavorative.</p>
+      <form id="email-offerta-form" class="mform" onsubmit="submitEmailOfferta(event)">
+        <div class="mform-row">
+          <div class="mform-field">
+            <label>Nome <span class="req">*</span></label>
+            <input type="text" id="eo-nome" placeholder="es. Mario" required/>
+          </div>
+          <div class="mform-field">
+            <label>Email <span class="req">*</span></label>
+            <input type="email" id="eo-email" placeholder="nome@esempio.it" required/>
+          </div>
+        </div>
+        <div class="mform-field" style="margin-top:.65rem">
+          <label>Messaggio</label>
+          <textarea id="eo-messaggio" rows="3"></textarea>
+        </div>
+        <label class="privacy-check-label" style="margin-top:1rem">
+          <input type="checkbox" id="eo-privacy" required/>
+          <span>Ho letto e accetto la <a href="/privacy" target="_blank">Privacy Policy</a> <span class="req">*</span></span>
+        </label>
+        <button type="submit" class="btn-modal-submit" id="eo-submit">Invia richiesta</button>
+        <div class="modal-success" id="eo-success" style="display:none">✅ Messaggio inviato! Ti risponderemo entro 24 ore.</div>
+      </form>
     </div>
   </div>
 </div>

@@ -223,6 +223,51 @@ def build_consulente_admin(
     )
 
 
+def build_ricontatto_admin(
+    nome: str,
+    cognome: str,
+    telefono: str,
+    fascia_oraria: str,
+    offerta_richiesta: str,
+    bolletta_id: str,
+    site_url: str,
+    from_email: str,
+) -> tuple:
+    body = (
+        '<h2 style="margin:0 0 6px;font-size:1.25rem;font-weight:800;color:#0d1b2a">'
+        "\U0001f6a8 URGENTE \u2014 Richiesta di ricontatto telefonico</h2>"
+        '<p style="margin:0 0 16px;font-size:.9rem;color:#5a6a7e">'
+        "Un utente vuole essere richiamato per attivare un'offerta. <strong>Contattarlo al pi\u00f9 presto.</strong></p>"
+        '<div style="background:#fef2f2;border-left:4px solid #dc2626;padding:14px 18px;border-radius:0 10px 10px 0;margin-bottom:20px">'
+        '<p style="margin:0;font-size:.9rem;color:#991b1b;font-weight:700">\u26a1 Richiesta di ricontatto urgente \u2014 il cliente attende una chiamata</p>'
+        '</div>'
+        '<table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafd;border-radius:10px;overflow:hidden;margin-bottom:20px">'
+        f'<tr><td style="padding:12px 16px;border-bottom:1px solid #e4eaf2">'
+        '<span style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#5a6a7e">Nome</span>'
+        f"<br><strong>{nome} {cognome}</strong></td></tr>"
+        f'<tr><td style="padding:12px 16px;border-bottom:1px solid #e4eaf2">'
+        '<span style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#5a6a7e">Telefono</span>'
+        f'<br><a href="tel:{telefono}" style="color:#dc2626;font-size:1.15rem;font-weight:800">{telefono or "&#8212;"}</a></td></tr>'
+        f'<tr><td style="padding:12px 16px;border-bottom:1px solid #e4eaf2">'
+        '<span style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#5a6a7e">Fascia oraria preferita</span>'
+        f'<br><strong>{fascia_oraria or "Qualsiasi orario"}</strong></td></tr>'
+        f'<tr><td style="padding:12px 16px;border-bottom:1px solid #e4eaf2">'
+        '<span style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#5a6a7e">Offerta di interesse</span>'
+        f'<br><strong>{offerta_richiesta or "&#8212;"}</strong></td></tr>'
+        f'<tr><td style="padding:12px 16px">'
+        '<span style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#5a6a7e">Bolletta analizzata</span>'
+        f'<br><span style="font-size:.82rem;color:#5a6a7e">{bolletta_id or "nessuna"}</span></td></tr>'
+        "</table>"
+        f'<a href="{site_url}/admin" style="display:inline-block;background:#dc2626;color:white;'
+        'text-decoration:none;padding:12px 24px;border-radius:10px;font-weight:700;font-size:.9rem">'
+        "\u26a1 Apri pannello admin</a>"
+    )
+    return (
+        f"\U0001f6a8 URGENTE \u2014 Ricontatto: {nome} {cognome} \u2014 {telefono}",
+        _base(body, f"URGENTE: {nome} {cognome} vuole essere richiamato \u2014 {telefono}", site_url, from_email),
+    )
+
+
 def send_email(to: str, subject: str, html: str, resend_key: str, from_email: str) -> bool:
     """Invia una email via Resend. Ritorna True se OK, False se disabilitato o errore."""
     if not _RESEND_OK or not resend_key:

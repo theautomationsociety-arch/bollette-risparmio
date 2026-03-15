@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block robots %}noindex, follow{% endblock %}
+
+{% block extra_css %}
+<style>
+.legal-wrap { max-width: 780px; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+.legal-breadcrumb { display: flex; align-items: center; gap: .4rem; font-size: .78rem; color: var(--muted); margin-bottom: 1.75rem; flex-wrap: wrap; }
+.legal-breadcrumb a { color: var(--muted); text-decoration: none; }
+.legal-breadcrumb a:hover { color: var(--accent); }
+.legal-wrap h1 { font-family: 'Sora', sans-serif; font-size: clamp(1.6rem, 3.5vw, 2.2rem); font-weight: 800; color: var(--primary); margin-bottom: .5rem; letter-spacing: -.5px; }
+.legal-subtitle { color: var(--muted); font-size: .9rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+.legal-wrap h2 { font-family: 'Sora', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--primary); margin: 2rem 0 .6rem; }
+.legal-wrap p  { color: #2d3a4a; line-height: 1.8; margin-bottom: .9rem; font-size: .93rem; }
+.legal-wrap ul { margin: .5rem 0 .9rem 1.4rem; color: #2d3a4a; font-size: .93rem; }
+.legal-wrap li { margin-bottom: .4rem; line-height: 1.7; }
+.legal-wrap a  { color: var(--accent); }
+.legal-wrap strong { color: var(--ink); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="legal-wrap">
+  <nav class="legal-breadcrumb" aria-label="Breadcrumb">
+    <a href="/">Home</a>
+    <span aria-hidden="true">›</span>
+    <span>{% block page_name %}Pagina{% endblock %}</span>
+  </nav>
+  {% block legal_content %}{% endblock %}
+</div>
+{% endblock %}

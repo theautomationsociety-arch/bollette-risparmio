@@ -2,6 +2,30 @@ const API = window.location.origin;
 let currentTipo = 'luce';
 let currentBollettaId = null;
 let selectedFile = null;
+let personalData = null; // { nome, cognome, telefono, email }
+
+// ── Contact Center configuration ──────────────────────────────────────────────
+const CONTACT_CENTER_PHONE        = '0819131897';
+const CONTACT_CENTER_PHONE_DISPLAY = '081 91 31 897';
+const CONTACT_CENTER_HOURS = { start: 9, end: 18, days: [1, 2, 3, 4, 5] }; // lun-ven 9-18
+
+function isContactCenterOpen() {
+  const now  = new Date();
+  const day  = now.getDay();
+  const hour = now.getHours();
+  return CONTACT_CENTER_HOURS.days.includes(day) &&
+         hour >= CONTACT_CENTER_HOURS.start &&
+         hour < CONTACT_CENTER_HOURS.end;
+}
+
+// Current offer selected for modals
+let _currentOfferName      = '';
+let _currentOfferFornitore = '';
+
+// Escape a string for safe use in an HTML attribute value (double-quoted)
+function _escAttr(s) {
+  return (s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
+}
 
 // ══════════════════════════════════════════════════════════════════════════════
 // PERSISTENZA — salva/ripristina lo stato dell'analisi in sessionStorage
@@ -37,6 +61,57 @@ function caricaPersistenza() {
 
 function cancellaPersistenza() {
   sessionStorage.removeItem(STORAGE_KEY);
+}
+
+// ── Personal data gate
+function submitPersonalData() {
+  const nome = document.getElementById('pd-nome').value.trim();
+  const cognome = document.getElementById('pd-cognome').value.trim();
+  const telefono = document.getElementById('pd-telefono').value.trim();
+  const email = document.getElementById('pd-email').value.trim();
+  if (!nome || !cognome || !telefono) {
+    showToast('Compila nome, cognome e telefono', 'error');
+    return;
+  }
+  // Validate required consents
+  const requiredBoxes = document.querySelectorAll('input[name="consent-required"]');
+  const allChecked = [...requiredBoxes].every(cb => cb.checked);
+  if (!allChecked) {
+    showToast('Accetta i consensi obbligatori per procedere', 'error');
+    const box = document.getElementById('consent-box');
+    box.classList.add('consent-error');
+    setTimeout(() => box.classList.remove('consent-error'), 500);
+    return;
+  }
+  personalData = {
+    nome, cognome, telefono, email,
+    consenso_privacy: true,
+    consenso_termini: true,
+    consenso_preventivi: true,
+    consenso_cessione: document.getElementById('consent-cessione').checked,
+    consenso_marketing: document.getElementById('consent-marketing').checked,
+    consenso_profilazione: document.getElementById('consent-profilazione').checked,
+    consenso_marketing_terzi: document.getElementById('consent-marketing-terzi').checked,
+  };
+  document.getElementById('personal-data-view').style.display = 'none';
+  document.getElementById('upload-view').style.display = 'block';
+}
+
+// ── Consent helpers
+function toggleAcceptAll(el) {
+  const checked = el.checked;
+  document.querySelectorAll('#consent-box input[type="checkbox"]').forEach(cb => cb.checked = checked);
+}
+
+function syncAcceptAll() {
+  const all = [...document.querySelectorAll('#consent-box input[type="checkbox"]:not(#consent-accept-all)')];
+  document.getElementById('consent-accept-all').checked = all.every(cb => cb.checked);
+}
+
+function toggleRecipientList(e) {
+  e.preventDefault();
+  const list = document.getElementById('consent-recipient-list');
+  list.style.display = list.style.display === 'none' ? 'block' : 'none';
 }
 
 // ── Tipo tabs
@@ -85,33 +160,105 @@ function clearFile() {
   document.getElementById('btn-analyze').disabled = true;
 }
 
+// ── Progress view helpers ──
+const _STEP_DELAYS = [0, 2000, 5000, 9000, 13000, 17000];
+let _stepTimers = [];
+
+function _activateStep(i) {
+  const steps = document.querySelectorAll('.analysis-step');
+  if (i > 0) {
+    steps[i - 1].classList.remove('active');
+    steps[i - 1].classList.add('done');
+  }
+  steps[i].classList.add('visible', 'active');
+}
+
+function startProgress() {
+  document.getElementById('upload-view').style.display = 'none';
+  const pv = document.getElementById('progress-view');
+  pv.style.display = 'block';
+  // Reset all steps
+  document.querySelectorAll('.analysis-step').forEach(el => {
+    el.classList.remove('active', 'done', 'visible', 'error');
+  });
+  const oldBtn = document.getElementById('analysis-steps').querySelector('.progress-retry-btn');
+  if (oldBtn) oldBtn.remove();
+  // Schedule step activations
+  _stepTimers.forEach(t => clearTimeout(t));
+  _stepTimers = _STEP_DELAYS.map((delay, i) => setTimeout(() => _activateStep(i), delay));
+}
+
+function completeProgress(callback) {
+  _stepTimers.forEach(t => clearTimeout(t));
+  _stepTimers = [];
+  const steps = document.querySelectorAll('.analysis-step');
+  steps.forEach(s => { s.classList.remove('active'); s.classList.add('done', 'visible'); });
+  steps[steps.length - 1].querySelector('.step-text').textContent = 'Analisi completata!';
+  setTimeout(() => {
+    document.getElementById('progress-view').style.display = 'none';
+    callback();
+  }, 500);
+}
+
+function errorProgress(message) {
+  _stepTimers.forEach(t => clearTimeout(t));
+  _stepTimers = [];
+  const steps = document.querySelectorAll('.analysis-step');
+  let activeIdx = -1;
+  steps.forEach((s, i) => { if (s.classList.contains('active')) activeIdx = i; });
+  if (activeIdx === -1) activeIdx = 0;
+  for (let i = 0; i < activeIdx; i++) {
+    steps[i].classList.remove('active');
+    steps[i].classList.add('done', 'visible');
+  }
+  const errStep = steps[activeIdx];
+  errStep.classList.remove('active');
+  errStep.classList.add('visible', 'error');
+  errStep.querySelector('.step-icon').textContent = '❌';
+  errStep.querySelector('.step-text').textContent = message;
+  const retryBtn = document.createElement('button');
+  retryBtn.className = 'progress-retry-btn';
+  retryBtn.textContent = 'Riprova';
+  retryBtn.onclick = () => {
+    document.getElementById('progress-view').style.display = 'none';
+    document.getElementById('upload-view').style.display = 'block';
+    const btn = document.getElementById('btn-analyze');
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg> Analizza con AI';
+  };
+  document.getElementById('analysis-steps').appendChild(retryBtn);
+}
+
 // ── Analisi
 async function analizza() {
   if (!selectedFile) return;
   const btn = document.getElementById('btn-analyze');
   btn.disabled = true;
-  btn.innerHTML = '<div class="spinner"></div> Analisi in corso…';
   const profilo = (document.querySelector('input[name="profilo-sel"]:checked') || {}).value || 'D2';
   const fd = new FormData();
   fd.append('file', selectedFile);
+  startProgress();
   try {
     const r = await fetch(`${API}/api/analizza/${currentTipo}?profilo=${profilo}`, {method:'POST', body:fd});
     if (!r.ok) { const err = await r.json().catch(()=>({})); throw new Error(err.detail || `Errore ${r.status}`); }
     const d = await r.json();
     currentBollettaId = d.bolletta_id;
     salvaPersistenza(d, currentTipo, currentBollettaId, null);
-    showResult(d);
-    // Aggiorna URL per condivisione senza reload
-    history.replaceState(null, '', `/risultati/${currentBollettaId}`);
+    completeProgress(() => {
+      showResult(d);
+      history.replaceState(null, '', `/risultati/${currentBollettaId}`);
+    });
   } catch(e) {
-    showToast(e.message, 'error');
-    btn.disabled = false;
-    btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg> Analizza con AI';
+    errorProgress(e.message);
   }
 }
 
 function showResult(d, offerteSalvate) {
   document.getElementById('upload-view').style.display = 'none';
+  document.getElementById('personal-data-view').style.display = 'none';
+  document.querySelector('.hero').style.display = 'none';
+  const fullscreen = document.getElementById('results-fullscreen');
+  fullscreen.style.display = 'block';
   const panel = document.getElementById('result-panel');
   panel.classList.add('visible');
 
@@ -146,11 +293,10 @@ function showResult(d, offerteSalvate) {
 
   // Se c'erano offerte già salvate (ripristino sessione), mostrare direttamente
   if (offerteSalvate && offerteSalvate.length) {
-    document.getElementById('lead-form').style.display = 'none';
     showOfferte(offerteSalvate);
   }
 
-  panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+  fullscreen.scrollIntoView({behavior:'smooth', block:'start'});
 }
 
 // ── Link condivisibile
@@ -184,10 +330,13 @@ function copiaLink(url) {
 }
 
 function resetAnalyzer() {
-  document.getElementById('upload-view').style.display = 'block';
+  document.querySelector('.hero').style.display = '';
+  document.getElementById('results-fullscreen').style.display = 'none';
+  document.getElementById('personal-data-view').style.display = personalData ? 'none' : 'block';
+  document.getElementById('upload-view').style.display = personalData ? 'block' : 'none';
+  document.getElementById('progress-view').style.display = 'none';
   document.getElementById('result-panel').classList.remove('visible');
   document.getElementById('offerte-list').style.display = 'none';
-  document.getElementById('lead-form').style.display = 'flex';
   const ctasEl = document.getElementById('offerte-ctas');
   if (ctasEl) ctasEl.style.display = 'none';
   const bestBox = document.getElementById('offerta-best-already');
@@ -202,21 +351,24 @@ function resetAnalyzer() {
 
 // ── Confronta
 async function confronta() {
-  const nome = document.getElementById('lead-nome').value.trim();
-  const cognome = document.getElementById('lead-cognome').value.trim();
-  if (!nome || !cognome) { showToast('Nome e cognome obbligatori', 'error'); return; }
+  if (!personalData) { showToast('Inserisci prima i tuoi dati', 'error'); return; }
   if (!currentBollettaId) { showToast('Analizza prima la bolletta', 'error'); return; }
   const btn = document.getElementById('btn-compare');
   btn.disabled = true;
   btn.innerHTML = '<div class="spinner"></div> Confronto in corso…';
   try {
-    const lead = {nome, cognome,
-      email: document.getElementById('lead-email').value.trim(),
-      telefono: document.getElementById('lead-telefono').value.trim(),
+    const lead = {
+      nome: personalData.nome,
+      cognome: personalData.cognome,
+      email: personalData.email,
+      telefono: personalData.telefono,
       bolletta_id: currentBollettaId,
       tipo_richiesta: 'comparazione',
-      consenso_privacy: true,
-      consenso_marketing: false
+      consenso_privacy: personalData.consenso_privacy,
+      consenso_marketing: personalData.consenso_marketing,
+      consenso_cessione: personalData.consenso_cessione,
+      consenso_profilazione: personalData.consenso_profilazione,
+      consenso_marketing_terzi: personalData.consenso_marketing_terzi,
     };
     const lr = await fetch(`${API}/api/leads`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(lead)});
     if (!lr.ok) { const e = await lr.json().catch(()=>({})); throw new Error(e.detail || 'Errore salvataggio contatti'); }
@@ -236,8 +388,48 @@ async function confronta() {
   }
 }
 
+function _offerCtaHtml(offertaNome, fornitore) {
+  const isOpen = isContactCenterOpen();
+  // Use data-* attributes to avoid double-quote conflicts inside onclick="..."
+  const dn = _escAttr(offertaNome);
+  const df = _escAttr(fornitore);
+  const rcBtn = `data-nome="${dn}" data-for="${df}" onclick="openRicontattoModal(this.dataset.nome,this.dataset.for)"`;
+  const emBtn = `data-nome="${dn}" data-for="${df}" onclick="openEmailModal(this.dataset.nome,this.dataset.for)"`;
+  if (isOpen) {
+    return `<div class="offer-cta-wrap">
+      <a href="tel:${CONTACT_CENTER_PHONE}" class="btn-offer-call">📞 Chiama ora — Attiva questa offerta</a>
+      <button class="offer-cta-secondary" ${rcBtn}>Preferisci essere ricontattato? Lascia il tuo numero →</button>
+    </div>`;
+  }
+  return `<div class="offer-cta-wrap offer-cta-closed">
+    <button class="btn-offer-callback" ${rcBtn}>📅 Richiedi ricontatto telefonico</button>
+    <button class="btn-offer-email" ${emBtn}>✉️ Contattaci via email</button>
+    <p class="offer-cta-hours-note">Il nostro contact center è attivo lun–ven dalle 9:00 alle 18:00. Ti richiameremo al prossimo orario disponibile.</p>
+  </div>`;
+}
+
+function _injectOfferBanner(hasSavings) {
+  const existing = document.getElementById('offer-top-banner');
+  if (existing) existing.remove();
+  if (!hasSavings) return;
+  const banner = document.createElement('div');
+  banner.id = 'offer-top-banner';
+  if (isContactCenterOpen()) {
+    banner.className = 'offer-top-banner offer-top-banner-open';
+    banner.innerHTML = `
+      <div class="offer-top-banner-text"><strong>🟢 Siamo operativi!</strong> Chiama subito per attivare la miglior offerta con il supporto di un consulente.</div>
+      <a href="tel:${CONTACT_CENTER_PHONE}" class="btn-offer-call btn-offer-call-sm">📞 ${CONTACT_CENTER_PHONE_DISPLAY}</a>`;
+  } else {
+    banner.className = 'offer-top-banner offer-top-banner-closed';
+    banner.innerHTML = `
+      <div class="offer-top-banner-text"><strong>🔴 Fuori orario</strong> — Il contact center riapre lun–ven 9:00–18:00. Lascia i tuoi dati e ti richiamiamo.</div>
+      <button class="btn-offer-callback btn-offer-callback-sm" onclick="openRicontattoModal('','')">📅 Richiedi ricontatto</button>`;
+  }
+  const list = document.getElementById('offerte-list');
+  list.parentElement.insertBefore(banner, list);
+}
+
 function showOfferte(offerte, ultimoAggiornamento) {
-  document.getElementById('lead-form').style.display = 'none';
   const agg = document.getElementById('offerte-aggiornamento');
   if (agg) {
     if (ultimoAggiornamento) {
@@ -249,9 +441,9 @@ function showOfferte(offerte, ultimoAggiornamento) {
     }
   }
 
-  const list = document.getElementById('offerte-list');
+  const list    = document.getElementById('offerte-list');
   const bestBox = document.getElementById('offerta-best-already');
-  const ctasEl = document.getElementById('offerte-ctas');
+  const ctasEl  = document.getElementById('offerte-ctas');
   list.style.display = 'flex';
 
   if (!offerte.length) {
@@ -260,7 +452,7 @@ function showOfferte(offerte, ultimoAggiornamento) {
     return;
   }
 
-  const sorted = [...offerte].sort((a,b) => (a.costo_annuo||999) - (b.costo_annuo||999));
+  const sorted     = [...offerte].sort((a,b) => (a.costo_annuo||999) - (b.costo_annuo||999));
   const bestSaving = sorted[0].risparmio_annuo || 0;
 
   // Se l'offerta attuale è già la più economica (risparmio <= 0)
@@ -275,23 +467,54 @@ function showOfferte(offerte, ultimoAggiornamento) {
       </div>`;
   }
 
+  _injectOfferBanner(bestSaving > 0);
+
   list.innerHTML = sorted.map((o, i) => {
-    const best = i === 0;
+    const best   = i === 0;
     const saving = o.risparmio_annuo;
+    const dn = _escAttr(o.nome || '');
+    const df = _escAttr(o.fornitore || '');
     return `<div class="offerta-card${best?' best':''}">
-      ${best?'<span class="offerta-badge">Miglior offerta</span>':''}
-      <div style="flex:1">
-        <div class="offerta-name">${o.nome||'—'}</div>
-        <div class="offerta-fornitore">${o.fornitore||'—'} · ${o.tipo||''}</div>
+      <div class="offerta-card-top">
+        ${best ? '<span class="offerta-badge">Miglior offerta</span>' : ''}
+        <div style="flex:1;min-width:0">
+          <div class="offerta-name">${o.nome||'—'}</div>
+          <div class="offerta-fornitore">${o.fornitore||'—'} · ${o.tipo||''}</div>
+        </div>
+        <div>
+          <div class="offerta-price">${o.costo_annuo ? o.costo_annuo.toFixed(0)+'€/anno' : '—'}</div>
+          ${saving && saving > 0 ? `<div class="offerta-saving">risparmi ${saving.toFixed(0)}€/anno</div>` : saving < 0 ? '<div class="offerta-saving" style="color:var(--gray-400)">già conveniente</div>' : ''}
+        </div>
       </div>
-      <div>
-        <div class="offerta-price">${o.costo_annuo ? o.costo_annuo.toFixed(0)+'€/anno' : '—'}</div>
-        ${saving && saving > 0 ? `<div class="offerta-saving">risparmi ${saving.toFixed(0)}€/anno</div>` : saving < 0 ? '<div class="offerta-saving" style="color:var(--gray-400)">già conveniente</div>' : ''}
-      </div>
+      <button class="btn-dettagli" data-nome="${dn}" data-for="${df}" onclick="openOfferDetail(this.dataset.nome,this.dataset.for)">Dettagli</button>
     </div>`;
   }).join('');
 
   if (ctasEl) ctasEl.style.display = 'block';
+}
+
+// ── Open offer detail → contact modal
+function openOfferDetail(offertaNome, fornitore) {
+  // Pre-fill contact form with personal data and offer info
+  if (personalData) {
+    document.getElementById('c-nome').value = personalData.nome || '';
+    document.getElementById('c-cognome').value = personalData.cognome || '';
+    document.getElementById('c-email').value = personalData.email || '';
+    document.getElementById('c-tel').value = personalData.telefono || '';
+  }
+  // Set the offer type
+  const offerSelect = document.getElementById('c-offerta');
+  if (offertaNome) {
+    // Try to match an option, fallback to first relevant
+    const tipo = currentTipo === 'gas' ? 'gas' : 'luce';
+    offerSelect.value = tipo;
+  }
+  // Update modal title to show offer name
+  const formBox = document.querySelector('.contact-form-box h3');
+  if (offertaNome) {
+    formBox.textContent = `📋 ${offertaNome} — ${fornitore}`;
+  }
+  openContact();
 }
 
 // ── Contact form
@@ -370,8 +593,8 @@ async function autoRestore() {
         nascondiBannerRipristino();
         salvaPersistenza(d, currentTipo, currentBollettaId, null);
         showResult(d);
-        // Scroll fluido all'analisi
-        setTimeout(() => document.getElementById('analyzer').scrollIntoView({behavior:'smooth', block:'start'}), 300);
+        // Scroll fluido ai risultati
+        setTimeout(() => document.getElementById('results-fullscreen').scrollIntoView({behavior:'smooth', block:'start'}), 300);
         return;
       }
     } catch(e) {}
@@ -399,7 +622,8 @@ function showBannerRipristino(msg) {
     b = document.createElement('div');
     b.id = 'restore-banner';
     b.className = 'restore-banner';
-    document.getElementById('analyzer').prepend(b);
+    const target = document.getElementById('result-panel') || document.getElementById('analyzer');
+    target.prepend(b);
   }
   b.textContent = msg;
   b.style.display = 'block';
@@ -421,7 +645,7 @@ function closeManualModal() {
   document.getElementById('manual-modal-overlay').classList.remove('open');
   document.body.style.overflow = '';
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeContact(); closeManualModal(); closeFab(); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeContact(); closeManualModal(); closeFab(); closeRicontattoModal(); closeEmailModal(); } });
 
 // ── FAB ──────────────────────────────────────────────────────────────────────
 function toggleFab() {
@@ -463,7 +687,10 @@ async function analizzaManuale(e) {
   closeManualModal();
   currentTipo = dati.tipo.includes('gas') && !dati.tipo.includes('luce') ? 'gas' : 'luce';
   document.getElementById('upload-view').style.display = 'none';
-  document.getElementById('result-panel').style.display = 'block';
+  document.getElementById('personal-data-view').style.display = 'none';
+  document.querySelector('.hero').style.display = 'none';
+  document.getElementById('results-fullscreen').style.display = 'block';
+  document.getElementById('result-panel').classList.add('visible');
 
   // Mostra stats sintetici dai dati inseriti
   const statsEl = document.getElementById('result-stats');
@@ -494,4 +721,128 @@ async function analizzaManuale(e) {
     // Mostra sezione confronto direttamente
   }
   document.getElementById('compare-section').style.display = 'block';
+}
+
+// ── MODALE RICONTATTO TELEFONICO ──────────────────────────────────────────────
+function openRicontattoModal(offertaNome, fornitore) {
+  // Arguments may come from dataset (HTML-decoded by browser) or from inline calls
+  _currentOfferName      = offertaNome || '';
+  _currentOfferFornitore = fornitore   || '';
+  const infoEl = document.getElementById('ricontatto-offerta-info');
+  if (offertaNome) {
+    infoEl.textContent = `Offerta: ${offertaNome}${fornitore ? ' — ' + fornitore : ''}`;
+    infoEl.style.display = 'block';
+  } else {
+    infoEl.style.display = 'none';
+  }
+  document.getElementById('ricontatto-form').reset();
+  document.getElementById('ricontatto-form').style.display = '';
+  document.getElementById('rc-success').style.display = 'none';
+  document.getElementById('ricontatto-modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeRicontattoModal() {
+  document.getElementById('ricontatto-modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+async function submitRicontatto(e) {
+  e.preventDefault();
+  const telefono = document.getElementById('rc-telefono').value.trim();
+  // Validate Italian phone
+  if (!/^(\+39|0039)?[\s]?3[0-9]{8,9}$/.test(telefono.replace(/[\s\-]/g, ''))) {
+    showToast('Inserisci un numero di cellulare italiano valido (es. 333 1234567)', 'error');
+    return;
+  }
+  const btn = document.getElementById('rc-submit');
+  btn.disabled = true;
+  btn.textContent = 'Invio in corso…';
+  try {
+    const r = await fetch(`${API}/api/leads`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        nome:                    document.getElementById('rc-nome').value.trim(),
+        cognome:                 document.getElementById('rc-cognome').value.trim(),
+        telefono,
+        tipo_richiesta:          'ricontatto',
+        offerta_richiesta:       _currentOfferName || null,
+        fascia_oraria_preferita: document.getElementById('rc-fascia').value,
+        bolletta_id:             currentBollettaId,
+        consenso_privacy:        true,
+      })
+    });
+    if (!r.ok) throw new Error('Errore server');
+    document.getElementById('ricontatto-form').style.display = 'none';
+    document.getElementById('rc-success').style.display = 'block';
+  } catch {
+    showToast('Errore nell\'invio. Riprova o chiamaci al ' + CONTACT_CENTER_PHONE_DISPLAY + '.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Invia richiesta di ricontatto';
+  }
+}
+
+// ── MODALE CONTATTO VIA EMAIL ─────────────────────────────────────────────────
+function openEmailModal(offertaNome, fornitore) {
+  _currentOfferName      = offertaNome || '';
+  _currentOfferFornitore = fornitore   || '';
+  const infoEl = document.getElementById('email-offerta-info');
+  if (offertaNome) {
+    infoEl.textContent = `Offerta: ${offertaNome}${fornitore ? ' — ' + fornitore : ''}`;
+    infoEl.style.display = 'block';
+  } else {
+    infoEl.style.display = 'none';
+  }
+  // Reset then pre-fill message
+  document.getElementById('email-offerta-form').reset();
+  document.getElementById('email-offerta-form').style.display = '';
+  document.getElementById('eo-success').style.display = 'none';
+  if (offertaNome) {
+    document.getElementById('eo-messaggio').value =
+      `Sono interessato/a all'offerta ${offertaNome} di ${fornitore}. Vorrei maggiori informazioni.`;
+  }
+  document.getElementById('email-offerta-modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeEmailModal() {
+  document.getElementById('email-offerta-modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+async function submitEmailOfferta(e) {
+  e.preventDefault();
+  const email = document.getElementById('eo-email').value.trim();
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    showToast('Inserisci un indirizzo email valido', 'error');
+    return;
+  }
+  const btn = document.getElementById('eo-submit');
+  btn.disabled = true;
+  btn.textContent = 'Invio in corso…';
+  try {
+    const r = await fetch(`${API}/api/leads`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        nome:              document.getElementById('eo-nome').value.trim(),
+        email,
+        note:              document.getElementById('eo-messaggio').value.trim(),
+        tipo_richiesta:    'email',
+        offerta_richiesta: _currentOfferName || null,
+        bolletta_id:       currentBollettaId,
+        consenso_privacy:  true,
+      })
+    });
+    if (!r.ok) throw new Error('Errore server');
+    document.getElementById('email-offerta-form').style.display = 'none';
+    document.getElementById('eo-success').style.display = 'block';
+  } catch {
+    showToast('Errore nell\'invio. Riprova.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Invia richiesta';
+  }
 }
